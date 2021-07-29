@@ -70,7 +70,6 @@ namespace Microsoft.Bot.Streaming.UnitTests
         [Fact]
         public void WebSocketServer_ctor_With_No_RequestHandler()
         {
-            var requestHandlerMock = new Mock<RequestHandler>();
             var socketMock = new Mock<WebSocket>();
 
             Assert.Throws<ArgumentNullException>(() => new WebSocketServer(socketMock.Object, null));

@@ -53,9 +53,9 @@ namespace Microsoft.Bot.Streaming.UnitTests
             var id = Guid.NewGuid();
             var assembler = new PayloadStreamAssembler(null, id);
             var content = new ContentStream(id, assembler);
-            var length = 3;
+            const int length = 3;
 
-            content.Length = 3;
+            content.Length = length;
 
             Assert.Equal(length, content.Length);
 
