@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Bot.Schema;
 using Microsoft.Bot.Streaming.Payloads;
 using Newtonsoft.Json;
 using Xunit;
