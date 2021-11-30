@@ -17,7 +17,11 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// </summary>
     public static class ObjectPath
     {
-        private static readonly JsonSerializerSettings _cloneSettings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All };
+        private static readonly JsonSerializerSettings _cloneSettings = new JsonSerializerSettings
+        {
+            TypeNameHandling = TypeNameHandling.All,
+            DateParseHandling = DateParseHandling.None
+        };
 
         private static readonly JsonSerializerSettings _expressionCaseSettings = new JsonSerializerSettings
         {

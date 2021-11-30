@@ -357,10 +357,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
                 throw new ArgumentException($"{path} = You can't pass an unresolved Task to SetValue");
             }
 
-            //if (value != null)
-            //{
-            //    value = JToken.FromObject(value);
-            //}
+            if (value != null)
+            {
+                value = JToken.FromObject(value);
+            }
 
             path = TransformPath(path ?? throw new ArgumentNullException(nameof(path)));
             if (TrackChange(path, value))
