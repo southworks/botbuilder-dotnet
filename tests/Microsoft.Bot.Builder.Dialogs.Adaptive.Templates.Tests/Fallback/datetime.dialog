@@ -108,6 +108,10 @@
         {
           "$kind": "Microsoft.SendActivity",
           "activity": "${isDateTime(user.date)}"
+        },
+        {
+          "$kind": "Microsoft.SendActivity",
+          "activity": "${convertFromUTC(trim(user.date), 'GMT Standard Time')}"
         }
       ]
     }
