@@ -23,7 +23,11 @@
         },
         {
           "$kind": "Microsoft.SendActivity",
-          "activity": "${string(user.date)}"
+          "activity": "${user.date}"
+        },
+        {
+          "$kind": "Microsoft.SendActivity",
+          "activity": "${trim(user.date)}"
         },
         {
           "$kind": "Microsoft.SendActivity",
