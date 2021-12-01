@@ -23,6 +23,10 @@
         },
         {
           "$kind": "Microsoft.SendActivity",
+          "activity": "${string(user.date)}"
+        },
+        {
+          "$kind": "Microsoft.SendActivity",
           "activity": "${addToTime(user.date, 120, 'Second')}"
         },
         {
@@ -108,10 +112,6 @@
         {
           "$kind": "Microsoft.SendActivity",
           "activity": "${isDateTime(user.date)}"
-        },
-        {
-          "$kind": "Microsoft.SendActivity",
-          "activity": "${convertFromUTC(trim(user.date), 'GMT Standard Time')}"
         }
       ]
     }

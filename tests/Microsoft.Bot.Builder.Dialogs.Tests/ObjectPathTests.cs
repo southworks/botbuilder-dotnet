@@ -478,6 +478,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [Fact]
         public void SetPathValue()
         {
+            const string dateISO = "2021-11-30T23:59:59:000Z";
             var test = new Dictionary<string, object>();
 
             ObjectPath.SetPathValue(test, "x.y.z", 15);
@@ -487,10 +488,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             ObjectPath.SetPathValue(test, "x.a[0]", "dabba");
             ObjectPath.SetPathValue(test, "null", null);
             ObjectPath.SetPathValue(test, "enum", TypeCode.Empty);
-            const string dateISO = "2021-11-30T23:59:59:000Z";
             ObjectPath.SetPathValue(test, "date.string.iso", dateISO);
-            ObjectPath.SetPathValue(test, "date.jtoken.iso", new JValue(dateISO));
-            ObjectPath.SetPathValue(test, "date.dict", new Dictionary<string, object> { { "iso", dateISO } });
+            ObjectPath.SetPathValue(test, "date.dict", new Dictionary<string, string> { { "iso", dateISO } });
+            ObjectPath.SetPathValue(test, "date.jtoken.string.iso", new JValue(dateISO));
+            ObjectPath.SetPathValue(test, "date.jtoken.dict", JToken.FromObject(new Dictionary<string, string> { { "iso", dateISO } }));
 
             Assert.Equal(15, ObjectPath.GetPathValue<int>(test, "x.y.z"));
             Assert.Equal("hello", ObjectPath.GetPathValue<string>(test, "x.p"));
@@ -503,9 +504,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.Equal("dabba", value2);
             Assert.False(ObjectPath.TryGetPathValue<object>(test, "null", out var nullValue));
             Assert.Equal(TypeCode.Empty, ObjectPath.GetPathValue<TypeCode>(test, "enum"));
-            Assert.Equal("2021-11-30T23:59:59:000Z", ObjectPath.GetPathValue<string>(test, "date.string.iso"));
-            Assert.Equal("2021-11-30T23:59:59:000Z", ObjectPath.GetPathValue<string>(test, "date.jtoken.iso"));
-            Assert.Equal("2021-11-30T23:59:59:000Z", ObjectPath.GetPathValue<string>(test, "date.dict.iso"));
+            Assert.Equal(dateISO, ObjectPath.GetPathValue<string>(test, "date.string.iso"));
+            Assert.Equal(dateISO, ObjectPath.GetPathValue<string>(test, "date.dict.iso"));
+            Assert.Equal(dateISO, ObjectPath.GetPathValue<string>(test, "date.jtoken.string.iso"));
+            Assert.Equal(dateISO, ObjectPath.GetPathValue<string>(test, "date.jtoken.dict.iso"));
 
             // value type tests
 #pragma warning disable SA1121 // Use built-in type alias
