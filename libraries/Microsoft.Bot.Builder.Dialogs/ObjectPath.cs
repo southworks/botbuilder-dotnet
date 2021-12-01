@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 
@@ -17,11 +18,14 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// </summary>
     public static class ObjectPath
     {
-        private static readonly JsonSerializerSettings _cloneSettings = new JsonSerializerSettings
-        {
-            TypeNameHandling = TypeNameHandling.All,
-            DateParseHandling = DateParseHandling.None
-        };
+        private static readonly IsoDateTimeConverter _cloneSettings = new IsoDateTimeConverter();
+
+        //{
+        //    //TypeNameHandling = TypeNameHandling.All,
+
+        //    ////DateParseHandling = DateParseHandling.None
+        //    //DateTimeFormat = "yyyy-MM-ddTHH:mm:ss.fffZ"
+        //};
 
         private static readonly JsonSerializerSettings _expressionCaseSettings = new JsonSerializerSettings
         {
@@ -726,7 +730,11 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 if (value is JToken || value is JObject || value is JArray)
                 {
-                    val = Clone((JToken)value);
+                    //val = Clone((JToken)value);
+
+                    val = ((JToken)value).DeepClone();
+
+                    //val = value is JObject ? (JObject)(value as JObject).DeepClone() : JObject.FromObject(value);
                 }
                 else if (value == null)
                 {
