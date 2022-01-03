@@ -5,12 +5,6 @@
 # "name" here defines the build number format. Build number is accessed via $(Build.BuildNumber)
 name: $(BUILD.BUILDID)
 
-resources:
-  pipelines:
-  - pipeline: FirstPipelineCI-resource
-    source: First-Pipeline-CI
-    trigger: true
-
 variables:
   BuildConfiguration: "Debug"
 

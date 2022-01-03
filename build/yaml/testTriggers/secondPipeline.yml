@@ -7,7 +7,7 @@ name: $(BUILD.BUILDID)
 
 resources:
   pipelines:
-  - pipeline: FirstPipelineCI-resource
+  - pipeline: FirstPipelineCI
     source: First-Pipeline-CI
     trigger: true
 
