@@ -1,0 +1,24 @@
+#
+# Executes the test scenarios.
+#
+
+resources:
+  pipelines:
+  - pipeline: FirstPipelineCI-resource
+    source: First-Pipeline-CI
+    trigger: true
+
+variables:
+  BuildConfiguration: "Debug"
+
+pool:
+  vmImage: "windows-2019"
+
+stages:
+  - stage: "Triggered_ipeline"
+    jobs:
+      - job: "Triggered_Pipeline"
+        steps:
+          - powershell: |
+              Write-Host "Executing triggered pipeline"
+            displayName: "Second Pipeline script"
