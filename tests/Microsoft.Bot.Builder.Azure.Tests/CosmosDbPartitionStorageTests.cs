@@ -23,8 +23,6 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
         public CosmosDbPartitionStorageTests(CosmosDbFixture cosmosDbFixture)
         {
-            cosmosDbFixture.SkipIfEmulatorIsNotRunning();
-
             _storage = new CosmosDbPartitionedStorage(
                 new CosmosDbPartitionedStorageOptions
                 {
@@ -45,7 +43,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             _storage = null;
         }
 
-        [SkippableFact]
+        [Fact]
         public void Constructor_Should_Throw_On_InvalidOptions()
         {
             // No Options. Should throw.
@@ -113,42 +111,6 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
 
         [SkippableFact]
-        public async Task CreateObjectCosmosDBPartitionTest()
-        {
-            await CreateObjectTest(_storage);
-        }
-
-        [SkippableFact]
-        public async Task ReadUnknownCosmosDBPartitionTest()
-        {
-            await ReadUnknownTest(_storage);
-        }
-
-        [SkippableFact]
-        public async Task UpdateObjectCosmosDBPartitionTest()
-        {
-            await UpdateObjectTest<CosmosException>(_storage);
-        }
-
-        [SkippableFact]
-        public async Task DeleteObjectCosmosDBPartitionTest()
-        {
-            await DeleteObjectTest(_storage);
-        }
-
-        [SkippableFact]
-        public async Task DeleteUnknownObjectCosmosDBPartitionTest()
-        {
-            await _storage.DeleteAsync(new[] { "unknown_delete" });
-        }
-
-        [SkippableFact]
-        public async Task HandleCrazyKeysCosmosDBPartition()
-        {
-            await HandleCrazyKeys(_storage);
-        }
-
-        [SkippableFact]
         public async Task ReadingEmptyKeysReturnsEmptyDictionary()
         {
             var state = await _storage.ReadAsync(new string[] { });
@@ -179,193 +141,6 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         public async Task DeletingNullStoreItemsThrowException()
         {
             await Assert.ThrowsAsync<ArgumentNullException>(() => _storage.DeleteAsync(null));
-        }
-
-        // For issue https://github.com/Microsoft/botbuilder-dotnet/issues/871
-        // See the linked issue for details. This issue was happening when using the CosmosDB
-        // data store for state. The stepIndex, which was an object being cast to an Int64
-        // after deserialization, was throwing an exception for not being Int32 datatype.
-        // This test checks to make sure that this error is no longer thrown.
-        //
-        // The problem was reintroduced when the prompt retry count feature was implemented:
-        // https://github.com/microsoft/botbuilder-dotnet/issues/1859
-        // The waterfall in this test has been modified to include a prompt.
-        [SkippableFact]
-        public async Task WaterfallCosmos()
-        {
-            var convoState = new ConversationState(_storage);
-
-            var adapter = new TestAdapter(TestAdapter.CreateConversation("waterfallTest"))
-                .Use(new AutoSaveStateMiddleware(convoState));
-
-            var dialogState = convoState.CreateProperty<DialogState>("dialogStateForWaterfallTest");
-            var dialogs = new DialogSet(dialogState);
-
-            dialogs.Add(new TextPrompt(nameof(TextPrompt), async (promptContext, cancellationToken) =>
-            {
-                var result = promptContext.Recognized.Value;
-                if (result.Length > 3)
-                {
-                    var succeededMessage = MessageFactory.Text($"You got it at the {promptContext.AttemptCount}th try!");
-                    await promptContext.Context.SendActivityAsync(succeededMessage, cancellationToken);
-                    return true;
-                }
-
-                var reply = MessageFactory.Text($"Please send a name that is longer than 3 characters. {promptContext.AttemptCount}");
-                await promptContext.Context.SendActivityAsync(reply, cancellationToken);
-
-                return false;
-            }));
-
-            var steps = new WaterfallStep[]
-                {
-                    async (stepContext, ct) =>
-                    {
-                        Assert.Equal(typeof(int), stepContext.ActiveDialog.State["stepIndex"].GetType());
-                        await stepContext.Context.SendActivityAsync("step1");
-                        return Dialog.EndOfTurn;
-                    },
-                    async (stepContext, ct) =>
-                    {
-                        Assert.Equal(typeof(int), stepContext.ActiveDialog.State["stepIndex"].GetType());
-                        return await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions { Prompt = MessageFactory.Text("Please type your name.") }, ct);
-                    },
-                    async (stepContext, ct) =>
-                    {
-                        Assert.Equal(typeof(int), stepContext.ActiveDialog.State["stepIndex"].GetType());
-                        await stepContext.Context.SendActivityAsync("step3");
-                        return Dialog.EndOfTurn;
-                    },
-                };
-
-            dialogs.Add(new WaterfallDialog(nameof(WaterfallDialog), steps));
-
-            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
-            {
-                if (turnContext.Activity.Text == "reset")
-                {
-                    await dialogState.DeleteAsync(turnContext);
-                }
-                else
-                {
-                    var dc = await dialogs.CreateContextAsync(turnContext);
-
-                    await dc.ContinueDialogAsync();
-
-                    if (!turnContext.Responded)
-                    {
-                        await dc.BeginDialogAsync(nameof(WaterfallDialog));
-                    }
-                }
-            })
-                .Send("reset")
-                .Send("hello")
-                .AssertReply("step1")
-                .Send("hello")
-                .AssertReply("Please type your name.")
-                .Send("hi")
-                .AssertReply("Please send a name that is longer than 3 characters. 1")
-                .Send("hi")
-                .AssertReply("Please send a name that is longer than 3 characters. 2")
-                .Send("hi")
-                .AssertReply("Please send a name that is longer than 3 characters. 3")
-                .Send("Kyle")
-                .AssertReply("You got it at the 4th try!")
-                .AssertReply("step3")
-                .StartTestAsync();
-        }
-
-        [SkippableFact]
-        public async Task Should_Be_Aware_Of_Nesting_Limit()
-        {
-            async Task TestNestAsync(int depth)
-            {
-                // This creates nested data with both objects and arrays
-                static JToken CreateNestedData(int count, bool isArray = false)
-                    => count > 0
-                        ? (isArray
-                            ? new JArray { CreateNestedData(count - 1, false) } as JToken
-                            : new JObject { new JProperty("data", CreateNestedData(count - 1, true)) })
-                        : null;
-
-                var changes = new Dictionary<string, object>
-                {
-                    { "CONTEXTKEY", CreateNestedData(depth) },
-                };
-
-                await _storage.WriteAsync(changes);
-            }
-
-            // Should not throw
-            await TestNestAsync(127);
-
-            try
-            {
-                // Should either not throw or throw a special exception
-                await TestNestAsync(128);
-            }
-            catch (InvalidOperationException ex)
-            {
-                // If the nesting limit is changed on the Cosmos side
-                // then this assertion won't be reached, which is okay
-                Assert.Contains("recursion", ex.Message);
-            }
-        }
-
-        [SkippableFact]
-        public async Task Should_Be_Aware_Of_Nesting_Limit_With_Dialogs()
-        {
-            async Task TestDialogNestAsync(int dialogDepth)
-            {
-                Dialog CreateNestedDialog(int depth) => new ComponentDialog(nameof(ComponentDialog))
-                    .AddDialog(depth > 0
-                        ? CreateNestedDialog(depth - 1)
-                        : new WaterfallDialog(
-                            nameof(WaterfallDialog),
-                            new List<WaterfallStep>
-                            {
-                                async (stepContext, ct) => Dialog.EndOfTurn
-                            }));
-
-                var dialog = CreateNestedDialog(dialogDepth);
-
-                var convoState = new ConversationState(_storage);
-
-                var adapter = new TestAdapter(TestAdapter.CreateConversation("nestingTest"))
-                    .Use(new AutoSaveStateMiddleware(convoState));
-
-                var dialogState = convoState.CreateProperty<DialogState>("dialogStateForNestingTest");
-
-                await new TestFlow(adapter, async (turnContext, cancellationToken) =>
-                {
-                    if (turnContext.Activity.Text == "reset")
-                    {
-                        await dialogState.DeleteAsync(turnContext);
-                    }
-                    else
-                    {
-                        await dialog.RunAsync(turnContext, dialogState, cancellationToken);
-                    }
-                })
-                    .Send("reset")
-                    .Send("hello")
-                    .StartTestAsync();
-            }
-
-            // Should not throw
-            await TestDialogNestAsync(23);
-
-            try
-            {
-                // Should either not throw or throw a special exception
-                await TestDialogNestAsync(24);
-            }
-            catch (InvalidOperationException ex)
-            {
-                // If the nesting limit is changed on the Cosmos side
-                // then this assertion won't be reached, which is okay
-                Assert.Contains("dialogs", ex.Message);
-            }
         }
     }
 }
