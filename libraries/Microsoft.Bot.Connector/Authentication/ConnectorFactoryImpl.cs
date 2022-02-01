@@ -36,11 +36,15 @@ namespace Microsoft.Bot.Connector.Authentication
             var credentials = await _credentialFactory.CreateCredentialsAsync(_appId, audience ?? _toChannelFromBotOAuthScope, _loginEndpoint, _validateAuthority, cancellationToken).ConfigureAwait(false);
 
             // A new connector client for making calls against this serviceUrl using credentials derived from the current appId and the specified audience.
-#pragma warning disable CA2000 // Dispose objects before losing scope
-            var httpClient = _httpClientFactory?.CreateClient() ?? new HttpClient();
+
+            HttpClient httpClient;
+            using (var hc = _httpClientFactory?.CreateClient() ?? new HttpClient())
+            {
+                httpClient = hc;
+            }
+
             ConnectorClient.AddDefaultRequestHeaders(httpClient);
             return new ConnectorClient(new Uri(serviceUrl), credentials, httpClient, true);
-#pragma warning restore CA2000 // Dispose objects before losing scope
         }
     }
 }

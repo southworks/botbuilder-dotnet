@@ -56,9 +56,11 @@ namespace Microsoft.Bot.Builder.AI.Luis
 
             var delegatingHandler = new LuisDelegatingHandler();
             var httpClientHandler = clientHandler ?? CreateRootHandler();
-#pragma warning disable CA2000 // Dispose objects before losing scope (suppressing this warning, for now! we will address this once we implement HttpClientFactory in a future release)
-            var currentHandler = CreateHttpHandlerPipeline(httpClientHandler, delegatingHandler);
-#pragma warning restore CA2000 // Dispose objects before losing scope
+            DelegatingHandler currentHandler;
+            using (DelegatingHandler dh = CreateHttpHandlerPipeline(httpClientHandler, delegatingHandler))
+            {
+                currentHandler = dh;
+            }
 
             HttpClient = new HttpClient(currentHandler, false)
             {
@@ -703,10 +705,11 @@ namespace Microsoft.Bot.Builder.AI.Luis
         {
             // Now, the RetryAfterDelegatingHandler should be the absolute outermost handler
             // because it's extremely lightweight and non-interfering
-            DelegatingHandler currentHandler =
-#pragma warning disable CA2000 // Dispose objects before losing scope (suppressing this warning, for now! we will address this once we implement HttpClientFactory in a future release)
-                new RetryDelegatingHandler(new RetryAfterDelegatingHandler { InnerHandler = httpClientHandler });
-#pragma warning restore CA2000 // Dispose objects before losing scope
+            DelegatingHandler currentHandler;
+            using (var radh = new RetryAfterDelegatingHandler { InnerHandler = httpClientHandler })
+            {
+                currentHandler = new RetryDelegatingHandler(radh);
+            }
 
             if (handlers != null)
             {

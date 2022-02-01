@@ -290,9 +290,11 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                         throw new NotSupportedException("This is a streaming scenario, all connectors from this factory must all be for the same url.");
                     }
 
-#pragma warning disable CA2000 // Dispose objects before losing scope
-                    var streamingHttpClient = new StreamingHttpClient(_requestHandler);
-#pragma warning restore CA2000 // Dispose objects before losing scope
+                    StreamingHttpClient streamingHttpClient;
+                    using (StreamingHttpClient shc = new StreamingHttpClient(_requestHandler))
+                    {
+                        streamingHttpClient = shc;
+                    }
 
                     return Task.FromResult<IConnectorClient>(new ConnectorClient(MicrosoftAppCredentials.Empty, streamingHttpClient, false));
                 }
