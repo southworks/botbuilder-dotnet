@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -50,7 +51,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <param name="options">The options for the QnA Maker knowledge base. If null, constructor option is used for this instance.</param>
         /// <returns>A list of answers for the user query, sorted in decreasing order of ranking score.</returns>
         [Obsolete]
-        public async Task<QueryResult[]> GetAnswersAsync(ITurnContext turnContext, IMessageActivity messageActivity, QnAMakerOptions options)
+        public async Task<Collection<QueryResult>> GetAnswersAsync(ITurnContext turnContext, IMessageActivity messageActivity, QnAMakerOptions options)
         {
             var result = await GetAnswersRawAsync(turnContext, messageActivity, options).ConfigureAwait(false);
 
@@ -86,7 +87,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
             var result = await QueryQnaServiceAsync((Activity)messageActivity, hydratedOptions).ConfigureAwait(false);
 
-            await EmitTraceInfoAsync(turnContext, (Activity)messageActivity, result.Answers, hydratedOptions).ConfigureAwait(false);
+            await EmitTraceInfoAsync(turnContext, (Activity)messageActivity, result.Answers.ToArray(), hydratedOptions).ConfigureAwait(false);
 
             return result;
         }
@@ -102,7 +103,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 answer.Score = answer.Score / 100;
             }
 
-            results.Answers = results.Answers.Where(answer => answer.Score > options.ScoreThreshold).ToArray();
+            results.SetAnswers(results.Answers.Where(answer => answer.Score > options.ScoreThreshold).ToArray());
 
             return results;
         }

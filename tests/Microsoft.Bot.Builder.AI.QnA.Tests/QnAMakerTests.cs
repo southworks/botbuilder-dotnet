@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Reflection;
@@ -282,9 +283,9 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
 
             var results = await qna.GetAnswersAsync(GetContext("Q11"));
             Assert.NotNull(results);
-            Assert.Equal(4, results.Length);
+            Assert.Equal(4, results.Count);
 
-            var filteredResults = qna.GetLowScoreVariation(results);
+            var filteredResults = qna.GetLowScoreVariation(results.ToArray());
             Assert.NotNull(filteredResults);
             Assert.Equal(3, filteredResults.Length);
 
@@ -294,9 +295,9 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
            
             results = await qna.GetAnswersAsync(GetContext("Q11"));
             Assert.NotNull(results);
-            Assert.Equal(4, results.Length);
+            Assert.Equal(4, results.Count);
 
-            filteredResults = qna.GetLowScoreVariation(results);
+            filteredResults = qna.GetLowScoreVariation(results.ToArray());
             Assert.NotNull(filteredResults);
             Assert.Equal(3, filteredResults.Length);
         }
@@ -543,7 +544,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
 
             var results = await qna.GetAnswersAsync(GetContext("Where can I buy?"), options);
             Assert.NotNull(results);
-            Assert.Equal(2, results.Length);
+            Assert.Equal(2, results.Count);
             Assert.NotEqual(1, results[0].Score);
         }
 
@@ -851,7 +852,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
 
             var results = await qna.GetAnswersAsync(GetContext("Q11"), qnaMakerOptions);
             Assert.NotNull(results);
-            Assert.Equal(2, results.Length);
+            Assert.Equal(2, results.Count);
         }
 
         [Fact]

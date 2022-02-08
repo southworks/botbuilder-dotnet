@@ -581,9 +581,9 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             if (response.Answers.Any() && response.Answers.First().Score <= (ActiveLearningUtils.MaximumScoreForLowScoreVariation / 100))
             {
                 // Get filtered list of the response that support low score variation criteria.
-                response.Answers = qnaClient.GetLowScoreVariation(response.Answers);
+                response.SetAnswers(qnaClient.GetLowScoreVariation(response.Answers.ToArray()));
 
-                if (response.Answers.Length > 1 && isActiveLearningEnabled)
+                if (response.Answers.Count > 1 && isActiveLearningEnabled)
                 {
                     var suggestedQuestions = new List<string>();
                     foreach (var qna in response.Answers)
