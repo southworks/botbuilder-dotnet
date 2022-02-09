@@ -212,16 +212,18 @@ namespace Microsoft.Bot.Builder.AI.QnA
             var traceInfo = new QnAMakerTraceInfo
             {
                 Message = messageActivity,
-                QueryResults = result,
                 KnowledgeBaseId = _endpoint.KnowledgeBaseId,
                 ScoreThreshold = options.ScoreThreshold,
                 Top = options.Top,
-                StrictFilters = options.StrictFilters.ToArray(),
                 Context = options.Context,
                 QnAId = options.QnAId,
                 IsTest = options.IsTest,
                 RankerType = options.RankerType
             };
+
+            traceInfo.SetQueryResults(result);
+            traceInfo.SetStrictFilters(options.StrictFilters.ToArray());
+
             var traceActivity = Activity.CreateTraceActivity(QnAMaker.QnAMakerName, QnAMaker.QnAMakerTraceType, traceInfo, QnAMaker.QnAMakerTraceLabel);
             await turnContext.SendActivityAsync(traceActivity).ConfigureAwait(false);
         }
