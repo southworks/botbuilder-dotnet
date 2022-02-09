@@ -18,9 +18,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests.Models
             {
                 QueryResults = new[]
                 {
-                    new QueryResult
+                    new QueryResult(new[] { "What's your name?" })
                     {
-                        Questions = new[] { "What's your name?" },
                         Answer = "My name is Mike",
                         Score = 0.9F,
                     },
