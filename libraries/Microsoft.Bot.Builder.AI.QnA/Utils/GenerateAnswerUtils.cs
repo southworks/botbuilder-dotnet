@@ -137,7 +137,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
             if (options.StrictFilters == null)
             {
-                options.StrictFilters = Array.Empty<Metadata>();
+                options.SetStrictFilters(Array.Empty<Metadata>());
             }
 
             if (options.RankerType == null)
@@ -167,9 +167,9 @@ namespace Microsoft.Bot.Builder.AI.QnA
                     hydratedOptions.Top = queryOptions.Top;
                 }
 
-                if (queryOptions.StrictFilters?.Length > 0)
+                if (queryOptions.StrictFilters?.Count > 0)
                 {
-                    hydratedOptions.StrictFilters = queryOptions.StrictFilters;
+                    hydratedOptions.SetStrictFilters(queryOptions.StrictFilters.ToArray());
                 }
 
                 hydratedOptions.Context = queryOptions.Context;
@@ -216,7 +216,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 KnowledgeBaseId = _endpoint.KnowledgeBaseId,
                 ScoreThreshold = options.ScoreThreshold,
                 Top = options.Top,
-                StrictFilters = options.StrictFilters,
+                StrictFilters = options.StrictFilters.ToArray(),
                 Context = options.Context,
                 QnAId = options.QnAId,
                 IsTest = options.IsTest,

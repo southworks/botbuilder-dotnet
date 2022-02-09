@@ -435,16 +435,19 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// <remarks>If the task is successful, the result contains the QnA Maker options to use.</remarks>
         protected virtual Task<QnAMakerOptions> GetQnAMakerOptionsAsync(DialogContext dc)
         {
-            return Task.FromResult(new QnAMakerOptions
+            var qnaMakerOptions = new QnAMakerOptions
             {
                 ScoreThreshold = Threshold,
-                StrictFilters = StrictFilters?.ToArray(),
                 Top = Top,
                 Context = new QnARequestContext(),
                 QnAId = 0,
                 RankerType = RankerType,
                 IsTest = IsTest
-            });
+            };
+
+            qnaMakerOptions.SetStrictFilters(StrictFilters?.ToArray());
+
+            return Task.FromResult(qnaMakerOptions);
         }
 
         /// <summary>
