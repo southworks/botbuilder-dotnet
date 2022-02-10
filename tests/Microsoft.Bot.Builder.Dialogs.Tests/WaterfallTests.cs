@@ -377,17 +377,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 trackEventCalled = true;
             });
 
+            var state = new Dictionary<string, object>
+            {
+                { "stepIndex", index },
+                { "instanceId", "(guid)" },
+            };
+
             await dialog.EndDialogAsync(
                 new TurnContext(new TestAdapter(), new Activity()),
-                new DialogInstance
-                {
-                    Id = id,
-                    State = new Dictionary<string, object>
-                    {
-                        { "stepIndex", index },
-                        { "instanceId", "(guid)" },
-                    }
-                },
+                new DialogInstance(id, state),
                 DialogReason.CancelCalled);
 
             Assert.True(trackEventCalled, "TrackEvent was never called.");

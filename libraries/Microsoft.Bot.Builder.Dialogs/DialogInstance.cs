@@ -14,6 +14,24 @@ namespace Microsoft.Bot.Builder.Dialogs
     public class DialogInstance
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="DialogInstance"/> class.
+        /// </summary>
+        public DialogInstance()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DialogInstance"/> class.
+        /// </summary>
+        /// <param name="id">The ID of the dialog.</param>
+        /// <param name="state">The instance's persisted state.</param>
+        public DialogInstance(string id, IDictionary<string, object> state)
+        {
+            Id = id;
+            State = state;
+        }
+
+        /// <summary>
         /// Gets or sets the ID of the dialog.
         /// </summary>
         /// <value>
@@ -23,15 +41,13 @@ namespace Microsoft.Bot.Builder.Dialogs
         public string Id { get; set; }
 
         /// <summary>
-        /// Gets or sets the instance's persisted state.
+        /// Gets the instance's persisted state.
         /// </summary>
         /// <value>
         /// The instance's persisted state.
         /// </value>
         [JsonProperty("state")]
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
-        public IDictionary<string, object> State { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
+        public IDictionary<string, object> State { get; private set; } = new Dictionary<string, object>();
 
         /// <summary>
         /// Gets or sets a stack index. Positive values are indexes within the current DC and negative values are 
