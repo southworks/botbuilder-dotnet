@@ -176,10 +176,9 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
         public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, Activity activity, CancellationToken cancellationToken, Dictionary<string, string> telemetryProperties = null, Dictionary<string, double> telemetryMetrics = null)
         {
             // Identify matched intents
-            var recognizerResult = new RecognizerResult
+            var recognizerResult = new RecognizerResult()
             {
                 Text = activity.Text,
-                Intents = new Dictionary<string, IntentScore>(),
             };
 
             if (string.IsNullOrEmpty(activity.Text))

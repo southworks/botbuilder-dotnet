@@ -142,7 +142,6 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
             var recognizerResult = new RecognizerResult()
             {
                 Text = text,
-                Intents = new Dictionary<string, IntentScore>(),
             };
 
             if (string.IsNullOrWhiteSpace(text))
@@ -203,16 +202,21 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
                         if (ambiguousResults.Count > 1)
                         {
                             // create a RecognizerResult for each ambiguous result.
-                            var recognizerResults = ambiguousResults.Select(result => new RecognizerResult()
+                            var recognizerResults = ambiguousResults.Select(result =>
                             {
-                                Text = text,
-                                AlteredText = result.ClosestText,
-                                Entities = recognizerResult.Entities,
-                                Properties = recognizerResult.Properties,
-                                Intents = new Dictionary<string, IntentScore>()
+                                var intents = new Dictionary<string, IntentScore>()
                                 {
                                     { result.Label.Name, new IntentScore() { Score = result.Score } }
-                                },
+                                };
+
+                                var recognizerResult = new RecognizerResult(intents)                                    
+                                {
+                                    Text = text,
+                                    AlteredText = result.ClosestText,
+                                };
+                                recognizerResult.SetEntities(recognizerResult.Entities);
+                                recognizerResult.SetProperties(recognizerResult.Properties);
+                                return recognizerResult;
                             });
 
                             // replace RecognizerResult with ChooseIntent => Ambiguous recognizerResults as candidates.
@@ -231,7 +235,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
             {
                 // Run external recognition
                 var externalResults = await ExternalEntityRecognizer.RecognizeAsync(dc, activity, cancellationToken, telemetryProperties, telemetryMetrics).ConfigureAwait(false);
-                recognizerResult.Entities = externalResults.Entities;
+                recognizerResult.SetEntities(externalResults.Entities);
             }
 
             TryScoreEntities(text, recognizerResult);
@@ -349,7 +353,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
 
                     if (recognizerResult.Entities == null)
                     {
-                        recognizerResult.Entities = new JObject();
+                        recognizerResult.SetEntities(new JObject());
                     }
 
                     var entitiesResult = recognizerResult.Entities;

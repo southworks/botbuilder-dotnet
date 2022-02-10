@@ -222,13 +222,12 @@ namespace Microsoft.Bot.Builder.AI.Luis
         private RecognizerResult BuildRecognizerResultFromLuisResponse(JObject luisResponse, string utterance)
         {
             var prediction = (JObject)luisResponse["prediction"];
-            var recognizerResult = new RecognizerResult
+            var recognizerResult = new RecognizerResult(LuisV3.LuisUtil.GetIntents(prediction))
             {
                 Text = utterance,
                 AlteredText = prediction["alteredQuery"]?.Value<string>(),
-                Intents = LuisV3.LuisUtil.GetIntents(prediction),
-                Entities = LuisV3.LuisUtil.ExtractEntitiesAndMetadata(prediction)
             };
+            recognizerResult.SetEntities(LuisV3.LuisUtil.ExtractEntitiesAndMetadata(prediction));
 
             LuisV3.LuisUtil.AddProperties(prediction, recognizerResult);
             if (IncludeAPIResults)

@@ -118,19 +118,20 @@ namespace Microsoft.Bot.Builder.Dialogs
             if (candidates.Any())
             {
                 // return ChooseIntent with candidates array
-                return new RecognizerResult()
+                var recognizerResult = new RecognizerResult(new Dictionary<string, IntentScore>() { { ChooseIntent, new IntentScore() { Score = 1.0 } } })
                 {
                     Text = text,
-                    Intents = new Dictionary<string, IntentScore>() { { ChooseIntent, new IntentScore() { Score = 1.0 } } },
-                    Properties = new Dictionary<string, object>() { { "candidates", candidates } },
                 };
+
+                recognizerResult.SetProperties(new Dictionary<string, object>() { { "candidates", candidates } });
+
+                return recognizerResult;
             }
 
             // just return a none intent
-            return new RecognizerResult()
+            return new RecognizerResult(new Dictionary<string, IntentScore>() { { NoneIntent, new IntentScore() { Score = 1.0 } } })
             {
                 Text = text,
-                Intents = new Dictionary<string, IntentScore>() { { NoneIntent, new IntentScore() { Score = 1.0 } } }
             };
         }
 

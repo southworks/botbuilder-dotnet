@@ -347,11 +347,11 @@ namespace Microsoft.Bot.Builder.AI.LuisV3
 
             if (string.IsNullOrWhiteSpace(utterance))
             {
-                recognizerResult = new RecognizerResult
+                var intents = new Dictionary<string, IntentScore>() { { string.Empty, new IntentScore() { Score = 1.0 } } };
+
+                recognizerResult = new RecognizerResult(intents)
                 {
                     Text = utterance,
-                    Intents = new Dictionary<string, IntentScore>() { { string.Empty, new IntentScore() { Score = 1.0 } } },
-                    Entities = new JObject(),
                 };
             }
             else
@@ -408,13 +408,12 @@ namespace Microsoft.Bot.Builder.AI.LuisV3
                 response.EnsureSuccessStatusCode();
                 luisResponse = (JObject)JsonConvert.DeserializeObject(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
                 var prediction = (JObject)luisResponse["prediction"];
-                recognizerResult = new RecognizerResult
+                recognizerResult = new RecognizerResult(LuisUtil.GetIntents(prediction))
                 {
                     Text = utterance,
                     AlteredText = prediction["alteredQuery"]?.Value<string>(),
-                    Intents = LuisUtil.GetIntents(prediction),
-                    Entities = LuisUtil.ExtractEntitiesAndMetadata(prediction),
                 };
+                recognizerResult.SetEntities(LuisUtil.ExtractEntitiesAndMetadata(prediction));
                 LuisUtil.AddProperties(prediction, recognizerResult);
                 if (options.IncludeAPIResults)
                 {

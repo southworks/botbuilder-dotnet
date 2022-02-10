@@ -56,23 +56,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, Activity activity, CancellationToken cancellationToken = default, Dictionary<string, string> telemetryProperties = null, Dictionary<string, double> telemetryMetrics = null)
             {
                 var text = activity.Text ?? string.Empty;
+                var intents = new Dictionary<string, IntentScore>
+                {
+                    {
+                        "myTestIntent", new IntentScore
+                        {
+                            Score = 1.0
+                        }
+                    }
+                };
 
-                var recognizerResult = await Task.FromResult(new RecognizerResult
+                var recognizerResult = await Task.FromResult(new RecognizerResult(intents)
                 {
                     Text = text,
                     AlteredText = null,
-                    Intents = new Dictionary<string, IntentScore>
-                    {
-                        {
-                            "myTestIntent", new IntentScore
-                            {
-                                Score = 1.0,
-                                Properties = new Dictionary<string, object>()
-                            }
-                        }
-                    },
-                    Entities = new JObject(),
-                    Properties = new Dictionary<string, object>()
                 });
 
                 TrackRecognizerResult(dialogContext, $"{nameof(MyRecognizerSubclass)}Result", FillRecognizerResultTelemetryProperties(recognizerResult, telemetryProperties, dialogContext), telemetryMetrics);
