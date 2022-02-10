@@ -63,7 +63,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
                 if (matches.Entities != null && matches.Entities.Count > 0)
                 {
                     options = new LuisV3.LuisPredictionOptions(options);
-                    options.ExternalEntities = new List<LuisV3.ExternalEntity>();
+                    options.SetExternalEntities(new List<LuisV3.ExternalEntity>());
                     var entities = matches.Entities;
                     var instance = entities["$instance"].ToObject<JObject>();
                     if (instance != null)
