@@ -45,25 +45,21 @@ namespace Microsoft.Bot.Schema.Teams
         }
 
         /// <summary>
-        /// Gets or sets set of inputs contained in this ActionCard whose each
+        /// Gets set of inputs contained in this ActionCard whose each
         /// item can be in any subtype of O365ConnectorCardInputBase.
         /// </summary>
         /// <value>The inputs contained in the ActionCard.</value>
         [JsonProperty(PropertyName = "inputs")]
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
-        public IList<O365ConnectorCardInputBase> Inputs { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
+        public IList<O365ConnectorCardInputBase> Inputs { get; private set; }
 
         /// <summary>
-        /// Gets or sets set of actions contained in this ActionCard whose each
+        /// Gets set of actions contained in this ActionCard whose each
         /// item can be in any subtype of O365ConnectorCardActionBase except
         /// O365ConnectorCardActionCard, as nested ActionCard is forbidden.
         /// </summary>
         /// <value>The actions contained in this ActionCard.</value>
         [JsonProperty(PropertyName = "actions")]
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
-        public IList<O365ConnectorCardActionBase> Actions { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
+        public IList<O365ConnectorCardActionBase> Actions { get; private set; }
 
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.

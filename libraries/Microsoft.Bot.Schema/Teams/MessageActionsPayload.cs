@@ -171,31 +171,25 @@ namespace Microsoft.Bot.Schema.Teams
         public string AttachmentLayout { get; set; }
 
         /// <summary>
-        /// Gets or sets attachments in the message - card, image, file, etc.
+        /// Gets attachments in the message - card, image, file, etc.
         /// </summary>
         /// <value>The attachments in the message.</value>
         [JsonProperty(PropertyName = "attachments")]
-#pragma warning disable CA2227 // Collection properties should be read only  (we can't change this without breaking compat)
-        public IList<MessageActionsPayloadAttachment> Attachments { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
+        public IList<MessageActionsPayloadAttachment> Attachments { get; private set; }
 
         /// <summary>
-        /// Gets or sets list of entities mentioned in the message.
+        /// Gets list of entities mentioned in the message.
         /// </summary>
         /// <value>The entities mentioned in the message.</value>
         [JsonProperty(PropertyName = "mentions")]
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat)
-        public IList<MessageActionsPayloadMention> Mentions { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
+        public IList<MessageActionsPayloadMention> Mentions { get; private set; }
 
         /// <summary>
-        /// Gets or sets reactions for the message.
+        /// Gets reactions for the message.
         /// </summary>
         /// <value>The reactions for the message.</value>
         [JsonProperty(PropertyName = "reactions")]
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat)
-        public IList<MessageActionsPayloadReaction> Reactions { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
+        public IList<MessageActionsPayloadReaction> Reactions { get; private set; }
 
         /// <summary>
         /// Gets or sets the link back to the message.

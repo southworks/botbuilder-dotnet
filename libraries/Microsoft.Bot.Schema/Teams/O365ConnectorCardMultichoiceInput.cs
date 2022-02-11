@@ -41,14 +41,12 @@ namespace Microsoft.Bot.Schema.Teams
         }
 
         /// <summary>
-        /// Gets or sets set of choices whose each item can be in any subtype
+        /// Gets set of choices whose each item can be in any subtype
         /// of O365ConnectorCardMultichoiceInputChoice.
         /// </summary>
         /// <value>The choices.</value>
         [JsonProperty(PropertyName = "choices")]
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
-        public IList<O365ConnectorCardMultichoiceInputChoice> Choices { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
+        public IList<O365ConnectorCardMultichoiceInputChoice> Choices { get; private set; }
 
         /// <summary>
         /// Gets or sets choice item rendering style. Default value is
