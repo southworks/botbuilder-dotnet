@@ -51,34 +51,28 @@ namespace Microsoft.Bot.Schema
         public PaymentItem Total { get; set; }
 
         /// <summary>
-        /// Gets or sets contains line items for the payment request that the
+        /// Gets contains line items for the payment request that the
         /// user agent may display.
         /// </summary>
         /// <value>The items for the payment request.</value>
         [JsonProperty(PropertyName = "displayItems")]
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
-        public IList<PaymentItem> DisplayItems { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
+        public IList<PaymentItem> DisplayItems { get; private set; }
 
         /// <summary>
-        /// Gets or sets a sequence containing the different shipping options
+        /// Gets a sequence containing the different shipping options
         /// for the user to choose from.
         /// </summary>
         /// <value>The the different shipping options for the user to choose from.</value>
         [JsonProperty(PropertyName = "shippingOptions")]
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
-        public IList<PaymentShippingOption> ShippingOptions { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
+        public IList<PaymentShippingOption> ShippingOptions { get; private set; }
 
         /// <summary>
-        /// Gets or sets contains modifiers for particular payment method
+        /// Gets contains modifiers for particular payment method
         /// identifiers.
         /// </summary>
         /// <value>The modifiers for a particular payment method.</value>
         [JsonProperty(PropertyName = "modifiers")]
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
-        public IList<PaymentDetailsModifier> Modifiers { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
+        public IList<PaymentDetailsModifier> Modifiers { get; private set; }
 
         /// <summary>
         /// Gets or sets error description.

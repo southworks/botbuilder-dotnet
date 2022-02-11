@@ -232,6 +232,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             };
             dialogs.Add(listPrompt);
 
+            var actions = new List<CardAction>
+            {
+                new CardAction { Type = "imBack", Value = "red", Title = "red" },
+                new CardAction { Type = "imBack", Value = "green", Title = "green" },
+                new CardAction { Type = "imBack", Value = "blue", Title = "blue" },
+            };
+
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
                 {
                     var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
@@ -248,17 +255,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     }
                 })
                 .Send("hello")
-                .AssertReply(SuggestedActionsValidator(
-                    "favorite color?",
-                    new SuggestedActions
-                    {
-                        Actions = new List<CardAction>
-                        {
-                            new CardAction { Type = "imBack", Value = "red", Title = "red" },
-                            new CardAction { Type = "imBack", Value = "green", Title = "green" },
-                            new CardAction { Type = "imBack", Value = "blue", Title = "blue" },
-                        },
-                    }))
+                .AssertReply(SuggestedActionsValidator("favorite color?", new SuggestedActions(actions: actions)))
                 .StartTestAsync();
         }
 
@@ -579,6 +576,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var dialogs = new DialogSet(dialogState);
             dialogs.Add(new ChoicePrompt("ChoicePrompt", defaultLocale: Culture.English) { Style = ListStyle.HeroCard });
 
+            var actions = new List<CardAction>
+            {
+                new CardAction { Type = "imBack", Value = "red", Title = "red" },
+                new CardAction { Type = "imBack", Value = "green", Title = "green" },
+                new CardAction { Type = "imBack", Value = "blue", Title = "blue" },
+            };
+
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
                 {
                     var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
@@ -598,17 +602,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     }
                 })
                 .Send("hello")
-                .AssertReply(SuggestedActionsValidator(
-                    "favorite color?",
-                    new SuggestedActions
-                    {
-                        Actions = new List<CardAction>
-                        {
-                            new CardAction { Type = "imBack", Value = "red", Title = "red" },
-                            new CardAction { Type = "imBack", Value = "green", Title = "green" },
-                            new CardAction { Type = "imBack", Value = "blue", Title = "blue" },
-                        },
-                    }))
+                .AssertReply(SuggestedActionsValidator("favorite color?", new SuggestedActions(actions: actions)))
                 .StartTestAsync();
         }
 

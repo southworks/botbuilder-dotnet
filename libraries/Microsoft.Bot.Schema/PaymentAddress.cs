@@ -76,16 +76,14 @@ namespace Microsoft.Bot.Schema
         public string Country { get; set; }
 
         /// <summary>
-        /// Gets or sets this is the most specific part of the address. It can
+        /// Gets this is the most specific part of the address. It can
         /// include, for example, a street name, a house number, apartment
         /// number, a rural delivery route, descriptive instructions, or a post
         /// office box number.
         /// </summary>
         /// <value>The most specific part of the address.</value>
         [JsonProperty(PropertyName = "addressLine")]
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat)
-        public IList<string> AddressLine { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
+        public IList<string> AddressLine { get; private set; }
 
         /// <summary>
         /// Gets or sets this is the top level administrative subdivision of

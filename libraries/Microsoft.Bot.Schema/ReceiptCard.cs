@@ -54,22 +54,18 @@ namespace Microsoft.Bot.Schema
         public string Title { get; set; }
 
         /// <summary>
-        /// Gets or sets array of Fact objects.
+        /// Gets array of Fact objects.
         /// </summary>
         /// <value>The collection of <see cref="Fact"/>'s.</value>
         [JsonProperty(PropertyName = "facts")]
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
-        public IList<Fact> Facts { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
+        public IList<Fact> Facts { get; private set; }
 
         /// <summary>
-        /// Gets or sets array of Receipt Items.
+        /// Gets array of Receipt Items.
         /// </summary>
         /// <value>The receipt items.</value>
         [JsonProperty(PropertyName = "items")]
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
-        public IList<ReceiptItem> Items { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
+        public IList<ReceiptItem> Items { get; private set; }
 
         /// <summary>
         /// Gets or sets this action will be activated when user taps on the
@@ -101,13 +97,11 @@ namespace Microsoft.Bot.Schema
         public string Vat { get; set; }
 
         /// <summary>
-        /// Gets or sets set of actions applicable to the current card.
+        /// Gets set of actions applicable to the current card.
         /// </summary>
         /// <value>The actions applicable to the current card.</value>
         [JsonProperty(PropertyName = "buttons")]
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
-        public IList<CardAction> Buttons { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
+        public IList<CardAction> Buttons { get; private set; }
 
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.
