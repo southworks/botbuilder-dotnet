@@ -32,13 +32,11 @@ namespace Microsoft.Bot.Schema
         }
 
         /// <summary>
-        /// Gets or sets the URLs to the resource you want to connect to.
+        /// Gets the URLs to the resource you want to connect to.
         /// </summary>
         /// <value>The URLs to the resources you want to connect to.</value>
         [JsonProperty(PropertyName = "resourceUrls")]
-#pragma warning disable CA2227 // Collection properties should be read only
-        public IList<string> ResourceUrls { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
+        public IList<string> ResourceUrls { get; private set; }
 
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.
