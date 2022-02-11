@@ -116,7 +116,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
                 Text = utterance,
                 AlteredText = luisResult.AlteredQuery,
             };
-            recognizerResult.SetEntities(LuisUtil.ExtractEntitiesAndMetadata(luisResult.Entities, luisResult.CompositeEntities, PredictionOptions.IncludeInstanceData ?? true, utterance));
+            recognizerResult.Entities.Merge(LuisUtil.ExtractEntitiesAndMetadata(luisResult.Entities, luisResult.CompositeEntities, PredictionOptions.IncludeInstanceData ?? true, utterance));
             LuisUtil.AddProperties(luisResult, recognizerResult);
             if (IncludeAPIResults)
             {

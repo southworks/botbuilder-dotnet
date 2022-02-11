@@ -88,23 +88,5 @@ namespace Microsoft.Bot.Builder
             Entities = result.Entities;
             Properties = result.Properties;
         }
-
-        /// <summary>
-        /// Sets the recognized top-level entities.
-        /// </summary>
-        /// <param name="entities">Object with each top-level recognized entity as a key.</param>
-        public void SetEntities(JObject entities)
-        {
-            Entities = entities;
-        }
-
-        /// <summary>
-        /// Sets properties that are not defined by the <see cref="RecognizerResult"/> type.
-        /// </summary>
-        /// <param name="properties">The extended properties for the object.</param>
-        public void SetProperties(IDictionary<string, object> properties)
-        {
-            Properties = properties;
-        }
     }
 }

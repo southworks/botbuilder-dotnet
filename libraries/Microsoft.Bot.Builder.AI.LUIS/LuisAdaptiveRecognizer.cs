@@ -133,7 +133,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
             else if (Options != null)
             {
                 options.DateTimeReference = Options.DateTimeReference;
-                options.SetExternalEntities(Options.ExternalEntities);
+                options.ExternalEntities.Concat(Options.ExternalEntities);
                 options.IncludeAllIntents = Options.IncludeAllIntents;
                 options.IncludeInstanceData = Options.IncludeInstanceData;
                 options.IncludeAPIResults = Options.IncludeAPIResults;
@@ -155,7 +155,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
                     list.Add(new AI.LuisV3.DynamicList(listEntity.Entity, listEntity.List));
                 }
 
-                options.SetDynamicLists(list);
+                options.DynamicLists.Concat(list);
             }
 
             var application = new LuisApplication(ApplicationId, EndpointKey, Endpoint);

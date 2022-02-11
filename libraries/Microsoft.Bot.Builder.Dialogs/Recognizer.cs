@@ -123,7 +123,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                     Text = text,
                 };
 
-                recognizerResult.SetProperties(new Dictionary<string, object>() { { "candidates", candidates } });
+                recognizerResult.Properties.Concat(new Dictionary<string, object>() { { "candidates", candidates } });
 
                 return recognizerResult;
             }

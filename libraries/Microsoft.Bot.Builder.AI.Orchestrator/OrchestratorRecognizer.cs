@@ -214,8 +214,8 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
                                     Text = text,
                                     AlteredText = result.ClosestText,
                                 };
-                                recognizerResult.SetEntities(recognizerResult.Entities);
-                                recognizerResult.SetProperties(recognizerResult.Properties);
+                                recognizerResult.Entities.Merge(recognizerResult.Entities);
+                                recognizerResult.Properties.Concat(recognizerResult.Properties);
                                 return recognizerResult;
                             });
 
@@ -235,7 +235,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
             {
                 // Run external recognition
                 var externalResults = await ExternalEntityRecognizer.RecognizeAsync(dc, activity, cancellationToken, telemetryProperties, telemetryMetrics).ConfigureAwait(false);
-                recognizerResult.SetEntities(externalResults.Entities);
+                recognizerResult.Entities.Merge(externalResults.Entities);
             }
 
             TryScoreEntities(text, recognizerResult);
@@ -353,7 +353,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
 
                     if (recognizerResult.Entities == null)
                     {
-                        recognizerResult.SetEntities(new JObject());
+                        recognizerResult.Entities.Merge(new JObject());
                     }
 
                     var entitiesResult = recognizerResult.Entities;

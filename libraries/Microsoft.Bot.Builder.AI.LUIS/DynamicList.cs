@@ -35,6 +35,6 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// The lists to append on the extended list entity.
         /// </value>
         [JsonProperty(PropertyName = "list")]
-        public IList<ListElement> List { get; private set; }
+        public IList<ListElement> List { get; private set; } = new List<ListElement>();
     }
 }

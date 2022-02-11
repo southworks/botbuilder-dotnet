@@ -375,7 +375,7 @@ namespace Microsoft.Bot.Builder.AI.LuisV3
                 content.Add("options", queryOptions);
 
                 var settings = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore };
-                if (options.DynamicLists != null)
+                if (options.DynamicLists != null && options.DynamicLists.Count > 0)
                 {
                     foreach (var list in options.DynamicLists)
                     {
@@ -385,7 +385,7 @@ namespace Microsoft.Bot.Builder.AI.LuisV3
                     content.Add("dynamicLists", (JArray)JsonConvert.DeserializeObject(JsonConvert.SerializeObject(options.DynamicLists, settings)));
                 }
 
-                if (options.ExternalEntities != null)
+                if (options.ExternalEntities != null && options.ExternalEntities.Count > 0)
                 {
                     foreach (var entity in options.ExternalEntities)
                     {
@@ -413,7 +413,7 @@ namespace Microsoft.Bot.Builder.AI.LuisV3
                     Text = utterance,
                     AlteredText = prediction["alteredQuery"]?.Value<string>(),
                 };
-                recognizerResult.SetEntities(LuisUtil.ExtractEntitiesAndMetadata(prediction));
+                recognizerResult.Entities.Merge(LuisUtil.ExtractEntitiesAndMetadata(prediction));
                 LuisUtil.AddProperties(prediction, recognizerResult);
                 if (options.IncludeAPIResults)
                 {

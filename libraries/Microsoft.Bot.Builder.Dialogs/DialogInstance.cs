@@ -14,24 +14,6 @@ namespace Microsoft.Bot.Builder.Dialogs
     public class DialogInstance
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="DialogInstance"/> class.
-        /// </summary>
-        public DialogInstance()
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DialogInstance"/> class.
-        /// </summary>
-        /// <param name="id">The ID of the dialog.</param>
-        /// <param name="state">The instance's persisted state.</param>
-        public DialogInstance(string id, IDictionary<string, object> state)
-        {
-            Id = id;
-            State = state;
-        }
-
-        /// <summary>
         /// Gets or sets the ID of the dialog.
         /// </summary>
         /// <value>

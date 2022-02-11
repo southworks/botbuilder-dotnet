@@ -46,7 +46,7 @@ namespace Microsoft.Bot.Builder.AI.LuisV3
         /// The synonyms of the canonical form.
         /// </value>
         [JsonProperty(PropertyName = "synonyms")]
-        public IList<string> Synonyms { get; private set; }
+        public IList<string> Synonyms { get; private set; } = new List<string>();
 
         /// <summary>
         /// Validate the object.

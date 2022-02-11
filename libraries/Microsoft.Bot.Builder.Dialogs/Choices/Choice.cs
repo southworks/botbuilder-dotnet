@@ -49,6 +49,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
         /// The list of synonyms to recognize in addition to the value.
         /// </value>
         [JsonProperty("synonyms")]
-        public List<string> Synonyms { get; private set; }
+        public List<string> Synonyms { get; private set; } = new List<string>();
     }
 }

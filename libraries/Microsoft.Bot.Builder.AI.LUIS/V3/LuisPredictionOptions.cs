@@ -74,7 +74,7 @@ namespace Microsoft.Bot.Builder.AI.LuisV3
         /// <value>
         /// Dynamic lists of things like contact names to recognize at query time.
         /// </value>
-        public IList<DynamicList> DynamicLists { get; private set; }
+        public IList<DynamicList> DynamicLists { get; private set; } = new List<DynamicList>();
 
         /// <summary>
         /// Gets entities recognized in the query.
@@ -82,7 +82,7 @@ namespace Microsoft.Bot.Builder.AI.LuisV3
         /// <value>
         /// External entities recognized in query.
         /// </value>
-        public IList<ExternalEntity> ExternalEntities { get; private set; }
+        public IList<ExternalEntity> ExternalEntities { get; private set; } = new List<ExternalEntity>();
 
         /// <summary>
         /// Gets or sets a value indicating whether external entities should override other means of recognizing entities.
@@ -123,23 +123,5 @@ namespace Microsoft.Bot.Builder.AI.LuisV3
         /// If this is specified, then the <see cref="Slot"/> is ignored.
         /// </remarks>
         public string Version { get; set; }
-
-        /// <summary>
-        /// Sets dynamic lists used to recognize entities for a particular query.
-        /// </summary>
-        /// <param name="lists">Dynamic lists of things like contact names to recognize at query time.</param>
-        public void SetDynamicLists(IList<DynamicList> lists)
-        {
-            DynamicLists = lists;
-        }
-
-        /// <summary>
-        /// Sets entities recognized in the query.
-        /// </summary>
-        /// <param name="entities">External entities recognized in query.</param>
-        public void SetExternalEntities(IList<ExternalEntity> entities)
-        {
-            ExternalEntities = entities;
-        }
     }
 }
