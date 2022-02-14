@@ -49,7 +49,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// </summary>
         /// <value>The parameters for the query.</value>
         [JsonProperty(PropertyName = "parameters")]
-        public IList<MessagingExtensionParameter> Parameters { get; private set; }
+        public IList<MessagingExtensionParameter> Parameters { get; private set; } = new List<MessagingExtensionParameter>();
 
         /// <summary>
         /// Gets or sets the query options.

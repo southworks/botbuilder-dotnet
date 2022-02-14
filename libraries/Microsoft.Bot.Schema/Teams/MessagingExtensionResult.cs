@@ -65,7 +65,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// </summary>
         /// <value>The attachments.</value>
         [JsonProperty(PropertyName = "attachments")]
-        public IList<MessagingExtensionAttachment> Attachments { get; private set; }
+        public IList<MessagingExtensionAttachment> Attachments { get; private set; } = new List<MessagingExtensionAttachment>();
 
         /// <summary>
         /// Gets or sets the suggested actions.

@@ -46,7 +46,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// </summary>
         /// <value>The choices.</value>
         [JsonProperty(PropertyName = "choices")]
-        public IList<O365ConnectorCardMultichoiceInputChoice> Choices { get; private set; }
+        public IList<O365ConnectorCardMultichoiceInputChoice> Choices { get; private set; } = new List<O365ConnectorCardMultichoiceInputChoice>();
 
         /// <summary>
         /// Gets or sets choice item rendering style. Default value is

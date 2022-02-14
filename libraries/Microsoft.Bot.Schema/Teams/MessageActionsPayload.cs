@@ -175,21 +175,21 @@ namespace Microsoft.Bot.Schema.Teams
         /// </summary>
         /// <value>The attachments in the message.</value>
         [JsonProperty(PropertyName = "attachments")]
-        public IList<MessageActionsPayloadAttachment> Attachments { get; private set; }
+        public IList<MessageActionsPayloadAttachment> Attachments { get; private set; } = new List<MessageActionsPayloadAttachment>();
 
         /// <summary>
         /// Gets list of entities mentioned in the message.
         /// </summary>
         /// <value>The entities mentioned in the message.</value>
         [JsonProperty(PropertyName = "mentions")]
-        public IList<MessageActionsPayloadMention> Mentions { get; private set; }
+        public IList<MessageActionsPayloadMention> Mentions { get; private set; } = new List<MessageActionsPayloadMention>();
 
         /// <summary>
         /// Gets reactions for the message.
         /// </summary>
         /// <value>The reactions for the message.</value>
         [JsonProperty(PropertyName = "reactions")]
-        public IList<MessageActionsPayloadReaction> Reactions { get; private set; }
+        public IList<MessageActionsPayloadReaction> Reactions { get; private set; } = new List<MessageActionsPayloadReaction>()
 
         /// <summary>
         /// Gets or sets the link back to the message.

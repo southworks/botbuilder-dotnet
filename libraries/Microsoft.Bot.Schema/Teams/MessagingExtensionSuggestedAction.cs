@@ -34,7 +34,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// </summary>
         /// <value>The actions.</value>
         [JsonProperty(PropertyName = "actions")]
-        public IList<CardAction> Actions { get; private set; }
+        public IList<CardAction> Actions { get; private set; } = new List<CardAction>();
 
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.

@@ -40,7 +40,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// </summary>
         /// <value>The target OS/URLs.</value>
         [JsonProperty(PropertyName = "targets")]
-        public IList<O365ConnectorCardOpenUriTarget> Targets { get; private set; }
+        public IList<O365ConnectorCardOpenUriTarget> Targets { get; private set; } = new List<O365ConnectorCardOpenUriTarget>();
 
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.

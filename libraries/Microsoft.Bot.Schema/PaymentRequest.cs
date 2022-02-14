@@ -62,7 +62,7 @@ namespace Microsoft.Bot.Schema
         /// </summary>
         /// <value>The payment methods for this request.</value>
         [JsonProperty(PropertyName = "methodData")]
-        public IList<PaymentMethodData> MethodData { get; private set; }
+        public IList<PaymentMethodData> MethodData { get; private set; } = new List<PaymentMethodData>();
 
         /// <summary>
         /// Gets or sets details for this request.

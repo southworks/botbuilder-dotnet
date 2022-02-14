@@ -44,7 +44,7 @@ namespace Microsoft.Bot.Schema
         /// </summary>
         /// <value>The supported payment methods.</value>
         [JsonProperty(PropertyName = "supportedMethods")]
-        public IList<string> SupportedMethods { get; private set; }
+        public IList<string> SupportedMethods { get; private set; } = new List<string>();
 
         /// <summary>
         /// Gets or sets a JSON-serializable object that provides optional

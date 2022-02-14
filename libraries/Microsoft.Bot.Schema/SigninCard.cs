@@ -41,7 +41,7 @@ namespace Microsoft.Bot.Schema
         /// </summary>
         /// <value>The action(s) to use to perform sign-in.</value>
         [JsonProperty(PropertyName = "buttons")]
-        public IList<CardAction> Buttons { get; private set; }
+        public IList<CardAction> Buttons { get; private set; } = new List<CardAction>();
 
         /// <summary>
         /// Creates a <see cref="SigninCard"/>.

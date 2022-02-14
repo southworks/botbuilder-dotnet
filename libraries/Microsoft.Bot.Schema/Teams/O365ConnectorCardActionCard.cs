@@ -50,7 +50,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// </summary>
         /// <value>The inputs contained in the ActionCard.</value>
         [JsonProperty(PropertyName = "inputs")]
-        public IList<O365ConnectorCardInputBase> Inputs { get; private set; }
+        public IList<O365ConnectorCardInputBase> Inputs { get; private set; } = new List<O365ConnectorCardInputBase>();
 
         /// <summary>
         /// Gets set of actions contained in this ActionCard whose each

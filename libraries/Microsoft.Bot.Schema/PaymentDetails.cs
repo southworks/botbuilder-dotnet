@@ -56,7 +56,7 @@ namespace Microsoft.Bot.Schema
         /// </summary>
         /// <value>The items for the payment request.</value>
         [JsonProperty(PropertyName = "displayItems")]
-        public IList<PaymentItem> DisplayItems { get; private set; }
+        public IList<PaymentItem> DisplayItems { get; private set; } = new List<PaymentItem>();
 
         /// <summary>
         /// Gets a sequence containing the different shipping options
@@ -64,7 +64,7 @@ namespace Microsoft.Bot.Schema
         /// </summary>
         /// <value>The the different shipping options for the user to choose from.</value>
         [JsonProperty(PropertyName = "shippingOptions")]
-        public IList<PaymentShippingOption> ShippingOptions { get; private set; }
+        public IList<PaymentShippingOption> ShippingOptions { get; private set; } = new List<PaymentShippingOption>();
 
         /// <summary>
         /// Gets contains modifiers for particular payment method
@@ -72,7 +72,7 @@ namespace Microsoft.Bot.Schema
         /// </summary>
         /// <value>The modifiers for a particular payment method.</value>
         [JsonProperty(PropertyName = "modifiers")]
-        public IList<PaymentDetailsModifier> Modifiers { get; private set; }
+        public IList<PaymentDetailsModifier> Modifiers { get; private set; } = new List<PaymentDetailsModifier>();
 
         /// <summary>
         /// Gets or sets error description.

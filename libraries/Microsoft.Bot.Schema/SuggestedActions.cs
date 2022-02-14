@@ -53,13 +53,13 @@ namespace Microsoft.Bot.Schema
         /// </summary>
         /// <value>The ID's of the recipients that the actions should be shown to.</value>
         [JsonProperty(PropertyName = "to")]
-        public IList<string> To { get; private set; }
+        public IList<string> To { get; private set; } = new List<string>();
 
         /// <summary>
         /// Gets actions that can be shown to the user.
         /// </summary>
         /// <value>The actions that can be shown to the user.</value>
         [JsonProperty(PropertyName = "actions")]
-        public IList<CardAction> Actions { get; private set; }
+        public IList<CardAction> Actions { get; private set; } = new List<CardAction>();
     }
 }

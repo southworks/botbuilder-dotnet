@@ -49,6 +49,6 @@ namespace Microsoft.Bot.Schema.Teams
         /// The channel accounts.
         /// </value>
         [JsonProperty(PropertyName = "members")]
-        public IList<TeamsChannelAccount> Members { get; private set; }
+        public IList<TeamsChannelAccount> Members { get; private set; } = new List<TeamsChannelAccount>();
     }
 }

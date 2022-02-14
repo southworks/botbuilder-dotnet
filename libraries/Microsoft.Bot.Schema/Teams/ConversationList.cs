@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// </summary>
         /// <value>The conversations.</value>
         [JsonProperty(PropertyName = "conversations")]
-        public IList<ChannelInfo> Conversations { get; private set; }
+        public IList<ChannelInfo> Conversations { get; private set; } = new List<ChannelInfo>();
 
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.

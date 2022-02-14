@@ -46,7 +46,7 @@ namespace Microsoft.Bot.Schema
         /// </summary>
         /// <value>The collection of settings for the specific provider for this request.</value>
         [JsonProperty(PropertyName = "settings")]
-        public IDictionary<string, object> Settings { get; private set; }
+        public IDictionary<string, object> Settings { get; private set; } = new Dictionary<string, object>();
 
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.
