@@ -65,12 +65,9 @@ namespace Microsoft.Bot.Schema.Tests
                 Text = null,
                 Type = "mention",
             };
-            var lst = new List<Entity>();
 
             var output = JsonConvert.SerializeObject(mention);
-            var entity = JsonConvert.DeserializeObject<Entity>(output);
-            lst.Add(entity);
-            activity.Entities = lst;
+            activity.Entities.Add(JsonConvert.DeserializeObject<Entity>(output));
 
             var strippedActivityText = activity.RemoveRecipientMention();
             Assert.Equal(strippedActivityText, expectedStrippedName);
@@ -93,12 +90,9 @@ namespace Microsoft.Bot.Schema.Tests
                 Text = "<at>firstName</at>",
                 Type = "mention",
             };
-            var lst = new List<Entity>();
 
             var output = JsonConvert.SerializeObject(mention);
-            var entity = JsonConvert.DeserializeObject<Entity>(output);
-            lst.Add(entity);
-            activity.Entities = lst;
+            activity.Entities.Add(JsonConvert.DeserializeObject<Entity>(output));
 
             var strippedActivityText = activity.RemoveRecipientMention();
             Assert.Equal(strippedActivityText, expectedStrippedName);
