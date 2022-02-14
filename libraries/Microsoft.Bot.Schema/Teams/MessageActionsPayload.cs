@@ -189,7 +189,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// </summary>
         /// <value>The reactions for the message.</value>
         [JsonProperty(PropertyName = "reactions")]
-        public IList<MessageActionsPayloadReaction> Reactions { get; private set; } = new List<MessageActionsPayloadReaction>()
+        public IList<MessageActionsPayloadReaction> Reactions { get; private set; } = new List<MessageActionsPayloadReaction>();
 
         /// <summary>
         /// Gets or sets the link back to the message.
