@@ -74,7 +74,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// </summary>
         /// <value>The bot activity preview.</value>
         [JsonProperty(PropertyName = "botActivityPreview")]
-        public IList<Activity> BotActivityPreview { get; private set; }
+        public IList<Activity> BotActivityPreview { get; private set; } = new List<Activity>();
 
         /// <summary>
         /// Gets or sets message content sent as part of the command request.

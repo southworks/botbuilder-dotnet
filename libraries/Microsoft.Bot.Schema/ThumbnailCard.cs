@@ -69,14 +69,14 @@ namespace Microsoft.Bot.Schema
         /// </summary>
         /// <value>The images for the card.</value>
         [JsonProperty(PropertyName = "images")]
-        public IList<CardImage> Images { get; private set; }
+        public IList<CardImage> Images { get; private set; } = new List<CardImage>();
 
         /// <summary>
         /// Gets set of actions applicable to the current card.
         /// </summary>
         /// <value>The actions applicable to the current card.</value>
         [JsonProperty(PropertyName = "buttons")]
-        public IList<CardAction> Buttons { get; private set; }
+        public IList<CardAction> Buttons { get; private set; } = new List<CardAction>();
 
         /// <summary>
         /// Gets or sets this action will be activated when user taps on the

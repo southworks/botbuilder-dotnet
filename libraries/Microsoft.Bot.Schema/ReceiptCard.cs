@@ -58,14 +58,14 @@ namespace Microsoft.Bot.Schema
         /// </summary>
         /// <value>The collection of <see cref="Fact"/>'s.</value>
         [JsonProperty(PropertyName = "facts")]
-        public IList<Fact> Facts { get; private set; }
+        public IList<Fact> Facts { get; private set; } = new List<Fact>();
 
         /// <summary>
         /// Gets array of Receipt Items.
         /// </summary>
         /// <value>The receipt items.</value>
         [JsonProperty(PropertyName = "items")]
-        public IList<ReceiptItem> Items { get; private set; }
+        public IList<ReceiptItem> Items { get; private set; } = new List<ReceiptItem>();
 
         /// <summary>
         /// Gets or sets this action will be activated when user taps on the
@@ -101,7 +101,7 @@ namespace Microsoft.Bot.Schema
         /// </summary>
         /// <value>The actions applicable to the current card.</value>
         [JsonProperty(PropertyName = "buttons")]
-        public IList<CardAction> Buttons { get; private set; }
+        public IList<CardAction> Buttons { get; private set; } = new List<CardAction>();
 
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.

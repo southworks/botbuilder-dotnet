@@ -43,7 +43,7 @@ namespace Microsoft.Bot.Schema
         /// </summary>
         /// <value>The Channel Accounts.</value>
         [JsonProperty(PropertyName = "members")]
-        public IList<ChannelAccount> Members { get; private set; }
+        public IList<ChannelAccount> Members { get; private set; } = new List<ChannelAccount>();
 
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.

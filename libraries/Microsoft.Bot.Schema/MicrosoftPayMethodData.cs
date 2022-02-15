@@ -77,14 +77,14 @@ namespace Microsoft.Bot.Schema
         /// </summary>
         /// <value>The supported payment networks.</value>
         [JsonProperty(PropertyName = "supportedNetworks")]
-        public IList<string> SupportedNetworks { get; private set; }
+        public IList<string> SupportedNetworks { get; private set; } = new List<string>();
 
         /// <summary>
         /// Gets supported payment types (e.g., "credit").
         /// </summary>
         /// <value>The supported payment types.</value>
         [JsonProperty(PropertyName = "supportedTypes")]
-        public IList<string> SupportedTypes { get; private set; }
+        public IList<string> SupportedTypes { get; private set; } = new List<string>();
 
         /// <summary>
         /// Get Microsoft Pay method data.

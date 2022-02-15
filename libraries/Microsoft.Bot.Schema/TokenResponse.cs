@@ -64,13 +64,13 @@ namespace Microsoft.Bot.Schema
         /// <value>The expiration.</value>
         [JsonProperty(PropertyName = "expiration")]
         public string Expiration { get; set; }
-        
+
         /// <summary>
         /// Gets extra properties.
         /// </summary>
         /// <value>The extra properties.</value>
         [JsonExtensionData(ReadData = true, WriteData = true)]
-        public JObject Properties { get; private set; }
+        public JObject Properties { get; private set; } = new JObject();
 
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.

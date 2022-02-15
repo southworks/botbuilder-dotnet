@@ -333,7 +333,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 {
                     Id = "OAuthPrompt",
                 };
-                dialogInstance.State.Concat(new Dictionary<string, object> { { "expires", DateTime.UtcNow.AddMinutes(-5) } });
+                dialogInstance.State.Add("expires", DateTime.UtcNow.AddMinutes(-5));
 
                 dialogContext.Stack.Insert(0, dialogInstance);
 
@@ -418,13 +418,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 {
                     Id = "OAuthPrompt",
                 };
-                dialogInstance.State.Concat(new Dictionary<string, object>
+                var states = new Dictionary<string, object>
                 {
                     { "expires", DateTime.UtcNow.AddHours(8) },
                     { "caller", null },
                     { "state", new Dictionary<string, object> { { "AttemptCount", 0 } } },
                     { "options", new PromptOptions() }
-                });
+                };
+                states.ToList().ForEach(dialogInstance.State.Add);
 
                 dialogContext.Stack.Insert(0, dialogInstance);
 
@@ -506,13 +507,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 {
                     Id = "OAuthPrompt",
                 };
-                dialogInstance.State.Concat(new Dictionary<string, object>
+                var states = new Dictionary<string, object>
                 {
                     { "expires", DateTime.UtcNow.AddHours(8) },
                     { "caller", null },
                     { "state", new Dictionary<string, object> { { "AttemptCount", 0 } } },
                     { "options", new PromptOptions() }
-                });
+                };
+                states.ToList().ForEach(dialogInstance.State.Add);
 
                 dialogContext.Stack.Insert(0, dialogInstance);
 
@@ -608,13 +610,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 {
                     Id = "OAuthPrompt",
                 };
-                dialogInstance.State.Concat(new Dictionary<string, object>
+                var states = new Dictionary<string, object>
                 {
                     { "expires", DateTime.UtcNow.AddHours(8) },
                     { "caller", null },
                     { "state", new Dictionary<string, object> { { "AttemptCount", 0 } } },
                     { "options", new PromptOptions() }
-                });
+                };
+                states.ToList().ForEach(dialogInstance.State.Add);
 
                 dialogContext.Stack.Insert(0, dialogInstance);
 
@@ -702,13 +705,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 {
                     Id = "OAuthPrompt",
                 };
-                dialogInstance.State.Concat(new Dictionary<string, object>
+                var states = new Dictionary<string, object>
                 {
                     { "expires", DateTime.UtcNow.AddHours(8) },
                     { "caller", null },
                     { "state", new Dictionary<string, object> { { "AttemptCount", 0 } } },
                     { "options", new PromptOptions() }
-                });
+                };
+                states.ToList().ForEach(dialogInstance.State.Add);
 
                 dialogContext.Stack.Insert(0, dialogInstance);
 

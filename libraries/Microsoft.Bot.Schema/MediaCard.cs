@@ -94,14 +94,14 @@ namespace Microsoft.Bot.Schema
         /// </summary>
         /// <value>The media URLs for this card.</value>
         [JsonProperty(PropertyName = "media")]
-        public IList<MediaUrl> Media { get; private set; }
+        public IList<MediaUrl> Media { get; private set; } = new List<MediaUrl>();
 
         /// <summary>
         /// Gets actions on this card.
         /// </summary>
         /// <value>The actions on this card.</value>
         [JsonProperty(PropertyName = "buttons")]
-        public IList<CardAction> Buttons { get; private set; }
+        public IList<CardAction> Buttons { get; private set; } = new List<CardAction>();
 
         /// <summary>
         /// Gets or sets this content may be shared with others (default:true).

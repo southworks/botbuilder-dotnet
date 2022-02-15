@@ -52,7 +52,7 @@ namespace Microsoft.Bot.Schema.Tests.Teams
             Assert.Equal(default, messageActionPayload.From);
             Assert.Equal(default, messageActionPayload.Body);
             Assert.Equal(default, messageActionPayload.AttachmentLayout);
-            Assert.Equal(default, messageActionPayload.Attachments);
+            Assert.Equal(new List<MessageActionsPayloadAttachment>(), messageActionPayload.Attachments);
             Assert.Equal(default, messageActionPayload.Mentions);
             Assert.Equal(default, messageActionPayload.Reactions);
         }

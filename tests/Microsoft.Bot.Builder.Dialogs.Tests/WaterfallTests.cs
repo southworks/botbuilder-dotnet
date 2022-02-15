@@ -382,11 +382,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             {
                 Id = id,
             };
-            dialogInstance.State.Concat(new Dictionary<string, object>
+            var states = new Dictionary<string, object>
             {
                 { "stepIndex", index },
                 { "instanceId", "(guid)" },
-            });
+            };
+            states.ToList().ForEach(dialogInstance.State.Add);
 
             await dialog.EndDialogAsync(
                 new TurnContext(new TestAdapter(), new Activity()),

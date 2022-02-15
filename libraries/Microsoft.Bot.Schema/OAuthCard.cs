@@ -62,7 +62,7 @@ namespace Microsoft.Bot.Schema
         /// </summary>
         /// <value>The actions used to perform sign-in.</value>
         [JsonProperty(PropertyName = "buttons")]
-        public IList<CardAction> Buttons { get; private set; }
+        public IList<CardAction> Buttons { get; private set; } = new List<CardAction>();
 
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.

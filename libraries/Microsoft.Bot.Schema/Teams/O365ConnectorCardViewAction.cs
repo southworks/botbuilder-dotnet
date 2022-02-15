@@ -39,7 +39,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// </summary>
         /// <value>The target URLs.</value>
         [JsonProperty(PropertyName = "target")]
-        public IList<string> Target { get; private set; }
+        public IList<string> Target { get; private set; } = new List<string>();
 
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.

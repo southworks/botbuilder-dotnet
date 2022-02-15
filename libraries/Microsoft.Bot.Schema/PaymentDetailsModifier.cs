@@ -51,7 +51,7 @@ namespace Microsoft.Bot.Schema
         /// </summary>
         /// <value>The supported method identifiers.</value>
         [JsonProperty(PropertyName = "supportedMethods")]
-        public IList<string> SupportedMethods { get; private set; }
+        public IList<string> SupportedMethods { get; private set; } = new List<string>();
 
         /// <summary>
         /// Gets or sets this value overrides the total field in the
@@ -69,7 +69,7 @@ namespace Microsoft.Bot.Schema
         /// </summary>
         /// <value>The additional display items that are appended to the displayItems field in PaymentDetails.</value>
         [JsonProperty(PropertyName = "additionalDisplayItems")]
-        public IList<PaymentItem> AdditionalDisplayItems { get; private set; }
+        public IList<PaymentItem> AdditionalDisplayItems { get; private set; } = new List<PaymentItem>();
 
         /// <summary>
         /// Gets or sets a JSON-serializable object that provides optional

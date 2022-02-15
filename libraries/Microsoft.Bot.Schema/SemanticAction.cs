@@ -43,7 +43,7 @@ namespace Microsoft.Bot.Schema
         /// </summary>
         /// <value>The entities associated with this action.</value>
         [JsonProperty(PropertyName = "entities")]
-        public IDictionary<string, Entity> Entities { get; private set; }
+        public IDictionary<string, Entity> Entities { get; private set; } = new Dictionary<string, Entity>();
 
         /// <summary>
         /// Gets or sets state of this action. Allowed values: `start`,

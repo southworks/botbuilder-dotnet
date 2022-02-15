@@ -209,14 +209,14 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
                                     { result.Label.Name, new IntentScore() { Score = result.Score } }
                                 };
 
-                                var recognizerResult = new RecognizerResult(intents)                                    
+                                var newRecognizerResult = new RecognizerResult(intents)                                    
                                 {
                                     Text = text,
                                     AlteredText = result.ClosestText,
                                 };
-                                recognizerResult.Entities.Merge(recognizerResult.Entities);
-                                recognizerResult.Properties.Concat(recognizerResult.Properties);
-                                return recognizerResult;
+                                newRecognizerResult.Entities.Merge(recognizerResult.Entities);
+                                recognizerResult.Properties.ToList().ForEach(newRecognizerResult.Properties.Add);
+                                return newRecognizerResult;
                             });
 
                             // replace RecognizerResult with ChooseIntent => Ambiguous recognizerResults as candidates.

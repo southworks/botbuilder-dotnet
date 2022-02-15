@@ -112,21 +112,21 @@ namespace Microsoft.Bot.Schema.Teams
         /// </summary>
         /// <value>The facts for the current section.</value>
         [JsonProperty(PropertyName = "facts")]
-        public IList<O365ConnectorCardFact> Facts { get; private set; }
+        public IList<O365ConnectorCardFact> Facts { get; private set; } = new List<O365ConnectorCardFact>();
 
         /// <summary>
         /// Gets set of images for the current section.
         /// </summary>
         /// <value>The images for the current section.</value>
         [JsonProperty(PropertyName = "images")]
-        public IList<O365ConnectorCardImage> Images { get; private set; }
+        public IList<O365ConnectorCardImage> Images { get; private set; } = new List<O365ConnectorCardImage>();
 
         /// <summary>
         /// Gets set of actions for the current section.
         /// </summary>
         /// <value>The actions for the current section.</value>
         [JsonProperty(PropertyName = "potentialAction")]
-        public IList<O365ConnectorCardActionBase> PotentialAction { get; private set; }
+        public IList<O365ConnectorCardActionBase> PotentialAction { get; private set; } = new List<O365ConnectorCardActionBase>();
 
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.

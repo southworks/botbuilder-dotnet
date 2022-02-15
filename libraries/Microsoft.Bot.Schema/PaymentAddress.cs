@@ -83,7 +83,7 @@ namespace Microsoft.Bot.Schema
         /// </summary>
         /// <value>The most specific part of the address.</value>
         [JsonProperty(PropertyName = "addressLine")]
-        public IList<string> AddressLine { get; private set; }
+        public IList<string> AddressLine { get; private set; } = new List<string>();
 
         /// <summary>
         /// Gets or sets this is the top level administrative subdivision of

@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Schema
         /// </summary>
         /// <value>A collection of activities that conforms to the Transcript schema.</value>
         [JsonProperty(PropertyName = "activities")]
-        public IList<Activity> Activities { get; private set; }
+        public IList<Activity> Activities { get; private set; } = new List<Activity>();
 
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.
