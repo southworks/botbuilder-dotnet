@@ -38,10 +38,10 @@ namespace Microsoft.Bot.Connector.Tests
 
             var param = new ConversationParameters()
             {
-                Members = new ChannelAccount[] { User },
                 Bot = Bot,
                 Activity = activity,
             };
+            param.Members.Add(User);
 
             await UseClientFor(async client =>
             {
@@ -102,10 +102,10 @@ namespace Microsoft.Bot.Connector.Tests
 
             var param = new ConversationParameters()
             {
-                Members = new ChannelAccount[] { User },
                 Bot = new ChannelAccount() { Id = "invalid-id" },
                 Activity = activity,
             };
+            param.Members.Add(User);
 
             await UseClientFor(async client =>
             {
@@ -132,7 +132,6 @@ namespace Microsoft.Bot.Connector.Tests
 
             var param = new ConversationParameters()
             {
-                Members = new ChannelAccount[] { },
                 Bot = Bot,
                 Activity = activity,
             };
@@ -162,10 +161,10 @@ namespace Microsoft.Bot.Connector.Tests
 
             var param = new ConversationParameters()
             {
-                Members = new ChannelAccount[] { Bot },
                 Bot = Bot,
                 Activity = activity,
             };
+            param.Members.Add(Bot);
 
             await UseClientFor(async client =>
             {
@@ -201,10 +200,10 @@ namespace Microsoft.Bot.Connector.Tests
 
             var param = new ConversationParameters()
             {
-                Members = new ChannelAccount[] { User },
                 Bot = Bot,
                 Activity = activity,
             };
+            param.Members.Add(User);
 
             var customHeaders = new Dictionary<string, List<string>>() { { "customHeader", new List<string>() { "customValue" } } };
 
@@ -226,9 +225,9 @@ namespace Microsoft.Bot.Connector.Tests
         {
             var createMessage = new ConversationParameters()
             {
-                Members = new ChannelAccount[] { User },
                 Bot = Bot,
             };
+            createMessage.Members.Add(User);
 
             await UseClientFor(async client =>
             {
@@ -259,9 +258,9 @@ namespace Microsoft.Bot.Connector.Tests
         {
             var createMessage = new ConversationParameters()
             {
-                Members = new ChannelAccount[] { User },
                 Bot = Bot,
             };
+            createMessage.Members.Add(User);
 
             await UseClientFor(async client =>
             {
@@ -291,9 +290,9 @@ namespace Microsoft.Bot.Connector.Tests
         {
             var createMessage = new ConversationParameters()
             {
-                Members = new ChannelAccount[] { User },
                 Bot = Bot,
             };
+            createMessage.Members.Add(User);
 
             var customHeaders = new Dictionary<string, List<string>>() { { "customHeader", new List<string>() { "customValue" } } };
 
@@ -327,9 +326,9 @@ namespace Microsoft.Bot.Connector.Tests
         {
             var createMessage = new ConversationParameters()
             {
-                Members = new ChannelAccount[] { User },
                 Bot = Bot,
             };
+            createMessage.Members.Add(User);
 
             await UseClientFor(async client =>
             {
@@ -360,9 +359,9 @@ namespace Microsoft.Bot.Connector.Tests
         {
             var createMessage = new ConversationParameters()
             {
-                Members = new ChannelAccount[] { User },
                 Bot = Bot,
             };
+            createMessage.Members.Add(User);
 
             await UseClientFor(async client =>
             {
@@ -381,9 +380,9 @@ namespace Microsoft.Bot.Connector.Tests
         {
             var createMessage = new ConversationParameters()
             {
-                Members = new ChannelAccount[] { User },
                 Bot = Bot,
             };
+            createMessage.Members.Add(User);
 
             await UseClientFor(async client =>
             {
@@ -414,9 +413,9 @@ namespace Microsoft.Bot.Connector.Tests
         {
             var createMessage = new ConversationParameters()
             {
-                Members = new ChannelAccount[] { User },
                 Bot = Bot,
             };
+            createMessage.Members.Add(User);
 
             var customHeaders = new Dictionary<string, List<string>>() { { "customHeader", new List<string>() { "customValue" } } };
 
@@ -460,10 +459,10 @@ namespace Microsoft.Bot.Connector.Tests
 
             var createMessage = new ConversationParameters()
             {
-                Members = new ChannelAccount[] { User },
                 Bot = Bot,
                 Activity = activity,
             };
+            createMessage.Members.Add(User);
 
             await UseClientFor(async client =>
             {
@@ -491,10 +490,10 @@ namespace Microsoft.Bot.Connector.Tests
 
             var createMessage = new ConversationParameters()
             {
-                Members = new ChannelAccount[] { User },
                 Bot = Bot,
                 Activity = activity,
             };
+            createMessage.Members.Add(User);
 
             await UseClientFor(async client =>
             {
@@ -514,9 +513,9 @@ namespace Microsoft.Bot.Connector.Tests
         {
             var createMessage = new ConversationParameters()
             {
-                Members = new ChannelAccount[] { User },
                 Bot = Bot,
             };
+            createMessage.Members.Add(User);
 
             await UseClientFor(async client =>
             {
@@ -552,10 +551,10 @@ namespace Microsoft.Bot.Connector.Tests
 
             var createMessage = new ConversationParameters()
             {
-                Members = new ChannelAccount[] { User },
                 Bot = Bot,
                 Activity = activity,
             };
+            createMessage.Members.Add(User);
 
             await UseClientFor(async client =>
             {
@@ -569,9 +568,9 @@ namespace Microsoft.Bot.Connector.Tests
         {
             var createMessage = new ConversationParameters()
             {
-                Members = new ChannelAccount[] { User },
                 Bot = Bot,
             };
+            createMessage.Members.Add(User);
 
             await UseClientFor(async client =>
             {
@@ -593,36 +592,40 @@ namespace Microsoft.Bot.Connector.Tests
                 Text = "TEST Send Card to Conversation",
             };
 
+            var heroCardStatic = new HeroCard()
+            {
+                Title = "A static image",
+                Subtitle = "JPEG image",
+            };
+            heroCardStatic.Images.Add(new CardImage() { Url = "https://docs.microsoft.com/bot-framework/media/designing-bots/core/dialogs-screens.png" });
+
+            var heroCardAnimation = new HeroCard()
+            {
+                Title = "An animation",
+                Subtitle = "GIF image",
+            };
+            heroCardAnimation.Images.Add(new CardImage() { Url = "http://i.giphy.com/Ki55RUbOV5njy.gif" });
+
             ((List<Attachment>)activity.Attachments).AddRange(
                 new List<Attachment>()
                 {
                     new Attachment()
                     {
                         ContentType = HeroCard.ContentType,
-                        Content = new HeroCard()
-                        {
-                            Title = "A static image",
-                            Subtitle = "JPEG image",
-                            Images = new CardImage[] { new CardImage() { Url = "https://docs.microsoft.com/bot-framework/media/designing-bots/core/dialogs-screens.png" } },
-                        },
+                        Content = heroCardStatic,
                     },
                     new Attachment()
                     {
                         ContentType = HeroCard.ContentType,
-                        Content = new HeroCard()
-                        {
-                            Title = "An animation",
-                            Subtitle = "GIF image",
-                            Images = new CardImage[] { new CardImage() { Url = "http://i.giphy.com/Ki55RUbOV5njy.gif" } },
-                        },
+                        Content = heroCardAnimation,
                     }
                 });
 
             var createMessage = new ConversationParameters()
             {
-                Members = new ChannelAccount[] { User },
                 Bot = Bot,
             };
+            createMessage.Members.Add(User);
 
             await UseClientFor(async client =>
             {
@@ -650,10 +653,10 @@ namespace Microsoft.Bot.Connector.Tests
 
             var createMessage = new ConversationParameters()
             {
-                Members = new ChannelAccount[] { User },
                 Bot = Bot,
                 Activity = activity,
             };
+            createMessage.Members.Add(User);
 
             var customHeaders = new Dictionary<string, List<string>>() { { "customHeader", new List<string>() { "customValue" } } };
 
@@ -683,10 +686,10 @@ namespace Microsoft.Bot.Connector.Tests
 
             var createMessage = new ConversationParameters()
             {
-                Members = new ChannelAccount[] { User },
                 Bot = Bot,
                 Activity = activity,
             };
+            createMessage.Members.Add(User);
 
             await UseClientFor(async client =>
             {
@@ -725,10 +728,10 @@ namespace Microsoft.Bot.Connector.Tests
 
             var createMessage = new ConversationParameters()
             {
-                Members = new ChannelAccount[] { User },
                 Bot = Bot,
                 Activity = activity,
             };
+            createMessage.Members.Add(User);
 
             await UseClientFor(async client =>
             {
@@ -756,10 +759,10 @@ namespace Microsoft.Bot.Connector.Tests
 
             var createMessage = new ConversationParameters()
             {
-                Members = new ChannelAccount[] { User },
                 Bot = Bot,
                 Activity = activity,
             };
+            createMessage.Members.Add(User);
 
             await UseClientFor(async client =>
             {
@@ -782,10 +785,10 @@ namespace Microsoft.Bot.Connector.Tests
 
             var createMessage = new ConversationParameters()
             {
-                Members = new ChannelAccount[] { User },
                 Bot = Bot,
                 Activity = activity,
             };
+            createMessage.Members.Add(User);
 
             await UseClientFor(async client =>
             {
@@ -808,10 +811,10 @@ namespace Microsoft.Bot.Connector.Tests
 
             var createMessage = new ConversationParameters()
             {
-                Members = new ChannelAccount[] { User },
                 Bot = Bot,
                 Activity = activity,
             };
+            createMessage.Members.Add(User);
 
             var customHeaders = new Dictionary<string, List<string>>() { { "customHeader", new List<string>() { "customValue" } } };
 
@@ -862,9 +865,9 @@ namespace Microsoft.Bot.Connector.Tests
 
             var createMessage = new ConversationParameters()
             {
-                Members = new ChannelAccount[] { User },
                 Bot = Bot,
             };
+            createMessage.Members.Add(User);
 
             await UseClientFor(async client =>
             {
@@ -901,9 +904,9 @@ namespace Microsoft.Bot.Connector.Tests
 
             var createMessage = new ConversationParameters()
             {
-                Members = new ChannelAccount[] { User },
                 Bot = Bot,
             };
+            createMessage.Members.Add(User);
 
             await UseClientFor(async client =>
             {
@@ -940,9 +943,9 @@ namespace Microsoft.Bot.Connector.Tests
 
             var createMessage = new ConversationParameters()
             {
-                Members = new ChannelAccount[] { User },
                 Bot = Bot,
             };
+            createMessage.Members.Add(User);
 
             await UseClientFor(async client =>
             {
@@ -974,9 +977,9 @@ namespace Microsoft.Bot.Connector.Tests
 
             var createMessage = new ConversationParameters()
             {
-                Members = new ChannelAccount[] { User },
                 Bot = Bot,
             };
+            createMessage.Members.Add(User);
 
             await UseClientFor(async client =>
             {
@@ -1000,9 +1003,9 @@ namespace Microsoft.Bot.Connector.Tests
 
             var createMessage = new ConversationParameters()
             {
-                Members = new ChannelAccount[] { User },
                 Bot = Bot,
             };
+            createMessage.Members.Add(User);
 
             await UseClientFor(async client =>
             {
@@ -1034,9 +1037,9 @@ namespace Microsoft.Bot.Connector.Tests
 
             var createMessage = new ConversationParameters()
             {
-                Members = new ChannelAccount[] { User },
                 Bot = Bot,
             };
+            createMessage.Members.Add(User);
 
             var customHeaders = new Dictionary<string, List<string>>() { { "customHeader", new List<string>() { "customValue" } } };
 
@@ -1080,10 +1083,10 @@ namespace Microsoft.Bot.Connector.Tests
 
             var createMessage = new ConversationParameters()
             {
-                Members = new ChannelAccount[] { User },
                 Bot = Bot,
                 Activity = activity,
             };
+            createMessage.Members.Add(User);
 
             await UseClientFor(async client =>
             {
@@ -1110,10 +1113,10 @@ namespace Microsoft.Bot.Connector.Tests
 
             var createMessage = new ConversationParameters()
             {
-                Members = new ChannelAccount[] { User },
                 Bot = Bot,
                 Activity = activity,
             };
+            createMessage.Members.Add(User);
 
             await UseClientFor(async client =>
             {
@@ -1141,10 +1144,10 @@ namespace Microsoft.Bot.Connector.Tests
 
             var createMessage = new ConversationParameters()
             {
-                Members = new ChannelAccount[] { User },
                 Bot = Bot,
                 Activity = activity,
             };
+            createMessage.Members.Add(User);
 
             await UseClientFor(async client =>
             {
@@ -1167,10 +1170,10 @@ namespace Microsoft.Bot.Connector.Tests
 
             var createMessage = new ConversationParameters()
             {
-                Members = new ChannelAccount[] { User },
                 Bot = Bot,
                 Activity = activity,
             };
+            createMessage.Members.Add(User);
 
             await UseClientFor(async client =>
             {
@@ -1193,10 +1196,10 @@ namespace Microsoft.Bot.Connector.Tests
 
             var createMessage = new ConversationParameters()
             {
-                Members = new ChannelAccount[] { User },
                 Bot = Bot,
                 Activity = activity,
             };
+            createMessage.Members.Add(User);
 
             var customHeaders = new Dictionary<string, List<string>>() { { "customHeader", new List<string>() { "customValue" } } };
 
@@ -1227,9 +1230,9 @@ namespace Microsoft.Bot.Connector.Tests
 
             var createMessage = new ConversationParameters()
             {
-                Members = new ChannelAccount[] { User },
                 Bot = Bot,
             };
+            createMessage.Members.Add(User);
 
             await UseClientFor(async client =>
             {
@@ -1265,9 +1268,9 @@ namespace Microsoft.Bot.Connector.Tests
 
             var createMessage = new ConversationParameters()
             {
-                Members = new ChannelAccount[] { User },
                 Bot = Bot,
             };
+            createMessage.Members.Add(User);
 
             await UseClientFor(async client =>
             {
@@ -1304,9 +1307,9 @@ namespace Microsoft.Bot.Connector.Tests
 
             var createMessage = new ConversationParameters()
             {
-                Members = new ChannelAccount[] { User },
                 Bot = Bot,
             };
+            createMessage.Members.Add(User);
 
             await UseClientFor(async client =>
             {
@@ -1338,9 +1341,9 @@ namespace Microsoft.Bot.Connector.Tests
 
             var createMessage = new ConversationParameters()
             {
-                Members = new ChannelAccount[] { User },
                 Bot = Bot,
             };
+            createMessage.Members.Add(User);
 
             await UseClientFor(async client =>
             {
@@ -1372,9 +1375,9 @@ namespace Microsoft.Bot.Connector.Tests
 
             var createMessage = new ConversationParameters()
             {
-                Members = new ChannelAccount[] { User },
                 Bot = Bot,
             };
+            createMessage.Members.Add(User);
 
             await UseClientFor(async client =>
             {
@@ -1398,9 +1401,9 @@ namespace Microsoft.Bot.Connector.Tests
 
             var createMessage = new ConversationParameters()
             {
-                Members = new ChannelAccount[] { User },
                 Bot = Bot,
             };
+            createMessage.Members.Add(User);
 
             var customHeaders = new Dictionary<string, List<string>>() { { "customHeader", new List<string>() { "customValue" } } };
 

@@ -111,7 +111,8 @@ namespace Microsoft.Bot.Builder.Skills
             turnContext.Activity.Locale = activity.Locale;
             turnContext.Activity.LocalTimestamp = activity.LocalTimestamp;
             turnContext.Activity.Name = activity.Name;
-            turnContext.Activity.Properties = activity.Properties;
+            turnContext.Activity.Properties.RemoveAll();
+            turnContext.Activity.Properties.Merge(activity.Properties);
             turnContext.Activity.RelatesTo = activity.RelatesTo;
             turnContext.Activity.ReplyToId = activity.ReplyToId;
             turnContext.Activity.Timestamp = activity.Timestamp;

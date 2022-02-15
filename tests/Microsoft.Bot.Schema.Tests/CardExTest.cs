@@ -24,8 +24,8 @@ namespace Microsoft.Bot.Schema.Tests
                 Title = "Hero Card Title",
                 Subtitle = "Hero Card Subtitle",
                 Text = "Testing Text.",
-                Buttons = new List<CardAction> { new CardAction(ActionTypes.OpenUrl, "Get Started", value: "https://docs.microsoft.com/bot-framework") },
             };
+            heroCard.Buttons.Add(new CardAction(ActionTypes.OpenUrl, "Get Started", value: "https://docs.microsoft.com/bot-framework"));
 
             attachments.Add(heroCard.ToAttachment());
 
@@ -134,24 +134,18 @@ namespace Microsoft.Bot.Schema.Tests
                 Image = new ThumbnailUrl
                 {
                     Url = "https://upload.wikimedia.org/wikipedia/en/3/3c/SW_-_Empire_Strikes_Back.jpg",
-                },
-                Media = new List<MediaUrl>
-                {
-                    new MediaUrl()
-                    {
-                        Url = "http://www.wavlist.com/movies/004/father.wav",
-                    },
-                },
-                Buttons = new List<CardAction>
-                {
-                    new CardAction()
-                    {
-                        Title = "Read More",
-                        Type = ActionTypes.OpenUrl,
-                        Value = "https://en.wikipedia.org/wiki/The_Empire_Strikes_Back",
-                    },
-                },
+                }
             };
+            audioCard.Media.Add(new MediaUrl()
+            {
+                Url = "http://www.wavlist.com/movies/004/father.wav",
+            });
+            audioCard.Buttons.Add(new CardAction()
+            {
+                Title = "Read More",
+                Type = ActionTypes.OpenUrl,
+                Value = "https://en.wikipedia.org/wiki/The_Empire_Strikes_Back",
+            });
 
             attachments.Add(audioCard.ToAttachment());
 
@@ -215,15 +209,12 @@ namespace Microsoft.Bot.Schema.Tests
                 Image = new ThumbnailUrl
                 {
                     Url = "https://docs.microsoft.com/en-us/bot-framework/media/how-it-works/architecture-resize.png",
-                },
-                Media = new List<MediaUrl>
-                {
-                    new MediaUrl()
-                    {
-                        Url = "http://i.giphy.com/Ki55RUbOV5njy.gif",
-                    },
-                },
+                }
             };
+            animationCard.Media.Add(new MediaUrl()
+            {
+                Url = "http://i.giphy.com/Ki55RUbOV5njy.gif",
+            });
 
             attachments.Add(animationCard.ToAttachment());
 

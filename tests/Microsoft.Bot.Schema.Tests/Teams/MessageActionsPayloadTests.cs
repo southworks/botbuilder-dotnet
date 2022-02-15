@@ -53,8 +53,8 @@ namespace Microsoft.Bot.Schema.Tests.Teams
             Assert.Equal(default, messageActionPayload.Body);
             Assert.Equal(default, messageActionPayload.AttachmentLayout);
             Assert.Equal(new List<MessageActionsPayloadAttachment>(), messageActionPayload.Attachments);
-            Assert.Equal(default, messageActionPayload.Mentions);
-            Assert.Equal(default, messageActionPayload.Reactions);
+            Assert.Equal(new List<MessageActionsPayloadMention>(), messageActionPayload.Mentions);
+            Assert.Equal(new List<MessageActionsPayloadReaction>(), messageActionPayload.Reactions);
         }
 
         /// <summary>

@@ -460,14 +460,10 @@ namespace Microsoft.Bot.Schema.Tests
         [Fact]
         public void CanSetProperties()
         {
-            var activity = new Activity()
-            {
-                Properties = new JObject()
-            };
+            var activity = new Activity();
 
-            var props = activity.Properties;
-            Assert.NotNull(props);
-            Assert.IsType<JObject>(props);
+            Assert.NotNull(activity.Properties);
+            Assert.IsType<JObject>(activity.Properties);
         }
 
         // Default locale intentionally oddly-cased to check that it isn't defaulted somewhere, but tests stay in English
@@ -477,19 +473,21 @@ namespace Microsoft.Bot.Schema.Tests
             {
                 Id = "ChannelAccount_Id_1",
                 Name = "ChannelAccount_Name_1",
-                Properties = new JObject { { "Name", "Value" } },
                 Role = "ChannelAccount_Role_1",
             }
             : null;
+
+            account1?.Properties.Add("Name", "Value");
 
             var account2 = createRecipient ? new ChannelAccount
             {
                 Id = "ChannelAccount_Id_2",
                 Name = "ChannelAccount_Name_2",
-                Properties = new JObject { { "Name", "Value" } },
                 Role = "ChannelAccount_Role_2",
             }
             : null;
+
+            account2?.Properties.Add("Name", "Value");
 
             var conversationAccount = new ConversationAccount
             {
@@ -497,9 +495,9 @@ namespace Microsoft.Bot.Schema.Tests
                 Id = "123",
                 IsGroup = true,
                 Name = "Name",
-                Properties = new JObject { { "Name", "Value" } },
                 Role = "ConversationAccount_Role",
             };
+            conversationAccount.Properties.Add("Name", "Value");
 
             var activity = new Activity
             {
