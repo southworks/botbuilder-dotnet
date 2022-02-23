@@ -29,7 +29,9 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="stack">The state information to initialize the stack with.</param>
         /// <remarks>The new instance has a dialog stack that is populated using the information
         /// in <paramref name="stack"/>.</remarks>
+#pragma warning disable CA1002 // Do not expose generic lists
         public DialogState(List<DialogInstance> stack)
+#pragma warning restore CA1002 // Do not expose generic lists
         {
             DialogStack = stack ?? new List<DialogInstance>();
         }
@@ -40,7 +42,9 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <value>State information for a dialog stack.</value>
         [JsonProperty("dialogStack")]
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
+#pragma warning disable CA1002 // Do not expose generic lists
         public List<DialogInstance> DialogStack { get; set; } = new List<DialogInstance>();
+#pragma warning restore CA1002 // Do not expose generic lists
 #pragma warning restore CA2227 // Collection properties should be read only
     }
 }

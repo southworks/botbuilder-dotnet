@@ -57,7 +57,9 @@ namespace Microsoft.Bot.Connector.Streaming.Payloads
         /// A <see cref="List{T}"/> of <see cref="ResponseMessageStream"/> items associated with this request.
         /// </value>
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
+#pragma warning disable CA1002 // Do not expose generic lists
         public List<ResponseMessageStream> Streams { get; set; } = new List<ResponseMessageStream>();
+#pragma warning restore CA1002 // Do not expose generic lists
 #pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
