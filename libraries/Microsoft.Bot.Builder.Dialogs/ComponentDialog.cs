@@ -64,7 +64,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             await EnsureInitializedAsync(dc).ConfigureAwait(false);
 
-            await this.CheckForVersionChangeAsync(dc).ConfigureAwait(false);
+            await this.CheckForVersionChangeAsync(dc, cancellationToken).ConfigureAwait(false);
 
             var innerDc = this.CreateChildContext(dc);
             var turnResult = await OnBeginDialogAsync(innerDc, options, cancellationToken).ConfigureAwait(false);
@@ -106,7 +106,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             await EnsureInitializedAsync(dc).ConfigureAwait(false);
 
-            await this.CheckForVersionChangeAsync(dc).ConfigureAwait(false);
+            await this.CheckForVersionChangeAsync(dc, cancellationToken).ConfigureAwait(false);
 
             // Continue execution of inner dialog
             var innerDc = this.CreateChildContext(dc);
@@ -157,7 +157,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             await EnsureInitializedAsync(dc).ConfigureAwait(false);
 
-            await this.CheckForVersionChangeAsync(dc).ConfigureAwait(false);
+            await this.CheckForVersionChangeAsync(dc, cancellationToken).ConfigureAwait(false);
 
             // Containers are typically leaf nodes on the stack but the dev is free to push other dialogs
             // on top of the stack which will result in the container receiving an unexpected call to
