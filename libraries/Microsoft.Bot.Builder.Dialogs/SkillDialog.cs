@@ -213,7 +213,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 throw new ArgumentNullException(nameof(options));
             }
 
-            if (!(options is BeginSkillDialogOptions dialogArgs))
+            if (options is not BeginSkillDialogOptions dialogArgs)
             {
                 throw new ArgumentException($"Unable to cast {nameof(options)} to {nameof(BeginSkillDialogOptions)}", nameof(options));
             }
