@@ -42,7 +42,9 @@ namespace Microsoft.Bot.Connector.Streaming.Transport
             {
                 ReadResult result;
 
-                result = await input.ReadAsync(cancellationToken).ConfigureAwait(false);
+#pragma warning disable CA2016 // Forward the 'CancellationToken' parameter to methods
+                result = await input.ReadAsync().ConfigureAwait(false);
+#pragma warning restore CA2016 // Forward the 'CancellationToken' parameter to methods
 
                 if (result.IsCanceled)
                 {
@@ -67,7 +69,9 @@ namespace Microsoft.Bot.Connector.Streaming.Transport
                                 {
                                     input.AdvanceTo(buffer.Start, buffer.End);
 
-                                    result = await input.ReadAsync(cancellationToken).ConfigureAwait(false);
+#pragma warning disable CA2016 // Forward the 'CancellationToken' parameter to methods
+                                    result = await input.ReadAsync().ConfigureAwait(false);
+#pragma warning restore CA2016 // Forward the 'CancellationToken' parameter to methods
 
                                     if (result.IsCanceled)
                                     {
