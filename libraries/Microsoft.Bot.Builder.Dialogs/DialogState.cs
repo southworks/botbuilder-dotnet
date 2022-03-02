@@ -41,6 +41,8 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         /// <value>State information for a dialog stack.</value>
         [JsonProperty("dialogStack")]
+#pragma warning disable CA1002 // Do not expose generic lists
         public List<DialogInstance> DialogStack { get; private set; } = new List<DialogInstance>();
+#pragma warning restore CA1002 // Do not expose generic lists
     }
 }
