@@ -43,16 +43,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
         public CardAction Action { get; set; }
 
         /// <summary>
-        /// Gets or sets the list of synonyms to recognize in addition to the value. This is optional.
+        /// Gets the list of synonyms to recognize in addition to the value. This is optional.
         /// </summary>
         /// <value>
         /// The list of synonyms to recognize in addition to the value.
         /// </value>
         [JsonProperty("synonyms")]
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
-#pragma warning disable CA1002 // Do not expose generic lists
-        public List<string> Synonyms { get; set; }
-#pragma warning restore CA1002 // Do not expose generic lists
-#pragma warning restore CA2227 // Collection properties should be read only
+        public List<string> Synonyms { get; private set; } = new List<string>();
     }
 }

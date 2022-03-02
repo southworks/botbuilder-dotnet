@@ -65,10 +65,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
                     Title = cardNoMatchText
                 });
 
-            var plCard = new HeroCard()
-            {
-                Buttons = buttonList
-            };
+            var plCard = new HeroCard(buttons: buttonList);
 
             // Create the attachment.
             var attachment = plCard.ToAttachment();
@@ -112,10 +109,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
                     });
             }
 
-            var plCard = new HeroCard()
-            {
-                Buttons = buttonList
-            };
+            var plCard = new HeroCard(buttons: buttonList);
 
             // Create the attachment.
             var attachment = plCard.ToAttachment();
