@@ -383,6 +383,57 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
 
         [Fact]
+        public async Task GetTranscriptActivitiesAsyncContinuationToken()
+        {
+            var stream = new Mock<CloudBlobStream>();
+            stream.SetupGet(x => x.CanWrite).Returns(true);
+
+            var mockBlockBlob = new Mock<CloudBlockBlob>(new Uri("http://test/myaccount/blob"));
+            mockBlockBlob.Object.Metadata["Timestamp"] = DateTime.Now.ToString(CultureInfo.InvariantCulture);
+            mockBlockBlob.SetupGet(x => x.Name).Returns("token-name");
+
+            var jsonString = JsonConvert.SerializeObject(new Activity());
+            mockBlockBlob.Setup(x => x.DownloadTextAsync()).Returns(Task.FromResult(jsonString));
+
+            var segment = new BlobResultSegment(new List<CloudBlockBlob> { mockBlockBlob.Object }, null);
+
+            var mockDirectory = new Mock<CloudBlobDirectory>();
+            mockDirectory.Setup(x => x.ListBlobsSegmentedAsync(
+                It.IsAny<bool>(),
+                It.IsAny<BlobListingDetails>(),
+                null,
+                It.IsAny<BlobContinuationToken>(),
+                It.IsAny<BlobRequestOptions>(),
+                It.IsAny<OperationContext>())).Returns(Task.FromResult(segment));
+
+            var mockContainer = new Mock<CloudBlobContainer>(new Uri("https://testuri.com"));
+            mockContainer.Setup(x => x.GetDirectoryReference(It.IsAny<string>())).Returns(mockDirectory.Object);
+            mockContainer.Setup(x => x.CreateIfNotExistsAsync());
+
+            var mockBlobClient = new Mock<CloudBlobClient>(new Uri("https://testuri.com"), null);
+            mockBlobClient.Setup(x => x.GetContainerReference(It.IsAny<string>())).Returns(mockContainer.Object);
+
+            var storageAccount = CloudStorageAccount.Parse(ConnectionString);
+
+            var blobTranscript = new AzureBlobTranscriptStore(storageAccount, ContainerName, mockBlobClient.Object);
+
+            await blobTranscript.GetTranscriptActivitiesAsync("channelId", "conversationId", "token-name");
+
+            mockBlobClient.Verify(x => x.GetContainerReference(It.IsAny<string>()), Times.Once);
+            mockContainer.Verify(x => x.GetDirectoryReference(It.IsAny<string>()), Times.Once);
+            mockDirectory.Verify(
+                x => x.ListBlobsSegmentedAsync(
+                    It.IsAny<bool>(),
+                    It.IsAny<BlobListingDetails>(),
+                    null,
+                    It.IsAny<BlobContinuationToken>(),
+                    It.IsAny<BlobRequestOptions>(),
+                    It.IsAny<OperationContext>()), Times.Once);
+
+            mockBlobClient.Verify(x => x.GetContainerReference(It.IsAny<string>()), Times.Once);
+        }
+
+        [Fact]
         public async Task ListTranscriptAsyncValidations()
         {
             var storageAccount = CloudStorageAccount.Parse(ConnectionString);
