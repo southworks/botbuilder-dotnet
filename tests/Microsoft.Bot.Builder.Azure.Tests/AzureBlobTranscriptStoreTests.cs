@@ -182,7 +182,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             };
 
             InitStorage();
-            
+
             _mockBlockBlob.Setup(x => x.DownloadTextAsync()).Returns(Task.FromResult(JsonConvert.SerializeObject(_activity)));
 
             await _blobTranscript.LogActivityAsync(_activity);
@@ -315,7 +315,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             _mockBlockBlob.Object.Metadata["Timestamp"] = DateTime.Now.ToString(CultureInfo.InvariantCulture);
             _mockBlockBlob.SetupGet(x => x.Name).Returns("token-name");
 
-            var segment = new BlobResultSegment(CreateSegment(21, _mockBlockBlob.Object).ToList(), null);         
+            var segment = new BlobResultSegment(CreateSegment(21, _mockBlockBlob.Object).ToList(), null);
 
             _mockDirectory.Setup(x => x.ListBlobsSegmentedAsync(
                 It.IsAny<bool>(),
@@ -365,7 +365,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 It.IsAny<OperationContext>())).Returns(Task.FromResult(_segment));
 
             _mockContainer.Setup(x => x.GetDirectoryReference(It.IsAny<string>())).Returns(_mockDirectory.Object);
-            
+
             await _blobTranscript.ListTranscriptsAsync("channelId", null);
 
             _mockBlobClient.Verify(x => x.GetContainerReference(It.IsAny<string>()), Times.Once);
@@ -421,6 +421,43 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             _mockBlockBlob.Verify(x => x.DeleteIfExistsAsync(), Times.Once);
         }
 
+        [Fact]
+        public async Task LogActivityAsyncInternalFindActivityBlobAsync()
+        {
+            _activity = new Activity
+            {
+                Type = ActivityTypes.MessageUpdate,
+                Text = "Hello",
+                Id = "test-id",
+                ChannelId = "channel-id",
+                Conversation = new ConversationAccount { Id = "conversation-id" },
+                Timestamp = new DateTimeOffset(),
+                From = new ChannelAccount { Id = "account-1" },
+                Recipient = new ChannelAccount { Id = "account-2" }
+            };
+
+            InitStorage();
+
+            _mockBlockBlob.Object.Metadata["Id"] = "test-id";
+            _mockBlockBlob.Setup(x => x.DownloadTextAsync()).Returns(Task.FromResult(JsonConvert.SerializeObject(_activity)));
+
+            await _blobTranscript.LogActivityAsync(_activity);
+
+            _mockBlobClient.Verify(x => x.GetContainerReference(It.IsAny<string>()), Times.Once);
+            _mockContainer.Verify(x => x.GetDirectoryReference(It.IsAny<string>()), Times.Once);
+
+            _mockBlockBlob.Verify(x => x.OpenWriteAsync(), Times.Once);
+
+            _mockDirectory.Verify(
+                x => x.ListBlobsSegmentedAsync(
+                    It.IsAny<bool>(),
+                    It.IsAny<BlobListingDetails>(),
+                    It.IsAny<int>(),
+                    It.IsAny<BlobContinuationToken>(),
+                    It.IsAny<BlobRequestOptions>(),
+                    It.IsAny<OperationContext>()), Times.Once);
+        }
+
         private static IEnumerable<CloudBlockBlob> CreateSegment(int count, CloudBlockBlob blob)
         {
             return Enumerable.Range(0, count).Select(x => blob);
@@ -429,7 +466,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         private void InitStorage()
         {
             var jsonString = JsonConvert.SerializeObject(new Activity());
-            
+
             _stream = new Mock<CloudBlobStream>();
             _stream.SetupGet(x => x.CanWrite).Returns(true);
 
