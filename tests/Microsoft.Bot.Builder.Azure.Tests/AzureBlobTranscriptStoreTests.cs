@@ -502,10 +502,6 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             stream.SetupGet(x => x.CanWrite).Returns(true);
 
             var mockBlockBlob = new Mock<CloudBlockBlob>(new Uri("http://test/myaccount/blob"));
-            
-            //var mockBlobDirectory = new CloudBlobDirectory();
-
-            //mockBlobDirectory.SetupGet(x => x.Parent).Returns("prefix");
 
             var segment = new BlobResultSegment(new List<CloudBlockBlob> { mockBlockBlob.Object }, null);
 
@@ -556,11 +552,6 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             await Assert.ThrowsAsync<ArgumentNullException>(() => blobTranscript.DeleteTranscriptAsync("channel-id", null));
         }
 
-        private static IEnumerable<CloudBlockBlob> CreateSegment(int count, CloudBlockBlob blob)
-        {
-            return Enumerable.Range(0, count).Select(x => blob);
-        }
-
         [Fact]
         public async Task DeleteTranscriptAsync()
         {
@@ -607,15 +598,9 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             mockBlockBlob.Verify(x => x.DeleteIfExistsAsync(), Times.Once);
         }
 
-        //private class TestItem : CloudBlobDirectory
-        //{
-            
-        //    public TestItem(StorageUri uri, string prefix, CloudBlobContainer container)
-        //    : base()
-        //    {
-        //        var parent = Parent;
-        //        parent.Prefix
-        //    }
-        //}
+        private static IEnumerable<CloudBlockBlob> CreateSegment(int count, CloudBlockBlob blob)
+        {
+            return Enumerable.Range(0, count).Select(x => blob);
+        }
     }
 }
