@@ -87,7 +87,7 @@ namespace Microsoft.Bot.Builder.Azure
         /// </summary>
         /// <param name="storageAccount">.</param>
         /// <param name="containerName">Name of the container where transcript blobs will be stored.</param>
-        /// <param name="blobClient">..</param>
+        /// <param name="blobClient">Custom implementation of CloudBlobClient.</param>
         internal AzureBlobTranscriptStore(CloudStorageAccount storageAccount, string containerName, CloudBlobClient blobClient)
             : this(storageAccount, containerName)
         {
