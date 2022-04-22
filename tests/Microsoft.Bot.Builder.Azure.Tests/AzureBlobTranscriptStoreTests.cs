@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 {
     public class AzureBlobTranscriptStoreTests
     {
-        protected const string ConnectionString = @"AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;DefaultEndpointsProtocol=http;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10001/devstoreaccount1;TableEndpoint=http://127.0.0.1:10002/devstoreaccount1;";
+        protected const string ConnectionString = @"UseDevelopmentStorage=true";
         protected const string ContainerName = "containername";
 
         [Fact]
@@ -342,6 +342,54 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
 
         [Fact]
+        public async Task ListTranscriptAsync()
+        {
+            var stream = new Mock<CloudBlobStream>();
+            stream.SetupGet(x => x.CanWrite).Returns(true);
+
+            var mockBlockBlob = new Mock<CloudBlockBlob>(new Uri("http://test/myaccount/blob"));
+            
+            //var mockBlobDirectory = new CloudBlobDirectory();
+
+            //mockBlobDirectory.SetupGet(x => x.Parent).Returns("prefix");
+
+            var segment = new BlobResultSegment(new List<CloudBlockBlob> { mockBlockBlob.Object }, null);
+
+            var mockDirectory = new Mock<CloudBlobDirectory>();
+            mockDirectory.Setup(x => x.ListBlobsSegmentedAsync(
+                It.IsAny<bool>(),
+                It.IsAny<BlobListingDetails>(),
+                null,
+                It.IsAny<BlobContinuationToken>(),
+                It.IsAny<BlobRequestOptions>(),
+                It.IsAny<OperationContext>())).Returns(Task.FromResult(segment));
+
+            var mockContainer = new Mock<CloudBlobContainer>(new Uri("https://testuri.com"));
+            mockContainer.Setup(x => x.GetDirectoryReference(It.IsAny<string>())).Returns(mockDirectory.Object);
+            mockContainer.Setup(x => x.CreateIfNotExistsAsync());
+
+            var mockBlobClient = new Mock<CloudBlobClient>(new Uri("https://testuri.com"), null);
+            mockBlobClient.Setup(x => x.GetContainerReference(It.IsAny<string>())).Returns(mockContainer.Object);
+
+            var storageAccount = CloudStorageAccount.Parse(ConnectionString);
+
+            var blobTranscript = new AzureBlobTranscriptStore(storageAccount, ContainerName, mockBlobClient.Object);
+
+            await blobTranscript.ListTranscriptsAsync("channelId", null);
+
+            mockBlobClient.Verify(x => x.GetContainerReference(It.IsAny<string>()), Times.Once);
+            mockContainer.Verify(x => x.GetDirectoryReference(It.IsAny<string>()), Times.Once);
+            mockDirectory.Verify(
+                x => x.ListBlobsSegmentedAsync(
+                    It.IsAny<bool>(),
+                    It.IsAny<BlobListingDetails>(),
+                    null,
+                    It.IsAny<BlobContinuationToken>(),
+                    It.IsAny<BlobRequestOptions>(),
+                    It.IsAny<OperationContext>()), Times.Once);
+        }
+
+        [Fact]
         public async Task DeleteTranscriptAsyncValidations()
         {
             var storageAccount = CloudStorageAccount.Parse(ConnectionString);
@@ -353,5 +401,62 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             // No conversation id. Should throw.
             await Assert.ThrowsAsync<ArgumentNullException>(() => blobTranscript.DeleteTranscriptAsync("channel-id", null));
         }
+
+        [Fact]
+        public async Task DeleteTranscriptAsync()
+        {
+            var stream = new Mock<CloudBlobStream>();
+            stream.SetupGet(x => x.CanWrite).Returns(true);
+
+            var mockBlockBlob = new Mock<CloudBlockBlob>(new Uri("http://test/myaccount/blob"));
+            mockBlockBlob.Setup(x => x.DeleteIfExistsAsync()).Returns(Task.FromResult<bool>(true));
+
+            var segment = new BlobResultSegment(new List<CloudBlockBlob> { mockBlockBlob.Object }, null);
+
+            var mockDirectory = new Mock<CloudBlobDirectory>();
+            mockDirectory.Setup(x => x.ListBlobsSegmentedAsync(
+                It.IsAny<bool>(),
+                It.IsAny<BlobListingDetails>(),
+                null,
+                It.IsAny<BlobContinuationToken>(),
+                It.IsAny<BlobRequestOptions>(),
+                It.IsAny<OperationContext>())).Returns(Task.FromResult(segment));
+
+            var mockContainer = new Mock<CloudBlobContainer>(new Uri("https://testuri.com"));
+            mockContainer.Setup(x => x.GetDirectoryReference(It.IsAny<string>())).Returns(mockDirectory.Object);
+            mockContainer.Setup(x => x.CreateIfNotExistsAsync());
+
+            var mockBlobClient = new Mock<CloudBlobClient>(new Uri("https://testuri.com"), null);
+            mockBlobClient.Setup(x => x.GetContainerReference(It.IsAny<string>())).Returns(mockContainer.Object);
+
+            var storageAccount = CloudStorageAccount.Parse(ConnectionString);
+
+            var blobTranscript = new AzureBlobTranscriptStore(storageAccount, ContainerName, mockBlobClient.Object);
+
+            await blobTranscript.DeleteTranscriptAsync("channelId", "convo-id");
+
+            mockBlobClient.Verify(x => x.GetContainerReference(It.IsAny<string>()), Times.Once);
+            mockContainer.Verify(x => x.GetDirectoryReference(It.IsAny<string>()), Times.Once);
+            mockDirectory.Verify(
+                x => x.ListBlobsSegmentedAsync(
+                    It.IsAny<bool>(),
+                    It.IsAny<BlobListingDetails>(),
+                    null,
+                    It.IsAny<BlobContinuationToken>(),
+                    It.IsAny<BlobRequestOptions>(),
+                    It.IsAny<OperationContext>()), Times.Once);
+            mockBlockBlob.Verify(x => x.DeleteIfExistsAsync(), Times.Once);
+        }
+
+        //private class TestItem : CloudBlobDirectory
+        //{
+            
+        //    public TestItem(StorageUri uri, string prefix, CloudBlobContainer container)
+        //    : base()
+        //    {
+        //        var parent = Parent;
+        //        parent.Prefix
+        //    }
+        //}
     }
 }
