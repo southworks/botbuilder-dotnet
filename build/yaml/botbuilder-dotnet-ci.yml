@@ -14,12 +14,6 @@ pool:
 trigger: none # ci trigger is set in ADO
 pr: none # pr trigger is set in ADO
 
-parameters:
-- name: Skip_Governance
-  displayName: Skip Governance
-  type: boolean
-  default: false
-
 variables:
   ApiCompatVersion: 4.6.3
   BotBuilderDll: Microsoft.Bot.Builder.AI.Luis,Microsoft.Bot.Builder.AI.QnA,Microsoft.Bot.Builder.ApplicationInsights,Microsoft.Bot.Builder.Azure,Microsoft.Bot.Builder.Dialogs,Microsoft.Bot.Builder.Integration.ApplicationInsights.Core,Microsoft.Bot.Builder.Integration.AspNet.Core,Microsoft.Bot.Builder.TemplateManager,Microsoft.Bot.Builder.Testing,Microsoft.Bot.Builder,Microsoft.Bot.Configuration,Microsoft.Bot.Connector,Microsoft.Bot.Schema,Microsoft.Bot.Streaming
@@ -32,6 +26,7 @@ variables:
   ReleasePackageVersion: 4.9.0-preview-$(Build.BuildNumber) # This is consumed by projects in Microsoft.Bot.Builder.sln.
   runCodesignValidationInjection: false # Disables unnecessary CodeSign Validation step
   system_accesstoken: $(System.AccessToken)
+  IsFork: ${{ eq(variables['System.PullRequest.IsFork'], 'True') }}
 #  ApiCompatExcludeClasses: (optional) define this in Azure
 #  DisableApiCompatibityValidation: (optional) define this in Azure
 #  DotNetCoverallsToken: define this in Azure
@@ -64,12 +59,10 @@ stages:
   #     enabled: ${{ or(parameters.Skip_Governance, ne(variables['System.PullRequest.IsFork'], 'True')) }}
 
   - job: a3
-    variables:
-      IsFork: ${{ eq(variables['System.PullRequest.IsFork'], 'True') }}
     steps:
     # - ${{ if eq(parameters.Skip_Governance, true) }}:
     # - ${{ if and(not(parameters.Skip_Governance), ne(variables['System.PullRequest.IsFork'], 'True')) }}:
-    - ${{ if and(not(parameters.Skip_Governance), not(variables.IsFork)) }}:
+    - ${{ if not(variables.IsFork) }}:
       - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
         displayName: 'Component Detection'
         inputs:
