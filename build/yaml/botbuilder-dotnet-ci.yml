@@ -72,6 +72,7 @@ stages:
         inputs:
           failOnAlert: false
 
+
   # - job: a4 # No funca
   #   steps:
   #   - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
