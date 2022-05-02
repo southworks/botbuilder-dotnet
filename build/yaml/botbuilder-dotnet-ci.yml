@@ -15,10 +15,10 @@ trigger: none # ci trigger is set in ADO
 pr: none # pr trigger is set in ADO
 
 parameters:
-- name: RunTask
-  displayName: Run task?
+- name: Skip_Governance
+  displayName: Skip Governance
   type: boolean
-  default: true
+  default: false
 
 variables:
   ApiCompatVersion: 4.6.3
@@ -52,7 +52,7 @@ stages:
   #     displayName: 'Component Detection'
   #     inputs:
   #       failOnAlert: false
-  #     condition: eq(${{ parameters.RunTask }}, true)
+  #     condition: eq(${{ parameters.Skip_Governance }}, true)
 
   # - job: a2
   #   steps:
@@ -60,13 +60,13 @@ stages:
   #     displayName: 'Component Detection'
   #     inputs:
   #       failOnAlert: false
-  #     # enabled: ${{ parameters.RunTask }}
-  #     enabled: ${{ or(parameters.RunTask, ne(variables['System.PullRequest.IsFork'], 'True')) }}
+  #     # enabled: ${{ parameters.Skip_Governance }}
+  #     enabled: ${{ or(parameters.Skip_Governance, ne(variables['System.PullRequest.IsFork'], 'True')) }}
 
   - job: a3
     steps:
-    # - ${{ if eq(parameters.RunTask, true) }}:
-    - ${{ if or(parameters.RunTask, ne(variables['System.PullRequest.IsFork'], 'True')) }}:
+    # - ${{ if eq(parameters.Skip_Governance, true) }}:
+    - ${{ if or(not(parameters.Skip_Governance), ne(variables['System.PullRequest.IsFork'], 'True')) }}:
       - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
         displayName: 'Component Detection'
         inputs:
