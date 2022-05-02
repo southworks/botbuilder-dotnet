@@ -44,7 +44,7 @@ stages:
     steps:
       - template: ci-component-detection-steps.yml
         parameters:
-          skip: ${{ eq(variables.IsFork, 'True') }}
+          skip: $(IsFork)
   # - job: a1 # No funca
   #   steps:
   #   - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
