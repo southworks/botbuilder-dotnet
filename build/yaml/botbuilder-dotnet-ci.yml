@@ -59,11 +59,11 @@ stages:
 
   - job: a3
     variables:
-      IsFork: ${{ eq(variables['IsFork'], 'True') }}
+      IsFork2: ${{ eq(variables['IsFork'], 'True') }}
     steps:
     # - ${{ if eq(parameters.Skip_Governance, true) }}:
     # - ${{ if and(not(parameters.Skip_Governance), ne(variables['System.PullRequest.IsFork'], 'True')) }}:
-    - ${{ if not(variables.IsFork) }}:
+    - ${{ if not(variables.IsFork2) }}:
       - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
         displayName: 'Component Detection'
         inputs:
