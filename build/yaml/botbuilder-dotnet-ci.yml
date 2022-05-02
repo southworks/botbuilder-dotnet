@@ -18,7 +18,7 @@ parameters:
 - name: RunTask
   displayName: Run task?
   type: boolean
-  default: $env:IsFork
+  default: true
 
 variables:
   ApiCompatVersion: 4.6.3
@@ -60,7 +60,8 @@ stages:
       displayName: 'Component Detection'
       inputs:
         failOnAlert: false
-      enabled: ${{ parameters.RunTask }}
+      # enabled: ${{ parameters.RunTask }}
+      enabled: $[or(parameters.RunTask, ne(variables['System.PullRequest.IsFork'], 'True')))]
 
   # - job: a3
   #   steps:
