@@ -55,8 +55,7 @@ stages:
 
   - job: a2
     steps:
-      - script: |
-        echo $System_PullRequest_IsFork # outputs my value
+      - script: echo $System_PullRequest_IsFork
     # - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
     #   displayName: 'Component Detection'
     #   inputs:
