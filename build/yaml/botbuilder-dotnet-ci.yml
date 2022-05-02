@@ -14,40 +14,52 @@ pool:
 trigger: none # ci trigger is set in ADO
 pr: none # pr trigger is set in ADO
 
-variables:
-  ApiCompatVersion: 4.6.3
-  BotBuilderDll: Microsoft.Bot.Builder.AI.Luis,Microsoft.Bot.Builder.AI.QnA,Microsoft.Bot.Builder.ApplicationInsights,Microsoft.Bot.Builder.Azure,Microsoft.Bot.Builder.Dialogs,Microsoft.Bot.Builder.Integration.ApplicationInsights.Core,Microsoft.Bot.Builder.Integration.AspNet.Core,Microsoft.Bot.Builder.TemplateManager,Microsoft.Bot.Builder.Testing,Microsoft.Bot.Builder,Microsoft.Bot.Configuration,Microsoft.Bot.Connector,Microsoft.Bot.Schema,Microsoft.Bot.Streaming
-  BuildConfiguration: Debug-Windows
-  BuildPlatform: any cpu
-  IsBuildServer: true # This is consumed by tests\Microsoft.Bot.Builder.Dialogs.Declarative.Tests\SchemaTestsFixture.cs.
-  MSBuildArguments: -p:SignAssembly=false -p:delaySign=false
-  Parameters.solution: Microsoft.Bot.Builder.sln
-  PreviewPackageVersion: 4.9.0-preview-$(Build.BuildNumber) # This is consumed by projects in Microsoft.Bot.Builder.sln.
-  ReleasePackageVersion: 4.9.0-preview-$(Build.BuildNumber) # This is consumed by projects in Microsoft.Bot.Builder.sln.
-  runCodesignValidationInjection: false # Disables unnecessary CodeSign Validation step
-  system_accesstoken: $(System.AccessToken)
-  ASD: $(System_PullRequest_IsFork)
-#  ApiCompatExcludeClasses: (optional) define this in Azure
-#  DisableApiCompatibityValidation: (optional) define this in Azure
-#  DotNetCoverallsToken: define this in Azure
-#  GitHubCommentApiKey: define this in Azure
-#  SDK_Dotnet_V4_org_Url: define this in Azure
+# variables:
+#   ApiCompatVersion: 4.6.3
+#   BotBuilderDll: Microsoft.Bot.Builder.AI.Luis,Microsoft.Bot.Builder.AI.QnA,Microsoft.Bot.Builder.ApplicationInsights,Microsoft.Bot.Builder.Azure,Microsoft.Bot.Builder.Dialogs,Microsoft.Bot.Builder.Integration.ApplicationInsights.Core,Microsoft.Bot.Builder.Integration.AspNet.Core,Microsoft.Bot.Builder.TemplateManager,Microsoft.Bot.Builder.Testing,Microsoft.Bot.Builder,Microsoft.Bot.Configuration,Microsoft.Bot.Connector,Microsoft.Bot.Schema,Microsoft.Bot.Streaming
+#   BuildConfiguration: Debug-Windows
+#   BuildPlatform: any cpu
+#   IsBuildServer: true # This is consumed by tests\Microsoft.Bot.Builder.Dialogs.Declarative.Tests\SchemaTestsFixture.cs.
+#   MSBuildArguments: -p:SignAssembly=false -p:delaySign=false
+#   Parameters.solution: Microsoft.Bot.Builder.sln
+#   PreviewPackageVersion: 4.9.0-preview-$(Build.BuildNumber) # This is consumed by projects in Microsoft.Bot.Builder.sln.
+#   ReleasePackageVersion: 4.9.0-preview-$(Build.BuildNumber) # This is consumed by projects in Microsoft.Bot.Builder.sln.
+#   runCodesignValidationInjection: false # Disables unnecessary CodeSign Validation step
+#   system_accesstoken: $(System.AccessToken)
+#   ASD: $(System_PullRequest_IsFork)
+# #  ApiCompatExcludeClasses: (optional) define this in Azure
+# #  DisableApiCompatibityValidation: (optional) define this in Azure
+# #  DotNetCoverallsToken: define this in Azure
+# #  GitHubCommentApiKey: define this in Azure
+# #  SDK_Dotnet_V4_org_Url: define this in Azure
 
-# The following 2 stages run multi-configuration, multi-agent parallel jobs.
-# Debug-Windows/Release-Windows => Builds everything in Debug/Release + the ASP.NET Desktop.
-# Debug/Release => would build all .NET Standard libs and test them.
-# The .NET 4.X asp.net integrations libraries do not build and test on non-windows boxes.
-# If we drop support for .NET 4.x then we can drop to just Debug/Release.
+# # The following 2 stages run multi-configuration, multi-agent parallel jobs.
+# # Debug-Windows/Release-Windows => Builds everything in Debug/Release + the ASP.NET Desktop.
+# # Debug/Release => would build all .NET Standard libs and test them.
+# # The .NET 4.X asp.net integrations libraries do not build and test on non-windows boxes.
+# # If we drop support for .NET 4.x then we can drop to just Debug/Release.
+
+variables:
+  - name: IsFork
+    value: '-1'
+
 stages:
 - stage: Build
   jobs:
   - job: template
     variables:
-      Skip: ${{ variables.System_PullRequest_IsFork }}
+      Skip: ${{ variables.IsFork }}
     steps:
-      - template: ci-component-detection-steps.yml
-        parameters:
-          skip: $(IsFork)
+      - script: echo "start"
+      - ${{ if eq(variables.IsFork, '0') }}:
+        - script: echo "0"
+      - ${{ elseif eq(variables.IsFork, '1') }}: # true
+        - script: echo "0" 
+      - ${{ else }}:
+        - script: echo "-1"
+      # - template: ci-component-detection-steps.yml
+      #   parameters:
+      #     skip: $(IsFork)
   # - job: a1 # No funca
   #   steps:
   #   - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
