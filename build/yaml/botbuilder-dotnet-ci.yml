@@ -40,11 +40,11 @@ variables:
 stages:
 - stage: Build
   jobs:
-  - job: template
-    steps:
-      - template: ci-component-detection-steps.yml
-        parameters:
-          skip: $(IsFork)
+  # - job: template
+  #   steps:
+  #     - template: ci-component-detection-steps.yml
+  #       parameters:
+  #         skip: $(IsFork)
   # - job: a1 # No funca
   #   steps:
   #   - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
@@ -53,14 +53,14 @@ stages:
   #       failOnAlert: false
   #     condition: eq(${{ parameters.Skip_Governance }}, true)
 
-  # - job: a2
-  #   steps:
-  #   - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
-  #     displayName: 'Component Detection'
-  #     inputs:
-  #       failOnAlert: false
-  #     # enabled: ${{ parameters.Skip_Governance }}
-  #     enabled: ${{ or(parameters.Skip_Governance, ne(variables['System.PullRequest.IsFork'], 'True')) }}
+  - job: a2
+    steps:
+    - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
+      displayName: 'Component Detection'
+      inputs:
+        failOnAlert: false
+      # enabled: ${{ parameters.Skip_Governance }}
+      enabled: eq(IsFork, 'True')
 
   # - job: a3
   #   variables:
