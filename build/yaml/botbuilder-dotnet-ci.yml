@@ -46,7 +46,7 @@ variables:
 stages:
 - stage: Build
   jobs:
-  - job: 1
+  - job: a1
     steps:
     - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
       displayName: 'Component Detection'
@@ -54,7 +54,7 @@ stages:
         failOnAlert: false
       condition: eq(${{ parameters.RunTask }}, true)
 
-  - job: 2
+  - job: a2
     steps:
     - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
       displayName: 'Component Detection'
@@ -62,7 +62,7 @@ stages:
         failOnAlert: false
       enabled: ${{ parameters.RunTask }}
 
-  - job: 3
+  - job: a3
     steps:
     - ${{ if eq(parameters.RunTask, true) }}:
       - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
@@ -70,7 +70,7 @@ stages:
         inputs:
           failOnAlert: false
 
-  - job: 4
+  - job: a4
     steps:
     - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
       displayName: 'Component Detection'
