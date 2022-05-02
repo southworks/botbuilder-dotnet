@@ -61,7 +61,7 @@ stages:
       inputs:
         failOnAlert: false
       # enabled: ${{ parameters.RunTask }}
-      enabled: or(ne(variables['System.PullRequest.IsFork'], 'True'), ne(variables['IsFork'], 'True'))
+      enabled: $[or(ne(variables['System.PullRequest.IsFork'], 'True'), ne(variables['IsFork'], 'True'))]
       
 
   - job: a3
