@@ -56,7 +56,14 @@ stages:
 
   - job: a2
     steps:
-      - script: echo ${{variables.ASD}}
+      - ${{ if eq(variables.ASD, 'True') }}:
+        - script: echo ${{variables.ASD}}
+      - ${{ if eq(variables.System_PullRequest_IsFork, 'True') }}:
+        - script: echo ${{variables.System_PullRequest_IsFork}}
+      - ${{ if ne(variables.ASD, 'True') }}:
+        - script: echo not ${{variables.ASD}}
+      - ${{ if ne(variables.System_PullRequest_IsFork, 'True') }}:
+        - script: echo not ${{variables.System_PullRequest_IsFork}}
     # - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
     #   displayName: 'Component Detection'
     #   inputs:
