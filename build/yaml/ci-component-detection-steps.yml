@@ -6,3 +6,4 @@ steps:
     verbosity: "Verbose"
     alertWarningLevel: "High"
     failOnAlert: true
+  condition: ne(variables['System.PullRequest.IsFork'], 'True')

@@ -32,6 +32,7 @@ steps:
   displayName: 'Component Detection'
   inputs:
     failOnAlert: true
+  condition: ne(variables['System.PullRequest.IsFork'], 'True')
 
 - script: |
    cd ..

@@ -59,3 +59,4 @@ jobs:
     displayName: 'Component Detection'
     inputs:
       failOnAlert: false
+    condition: ne(variables['System.PullRequest.IsFork'], 'True')
