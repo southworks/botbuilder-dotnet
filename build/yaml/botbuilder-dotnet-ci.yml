@@ -54,15 +54,14 @@ stages:
   #       failOnAlert: false
   #     condition: eq(${{ parameters.RunTask }}, true)
 
-  # - job: a2
-  #   steps:
-  #   - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
-  #     displayName: 'Component Detection'
-  #     inputs:
-  #       failOnAlert: false
-  #     # enabled: ${{ parameters.RunTask }}
-  #     enabled: $[or(ne(variables['System.PullRequest.IsFork'], 'True'), ne(variables['IsFork'], 'True'))]
-      
+  - job: a2
+    steps:
+    - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
+      displayName: 'Component Detection'
+      inputs:
+        failOnAlert: false
+      # enabled: ${{ parameters.RunTask }}
+      enabled: ${{ ne(variables['IsFork'], 'True') }}
 
   - job: a3
     steps:
