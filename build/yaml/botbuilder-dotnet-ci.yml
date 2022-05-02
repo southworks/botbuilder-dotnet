@@ -41,11 +41,13 @@ variables:
 stages:
 - stage: Build
   jobs:
-  # - job: template
-  #   steps:
-  #     - template: ci-component-detection-steps.yml
-  #       parameters:
-  #         skip: $(IsFork)
+  - job: template
+    variables:
+      Skip: ${{ variables.System_PullRequest_IsFork }}
+    steps:
+      - template: ci-component-detection-steps.yml
+        parameters:
+          skip: $(IsFork)
   # - job: a1 # No funca
   #   steps:
   #   - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
@@ -54,16 +56,16 @@ stages:
   #       failOnAlert: false
   #     condition: eq(${{ parameters.Skip_Governance }}, true)
 
-  - job: a2
-    steps:
-      - ${{ if eq(variables.ASD, 'True') }}:
-        - script: echo ${{variables.ASD}}
-      - ${{ if eq(variables.System_PullRequest_IsFork, 'True') }}:
-        - script: echo ${{variables.System_PullRequest_IsFork}}
-      - ${{ if ne(variables.ASD, 'True') }}:
-        - script: echo not ${{variables.ASD}}
-      - ${{ if ne(variables.System_PullRequest_IsFork, 'True') }}:
-        - script: echo not ${{variables.System_PullRequest_IsFork}}
+  # - job: a2
+  #   steps:
+  #     - ${{ if eq(variables.ASD, 'True') }}:
+  #       - script: echo ${{variables.ASD}}
+  #     - ${{ if eq(variables.System_PullRequest_IsFork, 'True') }}:
+  #       - script: echo ${{variables.System_PullRequest_IsFork}}
+  #     - ${{ if ne(variables.ASD, 'True') }}:
+  #       - script: echo not ${{variables.ASD}}
+  #     - ${{ if ne(variables.System_PullRequest_IsFork, 'True') }}:
+  #       - script: echo not ${{variables.System_PullRequest_IsFork}}
     # - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
     #   displayName: 'Component Detection'
     #   inputs:
