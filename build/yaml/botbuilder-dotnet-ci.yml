@@ -61,7 +61,7 @@ stages:
       inputs:
         failOnAlert: false
       # enabled: ${{ parameters.RunTask }}
-      enabled: $[or(parameters.RunTask, ne(variables['System.PullRequest.IsFork'], 'True')))]
+      enabled: ${{ or(parameters.RunTask, ne(variables['System.PullRequest.IsFork'], 'True'))) }}
 
   # - job: a3
   #   steps:
