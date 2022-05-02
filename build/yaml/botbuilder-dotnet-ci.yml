@@ -39,10 +39,6 @@ pr: none # pr trigger is set in ADO
 # # The .NET 4.X asp.net integrations libraries do not build and test on non-windows boxes.
 # # If we drop support for .NET 4.x then we can drop to just Debug/Release.
 
-variables:
-  - name: IsFork
-    value: '-1'
-
 stages:
 - stage: Build
   jobs:
