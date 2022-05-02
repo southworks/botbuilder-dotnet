@@ -18,7 +18,7 @@ parameters:
 - name: RunTask
   displayName: Run task?
   type: boolean
-  default: ${{ ne(variables['IsFork'], 'True') }}
+  default: $env:IsFork
 
 variables:
   ApiCompatVersion: 4.6.3
@@ -62,14 +62,14 @@ stages:
         failOnAlert: false
       enabled: ${{ parameters.RunTask }}
 
-  - job: a3
-    steps:
-    # - ${{ if eq(parameters.RunTask, true) }}:
-    - ${{ if ne(variables['IsFork'], 'True') }}:
-      - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
-        displayName: 'Component Detection'
-        inputs:
-          failOnAlert: false
+  # - job: a3
+  #   steps:
+  #   # - ${{ if eq(parameters.RunTask, true) }}:
+  #   - ${{ if ne(variables['IsFork'], 'True') }}:
+  #     - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
+  #       displayName: 'Component Detection'
+  #       inputs:
+  #         failOnAlert: false
 
   # - job: a4 # No funca
   #   steps:
