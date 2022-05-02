@@ -57,14 +57,23 @@ stages:
 
     - pwsh: Write-Host "always run this task"
 
-    - pwsh: Write-Host "skip this task when checkbox unticked..."
+    - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
+      displayName: 'Component Detection'
+      inputs:
+        failOnAlert: false
       condition: eq(${{ parameters.RunTask }}, true)
 
-    - pwsh: Write-Host "skip this task when checkbox unticked..."
+    - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
+      displayName: 'Component Detection'
+      inputs:
+        failOnAlert: false
       enabled: ${{ parameters.RunTask }}
 
     - ${{ if eq(parameters.RunTask, true) }}:
-      - pwsh: Write-Host "skip this task when checkbox unticked..."
+      - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
+        displayName: 'Component Detection'
+        inputs:
+          failOnAlert: false
 
     - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
       displayName: 'Component Detection'
