@@ -59,7 +59,7 @@ stages:
 
   - job: a3
     variables:
-      IsFork2: ${{ eq(IsFork, 'True') }}
+      IsFork2: ${{ eq(env:IsFork, 'True') }}
     steps:
     # - ${{ if eq(parameters.Skip_Governance, true) }}:
     # - ${{ if and(not(parameters.Skip_Governance), ne(variables['System.PullRequest.IsFork'], 'True')) }}:
