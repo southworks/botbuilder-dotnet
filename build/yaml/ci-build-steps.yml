@@ -32,7 +32,7 @@ steps:
   displayName: 'Component Detection'
   inputs:
     failOnAlert: true
-  condition: or(ne(variables['System.PullRequest.IsFork'], 'True'), ne(variables['IsFork'], 'True'))
+  condition: false # Disable Gov
 
 - script: |
    cd ..
