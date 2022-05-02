@@ -55,12 +55,14 @@ stages:
 
   - job: a2
     steps:
-    - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
-      displayName: 'Component Detection'
-      inputs:
-        failOnAlert: false
-      # enabled: ${{ parameters.Skip_Governance }}
-      enabled: eq(IsFork, 'True')
+      - script: |
+        echo ${{variables['System.PullRequest.IsFork']}} # outputs my value
+    # - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
+    #   displayName: 'Component Detection'
+    #   inputs:
+    #     failOnAlert: false
+    #   # enabled: ${{ parameters.Skip_Governance }}
+    #   enabled: eq(IsFork, 'True')
 
   # - job: a3
   #   variables:
