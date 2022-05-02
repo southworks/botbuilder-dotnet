@@ -39,8 +39,6 @@ variables:
 # If we drop support for .NET 4.x then we can drop to just Debug/Release.
 stages:
 - stage: Build
-  variables:
-    IsFork: ${{ eq(variables['IsFork'], 'True') }}
   jobs:
   # - job: a1 # No funca
   #   steps:
@@ -60,6 +58,8 @@ stages:
   #     enabled: ${{ or(parameters.Skip_Governance, ne(variables['System.PullRequest.IsFork'], 'True')) }}
 
   - job: a3
+    variables:
+      IsFork: ${{ eq(variables['IsFork'], 'True') }}
     steps:
     # - ${{ if eq(parameters.Skip_Governance, true) }}:
     # - ${{ if and(not(parameters.Skip_Governance), ne(variables['System.PullRequest.IsFork'], 'True')) }}:
