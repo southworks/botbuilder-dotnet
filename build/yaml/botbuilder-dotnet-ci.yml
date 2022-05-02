@@ -61,12 +61,12 @@ stages:
   #     inputs:
   #       failOnAlert: false
   #     # enabled: ${{ parameters.RunTask }}
-  #     enabled: ${{ or(parameters.RunTask, ne(variables['System.PullRequest.IsFork'], 'True'))) }}
+  #     enabled: ${{ or(parameters.RunTask, ne(variables['System.PullRequest.IsFork'], 'True')) }}
 
   - job: a3
     steps:
     # - ${{ if eq(parameters.RunTask, true) }}:
-    - ${{ if or(parameters.RunTask, ne(variables['System.PullRequest.IsFork'], 'True'))) }}:
+    - ${{ if or(parameters.RunTask, ne(variables['System.PullRequest.IsFork'], 'True')) }}:
       - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
         displayName: 'Component Detection'
         inputs:
