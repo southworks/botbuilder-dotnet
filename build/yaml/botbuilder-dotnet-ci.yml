@@ -26,7 +26,6 @@ variables:
   ReleasePackageVersion: 4.9.0-preview-$(Build.BuildNumber) # This is consumed by projects in Microsoft.Bot.Builder.sln.
   runCodesignValidationInjection: false # Disables unnecessary CodeSign Validation step
   system_accesstoken: $(System.AccessToken)
-  IsFork: ${{ eq(variables['System.PullRequest.IsFork'], 'True') }}
 #  ApiCompatExcludeClasses: (optional) define this in Azure
 #  DisableApiCompatibityValidation: (optional) define this in Azure
 #  DotNetCoverallsToken: define this in Azure
@@ -40,6 +39,8 @@ variables:
 # If we drop support for .NET 4.x then we can drop to just Debug/Release.
 stages:
 - stage: Build
+  variables:
+    IsFork: ${{ eq(variables['IsFork'], 'True') }}
   jobs:
   # - job: a1 # No funca
   #   steps:
