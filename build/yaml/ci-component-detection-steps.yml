@@ -1,9 +1,13 @@
+parameters:
+  - name: skip
+    default: false
+
 steps:
-- task: ComponentGovernanceComponentDetection@0
-  displayName: Component Detection
-  inputs:
-    scanType: "Register"
-    verbosity: "Verbose"
-    alertWarningLevel: "High"
-    failOnAlert: true
-  condition: false # Disable Gov
+- ${{ if not(parameters.skip) }}:
+  - task: ComponentGovernanceComponentDetection@0
+    displayName: Component Detection
+    inputs:
+      scanType: "Register"
+      verbosity: "Verbose"
+      alertWarningLevel: "High"
+      failOnAlert: true
