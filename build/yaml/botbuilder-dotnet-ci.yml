@@ -70,71 +70,71 @@ stages:
     - ${{ if not(parameters.SkipGovernance) }}:
       - template: ci-component-detection-steps.yml
 
-# - stage: API_Compatibility_Validation
-#   dependsOn: Build
-#   condition: and(succeeded(), ne(variables['DisableApiCompatibityValidation'], 'true'))
-#   variables:
-#     skipComponentGovernanceDetection: true # the task is already injected into the build jobs, so unnecessary here.
-#   jobs:
-#   - job: generate_multiconfig_var
-#     steps:
-#     - powershell: |
-#        $multiconfig = '{';
-#        if ("$(Build.Reason)" -in ('Schedule', 'Manual')) {
-#          $env:BotBuilderDll.Split(",") | ForEach {
-#            $library = $_.Trim()
-#            $threadName = $library -replace "Microsoft.", "";
-#            $multiconfig += "'" + $threadName + "':{'BotBuilderDll':'" + $library + "'}, ";
-#          }
-#        }
-#        else {
-#          $updatedFiles = $(git diff HEAD HEAD~ --name-only)
+- stage: API_Compatibility_Validation
+  dependsOn: Build
+  condition: and(succeeded(), ne(variables['DisableApiCompatibityValidation'], 'true'))
+  variables:
+    skipComponentGovernanceDetection: true # the task is already injected into the build jobs, so unnecessary here.
+  jobs:
+  - job: generate_multiconfig_var
+    steps:
+    - powershell: |
+       $multiconfig = '{';
+       if ("$(Build.Reason)" -in ('Schedule', 'Manual')) {
+         $env:BotBuilderDll.Split(",") | ForEach {
+           $library = $_.Trim()
+           $threadName = $library -replace "Microsoft.", "";
+           $multiconfig += "'" + $threadName + "':{'BotBuilderDll':'" + $library + "'}, ";
+         }
+       }
+       else {
+         $updatedFiles = $(git diff HEAD HEAD~ --name-only)
 
-#          $updatedFiles | ForEach-Object {
-#            $changedLibrary = ''
-#            Switch -Wildcard ($_) {
-#              '*/Microsoft.Bot.Builder.AI.Luis/*' { $changedLibrary = 'Microsoft.Bot.Builder.AI.Luis' }
-#              '*/Microsoft.Bot.Builder.AI.QnA/*' { $changedLibrary = 'Microsoft.Bot.Builder.AI.QnA' }
-#              '*/Microsoft.Bot.Builder.ApplicationInsights/*' { $changedLibrary = 'Microsoft.Bot.Builder.ApplicationInsights' }
-#              '*/Microsoft.Bot.Builder.Azure/*' { $changedLibrary = 'Microsoft.Bot.Builder.Azure' }
-#              '*/Microsoft.Bot.Builder.Dialogs/*' { $changedLibrary = 'Microsoft.Bot.Builder.Dialogs' }
-#              '*/Microsoft.Bot.Builder.Integration.ApplicationInsights.Core/*' { $changedLibrary = 'Microsoft.Bot.Builder.Integration.ApplicationInsights.Core' }
-#              '*/Microsoft.Bot.Builder.Integration.AspNet.Core/*' { $changedLibrary = 'Microsoft.Bot.Builder.Integration.AspNet.Core' }
-#              '*/Microsoft.Bot.Builder.TemplateManager/*' { $changedLibrary = 'Microsoft.Bot.Builder.TemplateManager' }
-#              '*/Microsoft.Bot.Builder.Testing/*' { $changedLibrary = 'Microsoft.Bot.Builder.Testing' }
-#              '*/Microsoft.Bot.Builder/*' { $changedLibrary = 'Microsoft.Bot.Builder' }
-#              '*/Microsoft.Bot.Configuration/*' { $changedLibrary = 'Microsoft.Bot.Configuration' }
-#              '*/Microsoft.Bot.Connector/*' { $changedLibrary = 'Microsoft.Bot.Connector' }
-#              '*/Microsoft.Bot.Schema/*' { $changedLibrary = 'Microsoft.Bot.Schema' }
-#              '*/Microsoft.Bot.Streaming/*' { $changedLibrary = 'Microsoft.Bot.Streaming' }
-#            }
-#            if ($changedLibrary.Length -gt 0) {
-#              Write-Host $changedLibrary
-#              $threadName = $changedLibrary.Split(".")[-1];
-#              $multiconfig += "'" + $threadName + "':{'BotBuilderDll':'" + $changedLibrary + "'}, ";
-#            }
-#           }
-#        }
-#        $multiconfig = $multiconfig.TrimEnd(' ').TrimEnd(',') + "}";
-#        echo $multiconfig
-#        "##vso[task.setVariable variable=MULTICONFIG;isOutput=true]$multiconfig"
-#       name: generate_var
-#     - script: echo $(generate_var.MULTICONFIG)
+         $updatedFiles | ForEach-Object {
+           $changedLibrary = ''
+           Switch -Wildcard ($_) {
+             '*/Microsoft.Bot.Builder.AI.Luis/*' { $changedLibrary = 'Microsoft.Bot.Builder.AI.Luis' }
+             '*/Microsoft.Bot.Builder.AI.QnA/*' { $changedLibrary = 'Microsoft.Bot.Builder.AI.QnA' }
+             '*/Microsoft.Bot.Builder.ApplicationInsights/*' { $changedLibrary = 'Microsoft.Bot.Builder.ApplicationInsights' }
+             '*/Microsoft.Bot.Builder.Azure/*' { $changedLibrary = 'Microsoft.Bot.Builder.Azure' }
+             '*/Microsoft.Bot.Builder.Dialogs/*' { $changedLibrary = 'Microsoft.Bot.Builder.Dialogs' }
+             '*/Microsoft.Bot.Builder.Integration.ApplicationInsights.Core/*' { $changedLibrary = 'Microsoft.Bot.Builder.Integration.ApplicationInsights.Core' }
+             '*/Microsoft.Bot.Builder.Integration.AspNet.Core/*' { $changedLibrary = 'Microsoft.Bot.Builder.Integration.AspNet.Core' }
+             '*/Microsoft.Bot.Builder.TemplateManager/*' { $changedLibrary = 'Microsoft.Bot.Builder.TemplateManager' }
+             '*/Microsoft.Bot.Builder.Testing/*' { $changedLibrary = 'Microsoft.Bot.Builder.Testing' }
+             '*/Microsoft.Bot.Builder/*' { $changedLibrary = 'Microsoft.Bot.Builder' }
+             '*/Microsoft.Bot.Configuration/*' { $changedLibrary = 'Microsoft.Bot.Configuration' }
+             '*/Microsoft.Bot.Connector/*' { $changedLibrary = 'Microsoft.Bot.Connector' }
+             '*/Microsoft.Bot.Schema/*' { $changedLibrary = 'Microsoft.Bot.Schema' }
+             '*/Microsoft.Bot.Streaming/*' { $changedLibrary = 'Microsoft.Bot.Streaming' }
+           }
+           if ($changedLibrary.Length -gt 0) {
+             Write-Host $changedLibrary
+             $threadName = $changedLibrary.Split(".")[-1];
+             $multiconfig += "'" + $threadName + "':{'BotBuilderDll':'" + $changedLibrary + "'}, ";
+           }
+          }
+       }
+       $multiconfig = $multiconfig.TrimEnd(' ').TrimEnd(',') + "}";
+       echo $multiconfig
+       "##vso[task.setVariable variable=MULTICONFIG;isOutput=true]$multiconfig"
+      name: generate_var
+    - script: echo $(generate_var.MULTICONFIG)
 
-#   - job: check_api_for
-#     dependsOn: generate_multiconfig_var
-#     condition: ne(dependencies.generate_multiconfig_var.outputs['generate_var.MULTICONFIG'], '{}')
-#     timeoutInMinutes: 10
-#     strategy:
-#       maxParallel: 10
-#       matrix: $[ dependencies.generate_multiconfig_var.outputs['generate_var.MULTICONFIG'] ]
-#     steps:
-#     - template: ci-api-validation-steps.yml
+  - job: check_api_for
+    dependsOn: generate_multiconfig_var
+    condition: ne(dependencies.generate_multiconfig_var.outputs['generate_var.MULTICONFIG'], '{}')
+    timeoutInMinutes: 10
+    strategy:
+      maxParallel: 10
+      matrix: $[ dependencies.generate_multiconfig_var.outputs['generate_var.MULTICONFIG'] ]
+    steps:
+    - template: ci-api-validation-steps.yml
 
-#   - job: post_results_to_gitHub
-#     dependsOn: check_api_for
-#     condition: ne(dependencies.generate_multiconfig_var.outputs['generate_var.MULTICONFIG'], '{}')
-#     variables:
-#       BuildConfiguration: Release-Windows
-#     steps:
-#     - template: ci-post-to-github-steps.yml
+  - job: post_results_to_gitHub
+    dependsOn: check_api_for
+    condition: ne(dependencies.generate_multiconfig_var.outputs['generate_var.MULTICONFIG'], '{}')
+    variables:
+      BuildConfiguration: Release-Windows
+    steps:
+    - template: ci-post-to-github-steps.yml
