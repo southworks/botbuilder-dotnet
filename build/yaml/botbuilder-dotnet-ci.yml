@@ -43,6 +43,7 @@ stages:
 - stage: Build
   jobs:
   - job: template
+    displayName: ${{ variables.Build.BuildId }} ${{ Build.BuildId }} ${{ Build.DefinitionName }}
     variables:
       Skip: ${{ variables.IsFork }}
     steps:
