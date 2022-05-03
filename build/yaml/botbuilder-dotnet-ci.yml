@@ -55,7 +55,7 @@ stages:
       parameters:
         SkipGovernance: ${{ parameters.SkipGovernance }}
     - template: ci-test-steps.yml
-    ${{ if not(parameters.SkipGovernance) }}:
+    - ${{ if not(parameters.SkipGovernance) }}:
       - template: ci-component-detection-steps.yml
   - job: Release_Windows_Configuration_31
     variables:
@@ -67,7 +67,7 @@ stages:
       parameters:
         SkipGovernance: ${{ parameters.SkipGovernance }}
     - template: ci-test-steps.yml
-    ${{ if not(parameters.SkipGovernance) }}:
+    - ${{ if not(parameters.SkipGovernance) }}:
       - template: ci-component-detection-steps.yml
 
 # - stage: API_Compatibility_Validation
