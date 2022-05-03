@@ -52,7 +52,7 @@ stages:
       displayName: 'Component Detection'
       inputs:
         failOnAlert: false
-      condition: and(succeeded(), ne(variables['System.PullRequest.IsFork'], 'True'))
+      enabled: and(succeeded(), ne(variables['System.PullRequest.IsFork'], 'True'))
 
   # - job: a2
   #   steps:
