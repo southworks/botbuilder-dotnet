@@ -42,28 +42,17 @@ pr: none # pr trigger is set in ADO
 stages:
 - stage: Build
   jobs:
-  - job: template
-    displayName: ${{ Build.BuildId }} ${{ Build.DefinitionName }}
-    variables:
-      Skip: ${{ variables.IsFork }}
-    steps:
-      - script: echo "start"
-      - ${{ if eq(variables.IsFork, '0') }}:
-        - script: echo "0"
-      - ${{ elseif eq(variables.IsFork, '1') }}: # true
-        - script: echo "0" 
-      - ${{ else }}:
-        - script: echo "-1"
+
       # - template: ci-component-detection-steps.yml
       #   parameters:
       #     skip: $(IsFork)
-  # - job: a1 # No funca
-  #   steps:
-  #   - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
-  #     displayName: 'Component Detection'
-  #     inputs:
-  #       failOnAlert: false
-  #     condition: eq(${{ parameters.Skip_Governance }}, true)
+  - job: a1 # No funca
+    steps:
+    - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
+      displayName: 'Component Detection'
+      inputs:
+        failOnAlert: false
+      condition: and(succeeded(), ne(variables['System.PullRequest.IsFork'], 'True'))
 
   # - job: a2
   #   steps:
