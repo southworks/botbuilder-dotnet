@@ -47,7 +47,7 @@ stages:
     steps:
     - template: ci-build-steps.yml
     - template: ci-test-steps.yml
-    - template: ci-component-detection-steps.yml
+    # - template: ci-component-detection-steps.yml
   - job: Debug_Windows_Configuration_6
     variables:
       BuildConfiguration: Debug-Windows
@@ -63,7 +63,7 @@ stages:
     steps:
     - template: ci-build-steps.yml
     - template: ci-test-steps.yml
-    - template: ci-component-detection-steps.yml
+    # - template: ci-component-detection-steps.yml
   - job: Release_Windows_Configuration_6
     variables:
       BuildConfiguration: Release-Windows
