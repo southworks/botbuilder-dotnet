@@ -4,6 +4,8 @@
 using System;
 using System.Buffers;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using System.IO.Pipelines;
 using System.IO.Pipes;
 using System.Threading;
@@ -33,10 +35,23 @@ namespace Microsoft.Bot.Connector.Streaming.Transport
 
             _pipeName = pipeName;
         }
+        
+        public async Task LogFileAsync(string name, object message)
+        {
+            var dir = Directory.GetCurrentDirectory();
+            using (var fs = new FileStream($"../../{name}-ASELog.txt", FileMode.Append))
+            {
+                using (var sw = new StreamWriter(fs))
+                {
+                    await sw.WriteLineAsync($"{name}: {DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture)} {message}").ConfigureAwait(false);
+                }
+            }
+        }
 
         public override async Task ConnectAsync(CancellationToken cancellationToken)
         {
             Log.NamedPipeOpened(Logger);
+            await LogFileAsync("Server", "Connecting").ConfigureAwait(false);
 
             try
             {
@@ -57,18 +72,26 @@ namespace Microsoft.Bot.Connector.Streaming.Transport
                     options: System.IO.Pipes.PipeOptions.WriteThrough | System.IO.Pipes.PipeOptions.Asynchronous);
 
                 await ((NamedPipeServerStream)_sender).WaitForConnectionAsync(cancellationToken).ConfigureAwait(false);
-
+                
+                await LogFileAsync("Server", "Processing").ConfigureAwait(false);
                 await ProcessAsync(cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                await LogFileAsync("Server", ex).ConfigureAwait(false);
+                throw;
             }
             finally
             {
                 Log.NamedPipeClosed(Logger);
+                await LogFileAsync("Server", "Finished").ConfigureAwait(false);
             }
         }
 
         public override async Task ConnectAsync(string url, IDictionary<string, string> requestHeaders = null, CancellationToken cancellationToken = default)
         {
             Log.NamedPipeOpened(Logger);
+            await LogFileAsync("Client", "Connecting").ConfigureAwait(false);
 
             try
             {
@@ -87,12 +110,19 @@ namespace Microsoft.Bot.Connector.Streaming.Transport
                     options: System.IO.Pipes.PipeOptions.WriteThrough | System.IO.Pipes.PipeOptions.Asynchronous);
 
                 await ((NamedPipeClientStream)_receiver).ConnectAsync(cancellationToken).ConfigureAwait(false);
-
+                
+                await LogFileAsync("Client", "Processing").ConfigureAwait(false);
                 await ProcessAsync(cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                await LogFileAsync("Client", ex).ConfigureAwait(false);
+                throw;
             }
             finally
             {
                 Log.NamedPipeClosed(Logger);
+                await LogFileAsync("Client", "Finished").ConfigureAwait(false);
             }
         }
 

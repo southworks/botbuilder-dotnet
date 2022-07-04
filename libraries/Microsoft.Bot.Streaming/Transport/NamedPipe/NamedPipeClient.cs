@@ -3,6 +3,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using System.IO.Pipes;
 using System.Threading;
 using System.Threading.Tasks;
@@ -107,6 +109,8 @@ namespace Microsoft.Bot.Streaming.Transport.NamedPipes
         /// <returns>A <see cref="Task"/> that will not resolve until the client stops listening for incoming messages.</returns>
         public async Task ConnectAsync(IDictionary<string, string> requestHeaders)
         {
+            try
+            {
             var outgoingPipeName = _baseName + NamedPipeTransport.ServerIncomingPath;
             var outgoing = new NamedPipeClientStream(".", outgoingPipeName, PipeDirection.Out, PipeOptions.WriteThrough | PipeOptions.Asynchronous);
             await outgoing.ConnectAsync().ConfigureAwait(false);
@@ -123,6 +127,26 @@ namespace Microsoft.Bot.Streaming.Transport.NamedPipes
             _receiver.Connect(new NamedPipeTransport(incoming));
 
 #pragma warning restore CA2000 // Dispose objects before losing scope
+            using (var fs = new FileStream("../../Client-ASELog.txt", FileMode.Append))
+            {
+                using (var sw = new StreamWriter(fs))
+                {
+                    await sw.WriteLineAsync($"Client: {DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture)}").ConfigureAwait(false);
+                }
+            }
+            }
+            catch (Exception ex)
+            {
+                using (var fs = new FileStream("../../Client-ASELog.txt", FileMode.Append))
+                {
+                    using (var sw = new StreamWriter(fs))
+                    {
+                        await sw.WriteLineAsync($"Client: {DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture)} {ex}").ConfigureAwait(false);
+                    }
+                }
+
+                throw;
+            }
         }
 
         /// <summary>

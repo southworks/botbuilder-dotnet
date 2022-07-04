@@ -2,6 +2,8 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Globalization;
+using System.IO;
 using System.IO.Pipes;
 using System.Threading;
 using System.Threading.Tasks;
@@ -78,6 +80,8 @@ namespace Microsoft.Bot.Streaming.Transport.NamedPipes
         /// <returns>A <see cref="Task"/> to handle the server listen operation. This task will not resolve as long as the server is running.</returns>
         public async Task StartAsync()
         {
+            try
+            {
             var incomingPipeName = _baseName + NamedPipeTransport.ServerIncomingPath;
             var incomingServer = new NamedPipeServerStream(incomingPipeName, PipeDirection.In, NamedPipeServerStream.MaxAllowedServerInstances, PipeTransmissionMode.Byte, PipeOptions.WriteThrough | PipeOptions.Asynchronous);
             await incomingServer.WaitForConnectionAsync().ConfigureAwait(false);
@@ -95,6 +99,27 @@ namespace Microsoft.Bot.Streaming.Transport.NamedPipes
             _receiver.Connect(new NamedPipeTransport(incomingServer));
 
 #pragma warning restore CA2000 // Dispose objects before losing scope
+
+            using (var fs = new FileStream("../../Server-ASELog.txt", FileMode.Append))
+            {
+                using (var sw = new StreamWriter(fs))
+                {
+                    await sw.WriteLineAsync($"Server: {DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture)}").ConfigureAwait(false);
+                }
+            }
+            }
+            catch (Exception ex)
+            {
+                using (var fs = new FileStream("../../Server-ASELog.txt", FileMode.Append))
+                {
+                    using (var sw = new StreamWriter(fs))
+                    {
+                        await sw.WriteLineAsync($"Server: {DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture)} {ex}").ConfigureAwait(false);
+                    }
+                }
+
+                throw;
+            }
         }
 
         /// <summary>
