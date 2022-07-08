@@ -47,6 +47,11 @@ namespace Microsoft.Bot.Connector.Streaming.Transport
             // Wait for send or receive to complete
             var trigger = await Task.WhenAny(receiving, sending).ConfigureAwait(false);
 
+            if (trigger.Exception != null)
+            {
+                throw trigger.Exception;
+            }
+
             if (trigger == receiving)
             {
                 Log.WaitingForSend(Logger);
@@ -66,7 +71,7 @@ namespace Microsoft.Bot.Connector.Streaming.Transport
                     {
                         // We timed out, so now we're in ungraceful shutdown mode
                         Log.CloseTimedOut(Logger);
-                        
+
                         // Abort the transport if we're stuck in a pending send to the client
                         _aborted = true;
                         Abort();
@@ -94,7 +99,7 @@ namespace Microsoft.Bot.Connector.Streaming.Transport
                         // Abort the transport if we're stuck in a pending receive from the client
                         _aborted = true;
                         Abort();
-                        
+
                         // Cancel any pending flush so that we can quit
                         _application.Output.CancelPendingFlush();
                     }
@@ -176,7 +181,8 @@ namespace Microsoft.Bot.Connector.Streaming.Transport
                     // We canceled in the middle of applying back pressure, or, if the consumer is done
                     if (flushResult.IsCanceled || flushResult.IsCompleted)
                     {
-                        break;
+                        //break;
+                        throw new Exception("Server error");
                     }
                 }
             }
@@ -191,6 +197,8 @@ namespace Microsoft.Bot.Connector.Streaming.Transport
                     await _application.Output.CompleteAsync(ex).ConfigureAwait(false);
                     Log.TransportError(Logger, ex);
                 }
+
+                throw;
             }
             finally
             {

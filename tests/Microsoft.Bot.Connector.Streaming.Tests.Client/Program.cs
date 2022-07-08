@@ -103,7 +103,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Client
             if (useNamedPipes)
             {
                 var pipeName = AskUser("Pipe Name:");
-                _client = new NamedPipeClient(pipeName, url: ".", new ConsoleRequestHandler(), logger: loggerFactory.CreateLogger("NamedPipeClient"), keepAlive: TimeSpan.FromSeconds(10));
+                _client = new NamedPipeClient(pipeName, url: ".", new ConsoleRequestHandler(), logger: loggerFactory.CreateLogger("NamedPipeClient"));
                 _client.Disconnected += Client_Disconnected;
                 _clientTask = _client.ConnectAsync();
             }

@@ -53,7 +53,7 @@ namespace Microsoft.Bot.Connector.Streaming.Transport
             Log.NamedPipeOpened(Logger);
             await LogFileAsync("Server", "Connecting").ConfigureAwait(false);
 
-            try
+            async Task Connect()
             {
                 _receiver = new NamedPipeServerStream(
                     pipeName: _pipeName + ServerIncomingPath,
@@ -76,9 +76,17 @@ namespace Microsoft.Bot.Connector.Streaming.Transport
                 await LogFileAsync("Server", "Processing").ConfigureAwait(false);
                 await ProcessAsync(cancellationToken).ConfigureAwait(false);
             }
+
+#pragma warning disable CA1031 // Do not catch general exception types
+            try
+            {
+                await Connect().ConfigureAwait(false);
+            }
             catch (Exception ex)
             {
                 await LogFileAsync("Server", ex).ConfigureAwait(false);
+
+                //await Connect().ConfigureAwait(false);
                 throw;
             }
             finally
@@ -86,6 +94,7 @@ namespace Microsoft.Bot.Connector.Streaming.Transport
                 Log.NamedPipeClosed(Logger);
                 await LogFileAsync("Server", "Finished").ConfigureAwait(false);
             }
+#pragma warning restore CA1031 // Do not catch general exception types
         }
 
         public override async Task ConnectAsync(string url, IDictionary<string, string> requestHeaders = null, CancellationToken cancellationToken = default)
