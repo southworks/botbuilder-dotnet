@@ -384,6 +384,34 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         }
 
         /// <summary>
+        /// asd.
+        /// </summary>
+        /// <param name="dc">asd1.</param>
+        /// <param name="dialogId">asd2.</param>
+        /// <returns>asd3.</returns>
+        public override Dialog FindDialog(DialogContext dc, string dialogId)
+        {
+            var dialog = FindDialog(dialogId);
+            if (dialog != null)
+            {
+                return dialog;
+            }
+
+            var resourceExplorer = dc.Context.TurnState.Get<ResourceExplorer>();
+            var resourceId = dialogId.EndsWith(".dialog", StringComparison.OrdinalIgnoreCase) ? dialogId : $"{dialogId}.dialog";
+            var foundResource = resourceExplorer?.TryGetResource(resourceId, out _) ?? false;
+            if (!foundResource)
+            {
+                return null;
+            }
+            
+            dialog = resourceExplorer.LoadType<AdaptiveDialog>(resourceId);
+            dialog.Id = dialogId;
+            dc.Dialogs.Add(dialog);
+            return dialog;
+        }
+
+        /// <summary>
         /// Gets the internal version string.
         /// </summary>
         /// <returns>Internal version string.</returns>
@@ -680,21 +708,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             var actionDC = CreateChildContext(actionContext);
             while (actionDC != null)
             {
-                if (actionDC.ActiveDialog != null)
-                {
-                    var dialog = FindDialog(actionDC.ActiveDialog.Id);
-                    if (dialog == null)
-                    {
-                        var resourceExplorer = actionDC.Context.TurnState.Get<ResourceExplorer>();
-                        var resourceId = $"{actionDC.ActiveDialog.Id}.dialog";
-                        var foundResource = resourceExplorer?.TryGetResource(resourceId, out _) ?? false;
-                        if (foundResource)
-                        {
-                            dialog = resourceExplorer.LoadType<AdaptiveDialog>(resourceId);
-                            actionDC.Dialogs.Add(dialog);
-                        }
-                    }
-                }
+                //if (actionDC.ActiveDialog != null)
+                //{
+                //    var dialog = FindDialog(actionDC.ActiveDialog.Id);
+                //    if (dialog == null)
+                //    {
+                //        var resourceExplorer = actionDC.Context.TurnState.Get<ResourceExplorer>();
+                //        var resourceId = $"{actionDC.ActiveDialog.Id}.dialog";
+                //        var foundResource = resourceExplorer?.TryGetResource(resourceId, out _) ?? false;
+                //        if (foundResource)
+                //        {
+                //            dialog = resourceExplorer.LoadType<AdaptiveDialog>(resourceId);
+                //            dialog.Id = actionDC.ActiveDialog.Id;
+                //            actionDC.Dialogs.Add(dialog);
+                //        }
+                //    }
+                //}
 
                 // DEBUG: To debug step execution set a breakpoint on line below and add a watch 
                 //        statement for actionContext.Actions.

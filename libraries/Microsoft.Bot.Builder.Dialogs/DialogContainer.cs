@@ -96,6 +96,17 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             return this.Dialogs.Find(dialogId);
         }
+        
+        /// <summary>
+        /// Finds a child dialog that was previously added to the container.
+        /// </summary>
+        /// <param name="dc">asd1.</param>
+        /// <param name="dialogId">The ID of the dialog to lookup.</param>
+        /// <returns>The Dialog if found; otherwise null.</returns>
+        public virtual Dialog FindDialog(DialogContext dc, string dialogId)
+        {
+            return dc.Dialogs.Find(dialogId);
+        }
 
         /// <summary>
         /// Called when an event has been raised, using `DialogContext.emitEvent()`, by either the current dialog or a dialog that the current dialog started.

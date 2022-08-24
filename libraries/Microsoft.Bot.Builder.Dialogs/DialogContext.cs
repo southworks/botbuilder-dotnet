@@ -277,6 +277,15 @@ namespace Microsoft.Bot.Builder.Dialogs
                 {
                     this.Context.TurnState["activityReceivedEmitted"] = true;
 
+                    //// Lookup dialog
+                    //var dialog = FindDialog(ActiveDialog?.Id);
+
+                    //// Continue dialog execution
+                    //if (dialog != null)
+                    //{
+                    //    await dialog.ContinueDialogAsync(this, cancellationToken).ConfigureAwait(false);
+                    //}
+
                     // Dispatch "activityReceived" event
                     // - This will queue up any interruptions.
                     await this.EmitEventAsync(DialogEvents.ActivityReceived, value: this.Context.Activity, bubble: true, fromLeaf: true, cancellationToken: cancellationToken).ConfigureAwait(false);
@@ -572,13 +581,37 @@ namespace Microsoft.Bot.Builder.Dialogs
                     var dialog = this.Dialogs.Find(dialogId);
                     if (dialog != null)
                     {
+                        //if (Child != null && Child.ActiveDialog?.Id != null)
+                        //{
+                        //    var childDialog = Dialogs.Find(Child.ActiveDialog.Id);
+                        //    if (dialog is DialogContainer && childDialog == null)
+                        //    {
+                        //        childDialog = (dialog as DialogContainer).FindDialog(this, Child.ActiveDialog.Id);
+                        //        if (childDialog != null)
+                        //        {
+                        //            Dialogs.Add(childDialog);
+                        //        }
+                        //    }
+                        //}
+
                         return dialog;
                     }
                 }
 
                 if (this.Parent != null)
                 {
-                    return this.Parent.FindDialog(dialogId);
+                    var dialog = Parent.FindDialog(dialogId);
+
+                    if (dialog == null && Parent?.ActiveDialog?.Id != null)
+                    {
+                        var parentDialog = FindDialog(Parent.ActiveDialog.Id);
+                        if (parentDialog is DialogContainer)
+                        {
+                            dialog = (parentDialog as DialogContainer).FindDialog(this, dialogId);
+                        }
+                    }
+
+                    return dialog;
                 }
 
                 return null;
