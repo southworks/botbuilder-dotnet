@@ -34,7 +34,7 @@ namespace Microsoft.Bot.Builder.Azure
         private static readonly JsonSerializer JsonSerializer = JsonSerializer.Create(new JsonSerializerSettings
         {
             // we use All so that we get typed roundtrip out of storage, but we don't use validation because we don't know what types are valid
-            TypeNameHandling = TypeNameHandling.All,
+            TypeNameHandling = TypeNameHandling.None,
         });
 
         // If a JsonSerializer is not provided during construction, this will be the default static JsonSerializer.
