@@ -1,4 +1,4 @@
-
+1
 # ![Bot Framework for dotnet](./doc/media/BotFrameworkDotnet_header.png)
 
 ### [What's new with Bot Framework](https://docs.microsoft.com/en-us/azure/bot-service/what-is-new?view=azure-bot-service-4.0)
@@ -11,12 +11,24 @@ To get started building bots using the SDK, see the [Azure Bot Service Documenta
 
 For more information jump to a section below.
 
-* [Build status](#build-status)
-* [Packages](#packages)
-* [Getting started](#getting-started)
-* [Getting support and providing feedback](#getting-support-and-providing-feedback)
-* [Contributing and our code of conduct](contributing-and-our-code-of-conduct)
-* [Reporting security sssues](#reporting-security-issues)
+- [!Bot Framework for dotnet](#)
+    - [What's new with Bot Framework](#whats-new-with-bot-framework)
+  - [Build Status](#build-status)
+  - [Packages](#packages)
+  - [Daily Feeds](#daily-feeds)
+  - [Dependency Graph](#dependency-graph)
+  - [Getting Started](#getting-started)
+    - [Prerequisites](#prerequisites)
+    - [Clone](#clone)
+    - [Build and test locally](#build-and-test-locally)
+  - [Getting support and providing feedback](#getting-support-and-providing-feedback)
+    - [Github issues](#github-issues)
+    - [Stack overflow](#stack-overflow)
+    - [Azure Support](#azure-support)
+    - [Twitter](#twitter)
+    - [Gitter Chat Room](#gitter-chat-room)
+  - [Contributing and our code of conduct](#contributing-and-our-code-of-conduct)
+  - [Reporting Security Issues](#reporting-security-issues)
 
 ## Build Status
 
