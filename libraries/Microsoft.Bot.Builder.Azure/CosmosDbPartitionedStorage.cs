@@ -21,7 +21,13 @@ namespace Microsoft.Bot.Builder.Azure
     public class CosmosDbPartitionedStorage : IStorage, IDisposable
     {
         private const int MaxDepthAllowed = 127;
-        private readonly JsonSerializer _jsonSerializer = JsonSerializer.Create(new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto, MaxDepth = null });
+
+        private KnownTypesBinder _knownTypesBinder = new KnownTypesBinder
+        {
+            KnownTypes = new List<Type> { typeof(CosmosDbPartitionedStorage) }
+        };
+
+        //private readonly JsonSerializer _jsonSerializer = JsonSerializer.Create(new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto, MaxDepth = null });
 
         private Container _container;
         private readonly CosmosDbPartitionedStorageOptions _cosmosDbStorageOptions;
@@ -189,22 +195,28 @@ namespace Microsoft.Bot.Builder.Azure
         /// <exception cref="Exception">Exception thrown is the etag is empty on any of the items within the changes dictionary.</exception>
         public async Task WriteAsync(IDictionary<string, object> changes, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (changes == null)
+             string jsonConverter = JsonConvert.SerializeObject(changes, Formatting.Indented, new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Objects,
+                SerializationBinder = _knownTypesBinder
+            });
+
+             if (changes == null)
             {
                 throw new ArgumentNullException(nameof(changes));
             }
 
-            if (changes.Count == 0)
+             if (changes.Count == 0)
             {
                 return;
             }
 
             // Ensure Initialization has been run
-            await InitializeAsync().ConfigureAwait(false);
+             await InitializeAsync().ConfigureAwait(false);
 
-            foreach (var change in changes)
+             foreach (var change in changes)
             {
-                var json = JObject.FromObject(change.Value, _jsonSerializer);
+                var json = JObject.FromObject(change.Value, jsonConverter);
 
                 // Remove etag from JSON object that was copied from IStoreItem.
                 // The ETag information is updated as an _etag attribute in the document metadata.
