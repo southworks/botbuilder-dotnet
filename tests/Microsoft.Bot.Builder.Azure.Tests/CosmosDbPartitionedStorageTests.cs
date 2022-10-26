@@ -357,7 +357,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             var current = new Dictionary<string, object>();
 
             nested.Add("0", current);
-            for (var i = 1; i <= 127; i++)
+            for (var i = 1; i <= 128; i++)
             {
                 var child = new Dictionary<string, object>();
                 current.Add(i.ToString(), child);

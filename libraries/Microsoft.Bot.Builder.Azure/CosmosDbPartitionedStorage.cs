@@ -22,12 +22,7 @@ namespace Microsoft.Bot.Builder.Azure
     {
         private const int MaxDepthAllowed = 127;
 
-        private KnownTypesBinder _knownTypesBinder = new KnownTypesBinder
-        {
-            KnownTypes = new List<Type> { typeof(CosmosDbPartitionedStorage) }
-        };
-
-        //private readonly JsonSerializer _jsonSerializer = JsonSerializer.Create(new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto, MaxDepth = null });
+        private readonly JsonSerializer _jsonSerializer = JsonSerializer.Create(new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.None, MaxDepth = null });
 
         private Container _container;
         private readonly CosmosDbPartitionedStorageOptions _cosmosDbStorageOptions;
@@ -195,12 +190,6 @@ namespace Microsoft.Bot.Builder.Azure
         /// <exception cref="Exception">Exception thrown is the etag is empty on any of the items within the changes dictionary.</exception>
         public async Task WriteAsync(IDictionary<string, object> changes, CancellationToken cancellationToken = default(CancellationToken))
         {
-             string jsonConverter = JsonConvert.SerializeObject(changes, Formatting.Indented, new JsonSerializerSettings
-            {
-                TypeNameHandling = TypeNameHandling.Objects,
-                SerializationBinder = _knownTypesBinder
-            });
-
              if (changes == null)
             {
                 throw new ArgumentNullException(nameof(changes));
@@ -216,7 +205,7 @@ namespace Microsoft.Bot.Builder.Azure
 
              foreach (var change in changes)
             {
-                var json = JObject.FromObject(change.Value, jsonConverter);
+                var json = JObject.FromObject(change.Value, _jsonSerializer);
 
                 // Remove etag from JSON object that was copied from IStoreItem.
                 // The ETag information is updated as an _etag attribute in the document metadata.
