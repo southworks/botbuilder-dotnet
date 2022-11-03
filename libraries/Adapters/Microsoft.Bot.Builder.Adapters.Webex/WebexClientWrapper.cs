@@ -71,14 +71,12 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                 ? request.Headers[SparkSignature].ToString().ToUpperInvariant()
                 : throw new InvalidOperationException($"HttpRequest is missing \"{SparkSignature}\"");
 
-#pragma warning disable CA5350 // Webex API uses SHA1 as cryptographic algorithm.
-            using (var hmac = new HMACSHA1(Encoding.UTF8.GetBytes(Options.WebexSecret)))
+            using (var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(Options.WebexSecret)))
             {
                 var hashArray = hmac.ComputeHash(Encoding.UTF8.GetBytes(jsonPayload));
                 var hash = BitConverter.ToString(hashArray).Replace("-", string.Empty).ToUpperInvariant();
                 return signature == hash;
             }
-#pragma warning restore CA5350 // Webex API uses SHA1 as cryptographic algorithm.
         }
 
         /// <summary>
