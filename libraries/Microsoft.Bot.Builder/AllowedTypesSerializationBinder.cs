@@ -16,8 +16,8 @@ namespace Microsoft.Bot.Builder
     /// capable of allowing only desired <see cref="Type"/>s to be serialized and deserialized.
     /// </summary>
     /// <remarks>
-    /// Internally loads types dynamically, allowing all the exported types from BotBuilder and 
-    /// the project who is using it to be taken into account in the verification process.
+    /// Dynamically loads types allowing all the exported types from BotBuilder and 
+    /// the project that is using it, to be considered in the verification process.
     /// </remarks>
     public class AllowedTypesSerializationBinder : DefaultSerializationBinder
     {
