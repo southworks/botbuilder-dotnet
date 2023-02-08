@@ -153,6 +153,12 @@ public partial class CommonRegexParser : Parser {
 			ICommonRegexListener typedListener = listener as ICommonRegexListener;
 			if (typedListener != null) typedListener.ExitParse(this);
 		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			ICommonRegexVisitor<TResult> typedVisitor = visitor as ICommonRegexVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitParse(this);
+			else return visitor.VisitChildren(this);
+		}
 	}
 
 	[RuleVersion(0)]
@@ -204,6 +210,12 @@ public partial class CommonRegexParser : Parser {
 		public override void ExitRule(IParseTreeListener listener) {
 			ICommonRegexListener typedListener = listener as ICommonRegexListener;
 			if (typedListener != null) typedListener.ExitAlternation(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			ICommonRegexVisitor<TResult> typedVisitor = visitor as ICommonRegexVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitAlternation(this);
+			else return visitor.VisitChildren(this);
 		}
 	}
 
@@ -268,6 +280,12 @@ public partial class CommonRegexParser : Parser {
 			ICommonRegexListener typedListener = listener as ICommonRegexListener;
 			if (typedListener != null) typedListener.ExitExpr(this);
 		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			ICommonRegexVisitor<TResult> typedVisitor = visitor as ICommonRegexVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitExpr(this);
+			else return visitor.VisitChildren(this);
+		}
 	}
 
 	[RuleVersion(0)]
@@ -326,6 +344,12 @@ public partial class CommonRegexParser : Parser {
 		public override void ExitRule(IParseTreeListener listener) {
 			ICommonRegexListener typedListener = listener as ICommonRegexListener;
 			if (typedListener != null) typedListener.ExitElement(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			ICommonRegexVisitor<TResult> typedVisitor = visitor as ICommonRegexVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitElement(this);
+			else return visitor.VisitChildren(this);
 		}
 	}
 
@@ -391,6 +415,12 @@ public partial class CommonRegexParser : Parser {
 		public override void ExitRule(IParseTreeListener listener) {
 			ICommonRegexListener typedListener = listener as ICommonRegexListener;
 			if (typedListener != null) typedListener.ExitQuantifier(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			ICommonRegexVisitor<TResult> typedVisitor = visitor as ICommonRegexVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitQuantifier(this);
+			else return visitor.VisitChildren(this);
 		}
 	}
 
@@ -504,6 +534,12 @@ public partial class CommonRegexParser : Parser {
 		public override void ExitRule(IParseTreeListener listener) {
 			ICommonRegexListener typedListener = listener as ICommonRegexListener;
 			if (typedListener != null) typedListener.ExitQuantifier_type(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			ICommonRegexVisitor<TResult> typedVisitor = visitor as ICommonRegexVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitQuantifier_type(this);
+			else return visitor.VisitChildren(this);
 		}
 	}
 
@@ -677,6 +713,12 @@ public partial class CommonRegexParser : Parser {
 			ICommonRegexListener typedListener = listener as ICommonRegexListener;
 			if (typedListener != null) typedListener.ExitCharacter_class(this);
 		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			ICommonRegexVisitor<TResult> typedVisitor = visitor as ICommonRegexVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitCharacter_class(this);
+			else return visitor.VisitChildren(this);
+		}
 	}
 
 	[RuleVersion(0)]
@@ -776,6 +818,12 @@ public partial class CommonRegexParser : Parser {
 			ICommonRegexListener typedListener = listener as ICommonRegexListener;
 			if (typedListener != null) typedListener.ExitCapture(this);
 		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			ICommonRegexVisitor<TResult> typedVisitor = visitor as ICommonRegexVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitCapture(this);
+			else return visitor.VisitChildren(this);
+		}
 	}
 
 	[RuleVersion(0)]
@@ -852,6 +900,12 @@ public partial class CommonRegexParser : Parser {
 			ICommonRegexListener typedListener = listener as ICommonRegexListener;
 			if (typedListener != null) typedListener.ExitNon_capture(this);
 		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			ICommonRegexVisitor<TResult> typedVisitor = visitor as ICommonRegexVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitNon_capture(this);
+			else return visitor.VisitChildren(this);
+		}
 	}
 
 	[RuleVersion(0)]
@@ -908,6 +962,12 @@ public partial class CommonRegexParser : Parser {
 		public override void ExitRule(IParseTreeListener listener) {
 			ICommonRegexListener typedListener = listener as ICommonRegexListener;
 			if (typedListener != null) typedListener.ExitOption(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			ICommonRegexVisitor<TResult> typedVisitor = visitor as ICommonRegexVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitOption(this);
+			else return visitor.VisitChildren(this);
 		}
 	}
 
@@ -970,6 +1030,12 @@ public partial class CommonRegexParser : Parser {
 		public override void ExitRule(IParseTreeListener listener) {
 			ICommonRegexListener typedListener = listener as ICommonRegexListener;
 			if (typedListener != null) typedListener.ExitOption_flag(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			ICommonRegexVisitor<TResult> typedVisitor = visitor as ICommonRegexVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitOption_flag(this);
+			else return visitor.VisitChildren(this);
 		}
 	}
 
@@ -1039,6 +1105,12 @@ public partial class CommonRegexParser : Parser {
 		public override void ExitRule(IParseTreeListener listener) {
 			ICommonRegexListener typedListener = listener as ICommonRegexListener;
 			if (typedListener != null) typedListener.ExitAtom(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			ICommonRegexVisitor<TResult> typedVisitor = visitor as ICommonRegexVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitAtom(this);
+			else return visitor.VisitChildren(this);
 		}
 	}
 
@@ -1152,6 +1224,12 @@ public partial class CommonRegexParser : Parser {
 			ICommonRegexListener typedListener = listener as ICommonRegexListener;
 			if (typedListener != null) typedListener.ExitCc_atom(this);
 		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			ICommonRegexVisitor<TResult> typedVisitor = visitor as ICommonRegexVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitCc_atom(this);
+			else return visitor.VisitChildren(this);
+		}
 	}
 
 	[RuleVersion(0)]
@@ -1225,6 +1303,12 @@ public partial class CommonRegexParser : Parser {
 			ICommonRegexListener typedListener = listener as ICommonRegexListener;
 			if (typedListener != null) typedListener.ExitShared_atom(this);
 		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			ICommonRegexVisitor<TResult> typedVisitor = visitor as ICommonRegexVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitShared_atom(this);
+			else return visitor.VisitChildren(this);
+		}
 	}
 
 	[RuleVersion(0)]
@@ -1276,6 +1360,12 @@ public partial class CommonRegexParser : Parser {
 		public override void ExitRule(IParseTreeListener listener) {
 			ICommonRegexListener typedListener = listener as ICommonRegexListener;
 			if (typedListener != null) typedListener.ExitLiteral(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			ICommonRegexVisitor<TResult> typedVisitor = visitor as ICommonRegexVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitLiteral(this);
+			else return visitor.VisitChildren(this);
 		}
 	}
 
@@ -1429,6 +1519,12 @@ public partial class CommonRegexParser : Parser {
 		public override void ExitRule(IParseTreeListener listener) {
 			ICommonRegexListener typedListener = listener as ICommonRegexListener;
 			if (typedListener != null) typedListener.ExitCc_literal(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			ICommonRegexVisitor<TResult> typedVisitor = visitor as ICommonRegexVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitCc_literal(this);
+			else return visitor.VisitChildren(this);
 		}
 	}
 
@@ -1664,6 +1760,12 @@ public partial class CommonRegexParser : Parser {
 		public override void ExitRule(IParseTreeListener listener) {
 			ICommonRegexListener typedListener = listener as ICommonRegexListener;
 			if (typedListener != null) typedListener.ExitShared_literal(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			ICommonRegexVisitor<TResult> typedVisitor = visitor as ICommonRegexVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitShared_literal(this);
+			else return visitor.VisitChildren(this);
 		}
 	}
 
@@ -1951,6 +2053,12 @@ public partial class CommonRegexParser : Parser {
 			ICommonRegexListener typedListener = listener as ICommonRegexListener;
 			if (typedListener != null) typedListener.ExitNumber(this);
 		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			ICommonRegexVisitor<TResult> typedVisitor = visitor as ICommonRegexVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitNumber(this);
+			else return visitor.VisitChildren(this);
+		}
 	}
 
 	[RuleVersion(0)]
@@ -2001,6 +2109,12 @@ public partial class CommonRegexParser : Parser {
 		public override void ExitRule(IParseTreeListener listener) {
 			ICommonRegexListener typedListener = listener as ICommonRegexListener;
 			if (typedListener != null) typedListener.ExitOctal_char(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			ICommonRegexVisitor<TResult> typedVisitor = visitor as ICommonRegexVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitOctal_char(this);
+			else return visitor.VisitChildren(this);
 		}
 	}
 
@@ -2082,6 +2196,12 @@ public partial class CommonRegexParser : Parser {
 			ICommonRegexListener typedListener = listener as ICommonRegexListener;
 			if (typedListener != null) typedListener.ExitOctal_digit(this);
 		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			ICommonRegexVisitor<TResult> typedVisitor = visitor as ICommonRegexVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitOctal_digit(this);
+			else return visitor.VisitChildren(this);
+		}
 	}
 
 	[RuleVersion(0)]
@@ -2135,6 +2255,12 @@ public partial class CommonRegexParser : Parser {
 		public override void ExitRule(IParseTreeListener listener) {
 			ICommonRegexListener typedListener = listener as ICommonRegexListener;
 			if (typedListener != null) typedListener.ExitDigits(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			ICommonRegexVisitor<TResult> typedVisitor = visitor as ICommonRegexVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitDigits(this);
+			else return visitor.VisitChildren(this);
 		}
 	}
 
@@ -2199,6 +2325,12 @@ public partial class CommonRegexParser : Parser {
 			ICommonRegexListener typedListener = listener as ICommonRegexListener;
 			if (typedListener != null) typedListener.ExitDigit(this);
 		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			ICommonRegexVisitor<TResult> typedVisitor = visitor as ICommonRegexVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitDigit(this);
+			else return visitor.VisitChildren(this);
+		}
 	}
 
 	[RuleVersion(0)]
@@ -2249,6 +2381,12 @@ public partial class CommonRegexParser : Parser {
 		public override void ExitRule(IParseTreeListener listener) {
 			ICommonRegexListener typedListener = listener as ICommonRegexListener;
 			if (typedListener != null) typedListener.ExitName(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			ICommonRegexVisitor<TResult> typedVisitor = visitor as ICommonRegexVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitName(this);
+			else return visitor.VisitChildren(this);
 		}
 	}
 
@@ -2305,6 +2443,12 @@ public partial class CommonRegexParser : Parser {
 		public override void ExitRule(IParseTreeListener listener) {
 			ICommonRegexListener typedListener = listener as ICommonRegexListener;
 			if (typedListener != null) typedListener.ExitAlpha_nums(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			ICommonRegexVisitor<TResult> typedVisitor = visitor as ICommonRegexVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitAlpha_nums(this);
+			else return visitor.VisitChildren(this);
 		}
 	}
 
@@ -2514,6 +2658,12 @@ public partial class CommonRegexParser : Parser {
 			ICommonRegexListener typedListener = listener as ICommonRegexListener;
 			if (typedListener != null) typedListener.ExitNon_close_parens(this);
 		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			ICommonRegexVisitor<TResult> typedVisitor = visitor as ICommonRegexVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitNon_close_parens(this);
+			else return visitor.VisitChildren(this);
+		}
 	}
 
 	[RuleVersion(0)]
@@ -2567,6 +2717,12 @@ public partial class CommonRegexParser : Parser {
 		public override void ExitRule(IParseTreeListener listener) {
 			ICommonRegexListener typedListener = listener as ICommonRegexListener;
 			if (typedListener != null) typedListener.ExitNon_close_paren(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			ICommonRegexVisitor<TResult> typedVisitor = visitor as ICommonRegexVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitNon_close_paren(this);
+			else return visitor.VisitChildren(this);
 		}
 	}
 
@@ -2667,6 +2823,12 @@ public partial class CommonRegexParser : Parser {
 		public override void ExitRule(IParseTreeListener listener) {
 			ICommonRegexListener typedListener = listener as ICommonRegexListener;
 			if (typedListener != null) typedListener.ExitLetter(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			ICommonRegexVisitor<TResult> typedVisitor = visitor as ICommonRegexVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitLetter(this);
+			else return visitor.VisitChildren(this);
 		}
 	}
 
