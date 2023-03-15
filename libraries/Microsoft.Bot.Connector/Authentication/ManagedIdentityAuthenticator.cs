@@ -16,6 +16,7 @@ namespace Microsoft.Bot.Connector.Authentication
     /// </summary>
     public class ManagedIdentityAuthenticator : IAuthenticator
     {
+        private readonly string _appId;
         private readonly string _resource;
         private readonly ILogger _logger;
         private readonly IConfidentialClientApplication _clientApplication;
@@ -53,6 +54,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 throw new ArgumentNullException(nameof(resource));
             }
             
+            _appId = appId;
             _resource = resource;
             _logger = logger ?? NullLogger.Instance;
             _clientApplication = CreateClientApplication(appId, customHttpClient);
@@ -78,7 +80,7 @@ namespace Microsoft.Bot.Connector.Authentication
             var scopes = new string[] { $"{_resource}/.default" };
             var authResult = await _clientApplication
                 .AcquireTokenForClient(scopes)
-                .WithManagedIdentity()
+                .WithManagedIdentity(_appId)
                 .WithForceRefresh(forceRefresh)
                 .ExecuteAsync()
                 .ConfigureAwait(false);
