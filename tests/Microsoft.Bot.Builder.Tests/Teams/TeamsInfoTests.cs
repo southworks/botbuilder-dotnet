@@ -449,7 +449,6 @@ namespace Microsoft.Bot.Builder.Teams.Tests
         [InlineData("201")]
         [InlineData("400")]
         [InlineData("403")]
-        [InlineData("404")]
         public async Task TestSendMessageToAllUsersInTenantAsync(string statusCode)
         {
             // 201: created
@@ -1041,10 +1040,6 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                         case "403":
                             response.Content = new StringContent("{\"error\":{\"code\":\"Forbidden\"}}");
                             response.StatusCode = HttpStatusCode.Forbidden;
-                            break;
-                        case "404":
-                            response.Content = new StringContent("{\"error\":{\"code\":\"NotFound\"}}");
-                            response.StatusCode = HttpStatusCode.NotFound;
                             break;
                         default:
                             response.StatusCode = HttpStatusCode.Accepted;
