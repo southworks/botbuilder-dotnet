@@ -360,7 +360,7 @@ namespace Microsoft.Bot.Builder.Teams
         }
 
         /// <summary>
-        /// Sends a message to the provided list of Teams members.
+        /// Sends a message to all the users in a tenant.
         /// </summary>
         /// <param name="turnContext"> Turn context. </param>
         /// <param name="activity"> The activity to send to the tenant. </param>
