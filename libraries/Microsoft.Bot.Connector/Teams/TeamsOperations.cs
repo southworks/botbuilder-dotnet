@@ -520,7 +520,7 @@ namespace Microsoft.Bot.Connector.Teams
             }
 
             // In case of throttling, it will retry the operation with default values (10 retries every 50 miliseconds).
-            var result = await Retry.Run(
+            var result = await RetryAction.RunAsync(
                 task: () => SendMessageToListOfUsersWithRetryAsync(activity, teamsMembers, tenantId, customHeaders, cancellationToken),
                 retryExceptionHandler: (ex, ct) => HandleThrottlingException(ex, ct)).ConfigureAwait(false);
 
