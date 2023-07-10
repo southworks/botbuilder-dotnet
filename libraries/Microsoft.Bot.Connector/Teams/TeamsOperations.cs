@@ -583,7 +583,7 @@ namespace Microsoft.Bot.Connector.Teams
             if (shouldTrace)
             {
                 invocationId = ServiceClientTracing.NextInvocationId.ToString(CultureInfo.InvariantCulture);
-                Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
+                var tracingParameters = new Dictionary<string, object>();
                 tracingParameters.Add("activity", activity);
                 tracingParameters.Add("tenantId", tenantId);
                 tracingParameters.Add("cancellationToken", cancellationToken);
