@@ -1161,10 +1161,10 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 // GetOperationState
                 else if (request.RequestUri.PathAndQuery.Contains("v3/batch/conversation/operation-id") && request.Method.ToString() == "GET")
                 {
+                    // get status from url for testing
                     var uri = request.RequestUri.PathAndQuery;
                     var status = uri.Substring(uri.IndexOf("*") + 1); 
 
-                    // hack From.Name as expected status code, for testing
                     switch (status)
                     {
                         case "200":
