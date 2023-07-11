@@ -499,6 +499,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             // 201: created
             // 400: when send message to list of users request payload validation fails.
             // 403: if the bot is not allowed to send messages.
+            // 404: when Team is not found.
             // 429: too many requests for throttled requests.
 
             var baseUri = new Uri("https://test.coffee");
