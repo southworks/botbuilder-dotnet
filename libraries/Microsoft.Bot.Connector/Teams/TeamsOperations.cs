@@ -8,6 +8,7 @@ namespace Microsoft.Bot.Connector.Teams
     using System.Globalization;
     using System.Net;
     using System.Net.Http;
+    using System.Net.Http.Headers;
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Bot.Connector.Authentication;
@@ -634,10 +635,10 @@ namespace Microsoft.Bot.Connector.Teams
 
             // Construct URL
             var baseUrl = Client.BaseUri.AbsoluteUri;
-            var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/", System.StringComparison.InvariantCulture) ? string.Empty : "/")), "v3/batch/conversation/tenant/").ToString();
+            var url = new Uri(new Uri(baseUrl + (baseUrl.EndsWith("/", StringComparison.InvariantCulture) ? string.Empty : "/")), "v3/batch/conversation/tenant/").ToString();
             using var httpRequest = new HttpRequestMessage();
             httpRequest.Method = new HttpMethod("POST");
-            httpRequest.RequestUri = new System.Uri(url);
+            httpRequest.RequestUri = new Uri(url);
 
             HttpResponseMessage httpResponse = null;
 
@@ -674,7 +675,7 @@ namespace Microsoft.Bot.Connector.Teams
                 {
                     requestContent = Rest.Serialization.SafeJsonConvert.SerializeObject(content);
                     httpRequest.Content = new StringContent(requestContent, System.Text.Encoding.UTF8);
-                    httpRequest.Content.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
+                    httpRequest.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
                 }
 
                 // Set Credentials
@@ -837,7 +838,7 @@ namespace Microsoft.Bot.Connector.Teams
                 {
                     requestContent = Rest.Serialization.SafeJsonConvert.SerializeObject(content);
                     httpRequest.Content = new StringContent(requestContent, System.Text.Encoding.UTF8);
-                    httpRequest.Content.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
+                    httpRequest.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
                 }
 
                 // Set Credentials
@@ -959,10 +960,10 @@ namespace Microsoft.Bot.Connector.Teams
 
             // Construct URL
             var baseUrl = Client.BaseUri.AbsoluteUri;
-            var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/", System.StringComparison.InvariantCulture) ? string.Empty : "/")), "v3/batch/conversation/team/").ToString();
+            var url = new Uri(new Uri(baseUrl + (baseUrl.EndsWith("/", StringComparison.InvariantCulture) ? string.Empty : "/")), "v3/batch/conversation/team/").ToString();
             using var httpRequest = new HttpRequestMessage();
             httpRequest.Method = new HttpMethod("POST");
-            httpRequest.RequestUri = new System.Uri(url);
+            httpRequest.RequestUri = new Uri(url);
 
             HttpResponseMessage httpResponse = null;
 
@@ -989,7 +990,7 @@ namespace Microsoft.Bot.Connector.Teams
                 var content = new
                 {
                     Activity = activity,
-                    teamId = teamId,
+                    TeamId = teamId,
                     TenantId = tenantId,
                 };
 
@@ -1000,7 +1001,7 @@ namespace Microsoft.Bot.Connector.Teams
                 {
                     requestContent = Rest.Serialization.SafeJsonConvert.SerializeObject(content);
                     httpRequest.Content = new StringContent(requestContent, System.Text.Encoding.UTF8);
-                    httpRequest.Content.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
+                    httpRequest.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
                 }
 
                 // Set Credentials

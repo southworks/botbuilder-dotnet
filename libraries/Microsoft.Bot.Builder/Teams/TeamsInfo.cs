@@ -382,7 +382,7 @@ namespace Microsoft.Bot.Builder.Teams
         /// Sends a message to all the users in a team.
         /// </summary>
         /// <param name="turnContext"> Turn context. </param>
-        /// <param name="activity"> The activity to send to the tenant. </param>
+        /// <param name="activity"> The activity to send to the users in the team. </param>
         /// <param name="teamId"> The team ID. </param>
         /// <param name="tenantId"> The tenant ID. </param>
         /// <param name="cancellationToken"> The cancellation token. </param>
