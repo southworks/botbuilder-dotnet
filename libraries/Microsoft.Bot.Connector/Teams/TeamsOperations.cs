@@ -8,7 +8,6 @@ namespace Microsoft.Bot.Connector.Teams
     using System.Globalization;
     using System.Net;
     using System.Net.Http;
-    using System.Net.Http.Headers;
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Bot.Connector.Authentication;
@@ -675,7 +674,7 @@ namespace Microsoft.Bot.Connector.Teams
                 {
                     requestContent = Rest.Serialization.SafeJsonConvert.SerializeObject(content);
                     httpRequest.Content = new StringContent(requestContent, System.Text.Encoding.UTF8);
-                    httpRequest.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
+                    httpRequest.Content.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
                 }
 
                 // Set Credentials
@@ -838,7 +837,7 @@ namespace Microsoft.Bot.Connector.Teams
                 {
                     requestContent = Rest.Serialization.SafeJsonConvert.SerializeObject(content);
                     httpRequest.Content = new StringContent(requestContent, System.Text.Encoding.UTF8);
-                    httpRequest.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
+                    httpRequest.Content.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
                 }
 
                 // Set Credentials
@@ -955,7 +954,7 @@ namespace Microsoft.Bot.Connector.Teams
                 tracingParameters.Add("teamId", teamId);
                 tracingParameters.Add("tenantId", tenantId);
                 tracingParameters.Add("cancellationToken", cancellationToken);
-                ServiceClientTracing.Enter(invocationId, this, "SendMessageToAllUsersInTenant", tracingParameters);
+                ServiceClientTracing.Enter(invocationId, this, "SendMessageToAllUsersInTeam", tracingParameters);
             }
 
             // Construct URL
@@ -1001,7 +1000,7 @@ namespace Microsoft.Bot.Connector.Teams
                 {
                     requestContent = Rest.Serialization.SafeJsonConvert.SerializeObject(content);
                     httpRequest.Content = new StringContent(requestContent, System.Text.Encoding.UTF8);
-                    httpRequest.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
+                    httpRequest.Content.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
                 }
 
                 // Set Credentials
