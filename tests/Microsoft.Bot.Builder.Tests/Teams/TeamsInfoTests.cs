@@ -497,7 +497,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
         public async Task TestSendMessageToListOfChannelsAsync(string statusCode)
         {
             // 201: created
-            // 400: when send message to list of users request payload validation fails.
+            // 400: when send message to list of channels request payload validation fails.
             // 403: if the bot is not allowed to send messages.
             // 429: too many requests for throttled requests.
 
@@ -572,7 +572,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                         await CallSendMessageToAllUsersInTenantAsync(turnContext);
                         break;
                     case "Test-SendMessageToListOfChannelsAsync":
-                        await CallSendMessageToListOfUsersAsync(turnContext);
+                        await CallSendMessageToListOfChannelsAsync(turnContext);
                         break;
                     default:
                         Assert.True(false);
@@ -1173,7 +1173,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                     }
                 }
 
-                // SendMessageToAllUsersInTenant
+                // SendMessageToListOfChannels
                 else if (request.RequestUri.PathAndQuery.EndsWith("v3/batch/conversation/channels/"))
                 {
                     var requestBody = await request.Content.ReadAsStringAsync().ConfigureAwait(false);
