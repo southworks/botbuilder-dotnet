@@ -954,7 +954,7 @@ namespace Microsoft.Bot.Connector.Teams
                 tracingParameters.Add("channelsMembers", channelsMembers);
                 tracingParameters.Add("tenantId", tenantId);
                 tracingParameters.Add("cancellationToken", cancellationToken);
-                ServiceClientTracing.Enter(invocationId, this, "SendMessageToListOfUsers", tracingParameters);
+                ServiceClientTracing.Enter(invocationId, this, "SendMessageToListOfChannels", tracingParameters);
             }
 
             // Construct URL
