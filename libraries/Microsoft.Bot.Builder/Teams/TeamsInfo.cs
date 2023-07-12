@@ -378,6 +378,23 @@ namespace Microsoft.Bot.Builder.Teams
             }
         }
 
+        /// <summary>
+        /// Cancels the proccess of an operation.
+        /// </summary>
+        /// <param name="turnContext"> Turn context. </param>
+        /// <param name="operationId"> The operationId of the operation to cancel. </param>
+        /// <param name="cancellationToken"> The cancellation token. </param>
+        /// <returns>The state and responses of the operation.</returns>
+        public static async Task<string> CancelOperationAsync(ITurnContext turnContext, string operationId, CancellationToken cancellationToken = default)
+        {
+            operationId = operationId ?? throw new InvalidOperationException($"{nameof(operationId)} is required.");
+
+            using (var teamsClient = GetTeamsConnectorClient(turnContext))
+            {
+                return await teamsClient.Teams.CancelOperationAsync(operationId, cancellationToken).ConfigureAwait(false);
+            }
+        }
+
         private static async Task<IEnumerable<TeamsChannelAccount>> GetMembersAsync(IConnectorClient connectorClient, string conversationId, CancellationToken cancellationToken)
         {
             if (conversationId == null)
