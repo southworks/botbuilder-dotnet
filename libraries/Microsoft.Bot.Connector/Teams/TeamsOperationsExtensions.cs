@@ -212,19 +212,19 @@ namespace Microsoft.Bot.Connector.Teams
         }
 
         /// <summary>
-        /// Gets the state of a operation.
+        /// Gets the state of an operation.
         /// </summary>
         /// <param name='operations'>
         /// The operations group for this extension method.
         /// </param>
         /// <param name='operationId'>
-        /// The operationId to get the state.
+        /// The operationId to get the state of.
         /// </param>
         /// <param name='cancellationToken'>
         /// The cancellation token.
         /// </param>
         /// <returns>The state and responses of the operation.</returns>
-        public static async Task<string> GetOperationStateAsync(this ITeamsOperations operations,  string operationId, CancellationToken cancellationToken = default(CancellationToken))
+        public static async Task<BatchOperationState> GetOperationStateAsync(this ITeamsOperations operations,  string operationId, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (operations is TeamsOperations teamsOperations)
             {

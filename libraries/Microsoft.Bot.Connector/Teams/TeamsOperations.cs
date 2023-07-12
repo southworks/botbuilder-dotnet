@@ -566,9 +566,9 @@ namespace Microsoft.Bot.Connector.Teams
         /// <summary>
         /// Gets the state of a operation.
         /// </summary>
-        /// <param name="operationId"> The operationId to get the state. </param>
+        /// <param name="operationId"> The operationId to get the state of. </param>
         /// <param name="customHeaders"> Headers that will be added to request. </param>
-        /// <param name='cancellationToken'> The cancellation token.  </param>
+        /// <param name='cancellationToken'> The cancellation token. </param>
         /// <exception cref="HttpOperationException">
         /// Thrown when the operation returned an invalid status code.
         /// </exception>
@@ -578,7 +578,7 @@ namespace Microsoft.Bot.Connector.Teams
         /// <returns>
         /// A response object containing the state and responses of the operation.
         /// </returns>
-        public async Task<HttpOperationResponse<string>> GetOperationStateAsync(string operationId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<HttpOperationResponse<BatchOperationState>> GetOperationStateAsync(string operationId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (string.IsNullOrEmpty(operationId))
             {
@@ -929,7 +929,7 @@ namespace Microsoft.Bot.Connector.Teams
             return result;
         }
 
-        private async Task<HttpOperationResponse<string>> GetOperationStateWithRetryAsync(string operationId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
+        private async Task<HttpOperationResponse<BatchOperationState>> GetOperationStateWithRetryAsync(string operationId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Tracing
             var shouldTrace = ServiceClientTracing.IsEnabled;
@@ -945,7 +945,8 @@ namespace Microsoft.Bot.Connector.Teams
 
             // Construct URL
             var baseUrl = Client.BaseUri.AbsoluteUri;
-            var url = new Uri(new Uri(baseUrl + (baseUrl.EndsWith("/", StringComparison.InvariantCulture) ? string.Empty : "/")), "v3/batch/conversation/" + operationId).ToString();
+            var url = new Uri(new Uri(baseUrl + (baseUrl.EndsWith("/", StringComparison.InvariantCulture) ? string.Empty : "/")), "v3/batch/conversation/{operationId}").ToString();
+            url = url.Replace("{operationId}", System.Uri.EscapeDataString(operationId));
             using var httpRequest = new HttpRequestMessage();
             httpRequest.Method = new HttpMethod("GET");
             httpRequest.RequestUri = new Uri(url);
@@ -954,7 +955,7 @@ namespace Microsoft.Bot.Connector.Teams
 
             // Create HTTP transport objects
 #pragma warning disable CA2000 // Dispose objects before losing scope
-            var result = new HttpOperationResponse<string>();
+            var result = new HttpOperationResponse<BatchOperationState>();
 #pragma warning restore CA2000 // Dispose objects before losing scope
             try
             {
@@ -1003,10 +1004,11 @@ namespace Microsoft.Bot.Connector.Teams
                 if ((int)statusCode == 200)
                 {
                     // 200: OK
+
+                    responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                     try
                     {
-                        responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                        result.Body = responseContent;
+                        result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<BatchOperationState>(responseContent, Client.DeserializationSettings);
                     }
                     catch (JsonException ex)
                     {

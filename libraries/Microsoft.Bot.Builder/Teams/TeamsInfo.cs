@@ -379,13 +379,13 @@ namespace Microsoft.Bot.Builder.Teams
         }
 
         /// <summary>
-        /// Gets the state of a operation.
+        /// Gets the state of an operation.
         /// </summary>
         /// <param name="turnContext"> Turn context. </param>
-        /// <param name="operationId"> The operationId to get the state. </param>
+        /// <param name="operationId"> The operationId to get the state of. </param>
         /// <param name="cancellationToken"> The cancellation token. </param>
         /// <returns>The state and responses of the operation.</returns>
-        public static async Task<string> GetOperationStateAsync(ITurnContext turnContext, string operationId, CancellationToken cancellationToken = default)
+        public static async Task<BatchOperationState> GetOperationStateAsync(ITurnContext turnContext, string operationId, CancellationToken cancellationToken = default)
         {
             operationId = operationId ?? throw new InvalidOperationException($"{nameof(operationId)} is required.");
 

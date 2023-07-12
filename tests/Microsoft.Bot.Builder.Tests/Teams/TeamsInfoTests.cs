@@ -495,7 +495,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
         public async Task TestGetOperationStateAsync(string statusCode)
         {
             // 200: ok
-            // 400: when send message to list of users request payload validation fails.
+            // 400: for requests with invalid operationId (Which should be of type GUID).
             // 429: too many requests for throttled requests.
 
             var baseUri = new Uri("https://test.coffee");
@@ -871,15 +871,22 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             {
                 var from = turnContext.Activity.From.Name;
                 var operationId = "operation-id*";
+                var response = new BatchOperationState
+                {
+                    State = "state-1",
+                    Response = new BatchOperationResponse(),
+                    TotalEntriesCount = 1
+                };
+                response.Response.StatusMap.Add("statusMap-1", 1);
 
                 try
                 {
-                    var operationIdResponse = await TeamsInfo.GetOperationStateAsync(turnContext, operationId + from).ConfigureAwait(false);
+                    var operationResponse = await TeamsInfo.GetOperationStateAsync(turnContext, operationId + from).ConfigureAwait(false);
 
                     switch (from)
                     {
                         case "200":
-                            Assert.Equal("operation-1", operationIdResponse);
+                            Assert.Equal(response.ToString(), operationResponse.ToString());
                             break;
                         default:
                             throw new InvalidOperationException($"Expected {nameof(HttpOperationException)} with response status code {from}.");
@@ -1163,12 +1170,18 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 {
                     // get status from url for testing
                     var uri = request.RequestUri.PathAndQuery;
-                    var status = uri.Substring(uri.IndexOf("*") + 1); 
+                    var status = uri.Substring(uri.IndexOf("%2A") + 3); 
 
                     switch (status)
                     {
                         case "200":
-                            response.Content = new StringContent("operation-1");
+                            var content = new JObject
+                            {
+                                new JProperty("state", "state-1"),
+                                new JProperty("response", new JObject(new JProperty("statusMap", new JObject(new JProperty("statusMap-1", 1))))),
+                                new JProperty("totalEntriesCount", 1),
+                            };
+                            response.Content = new StringContent(content.ToString());
                             response.StatusCode = HttpStatusCode.OK;
                             break;
                         case "400":
