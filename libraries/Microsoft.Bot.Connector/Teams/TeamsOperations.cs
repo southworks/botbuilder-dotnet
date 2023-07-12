@@ -682,7 +682,7 @@ namespace Microsoft.Bot.Connector.Teams
                     }
                     finally
                     {
-                        // This means the request was successfull. We can make our retry policy null.
+                        // This means the request was successful. We can make our retry policy null.
                         if (currentRetryPolicy != null)
                         {
                             currentRetryPolicy = null;
@@ -845,7 +845,7 @@ namespace Microsoft.Bot.Connector.Teams
                     }
                     finally
                     {
-                        // This means the request was successfull. We can make our retry policy null.
+                        // This means the request was successful. We can make our retry policy null.
                         if (currentRetryPolicy != null)
                         {
                             currentRetryPolicy = null;
