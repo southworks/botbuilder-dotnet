@@ -212,6 +212,74 @@ namespace Microsoft.Bot.Connector.Teams
         }
 
         /// <summary>
+        /// Sends a message to all the users in a team.
+        /// </summary>
+        /// <param name='operations'>
+        /// The operations group for this extension method.
+        /// </param>
+        /// <param name='activity'>
+        /// The activity to send.
+        /// </param>
+        /// <param name='teamId'>
+        /// The team ID.
+        /// </param>
+        /// <param name='tenantId'>
+        /// The tenant ID.
+        /// </param>
+        /// <param name='cancellationToken'>
+        /// The cancellation token.
+        /// </param>
+        /// <returns>The operation Id.</returns>
+        public static async Task<string> SendMessageToAllUsersInTeamAsync(this ITeamsOperations operations, IActivity activity, string teamId, string tenantId, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (operations is TeamsOperations teamsOperations)
+            {
+                using (var result = await teamsOperations.SendMessageToAllUsersInTeamAsync(activity, teamId, tenantId, null, cancellationToken).ConfigureAwait(false))
+                {
+                    return result.Body;
+                }
+            }
+            else
+            {
+                throw new InvalidOperationException("TeamsOperations with SendMessageToAllUsersInTeamAsync is required for SendMessageToAllUsersInTeamAsync.");
+            }
+        }
+
+        /// <summary>
+        /// Sends a message to a list of Teams channels.
+        /// </summary>
+        /// <param name='operations'>
+        /// The operations group for this extension method.
+        /// </param>
+        /// <param name='activity'>
+        /// The activity to send.
+        /// </param>
+        /// <param name='channelsMembers'>
+        /// The list of channels for the message.
+        /// </param>
+        /// <param name='tenantId'>
+        /// The tenant ID.
+        /// </param>
+        /// <param name='cancellationToken'>
+        /// The cancellation token.
+        /// </param>
+        /// <returns>The operation Id.</returns>
+        public static async Task<string> SendMessageToListOfChannelsAsync(this ITeamsOperations operations, IActivity activity, List<object> channelsMembers, string tenantId, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (operations is TeamsOperations teamsOperations)
+            {
+                using (var result = await teamsOperations.SendMessageToListOfChannelsAsync(activity, channelsMembers, tenantId, null, cancellationToken).ConfigureAwait(false))
+                {
+                    return result.Body;
+                }
+            }
+            else
+            {
+                throw new InvalidOperationException("TeamsOperations with SendMessageToListOfChannelsAsync is required for SendMessageToListOfChannelsAsync.");
+            }
+        }
+
+        /// <summary>
         /// Gets the state of an operation.
         /// </summary>
         /// <param name='operations'>
