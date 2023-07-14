@@ -530,7 +530,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             var handler = new TestTeamsActivityHandler();
             await handler.OnTurnAsync(turnContext);
         }
-        
+
         [Theory]
         [InlineData("201")]
         [InlineData("400")]
@@ -1052,7 +1052,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                     }
                 }
             }
-            
+
             private async Task CallSendMessageToListOfChannelsAsync(ITurnContext turnContext)
             {
                 var from = turnContext.Activity.From;
@@ -1105,7 +1105,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                     }
                 }
             }
-            
+
             private async Task CallGetOperationStateAsync(ITurnContext turnContext)
             {
                 var from = turnContext.Activity.From.Name;
@@ -1153,8 +1153,6 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                     }
                 }
             }
-        }
-
 
             private async Task CallCancelOperationAsync(ITurnContext turnContext)
             {
@@ -1416,6 +1414,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                             break;
                     }
                 }
+
                 // SendMessageToAllUsersInTenant
                 else if (request.RequestUri.PathAndQuery.EndsWith("v3/batch/conversation/tenant/"))
                 {
@@ -1447,6 +1446,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                             break;
                     }
                 }
+
                 // SendMessageToAllUsersInTeam
                 else if (request.RequestUri.PathAndQuery.EndsWith("v3/batch/conversation/team/"))
                 {
@@ -1482,6 +1482,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                             break;
                     }
                 }
+
                 // SendMessageToListOfChannels
                 else if (request.RequestUri.PathAndQuery.EndsWith("v3/batch/conversation/channels/"))
                 {
@@ -1513,12 +1514,13 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                             break;
                     }
                 }
+
                 // GetOperationState
                 else if (request.RequestUri.PathAndQuery.Contains("v3/batch/conversation/operation-id") && request.Method.ToString() == "GET")
                 {
                     // get status from url for testing
                     var uri = request.RequestUri.PathAndQuery;
-                    var status = uri.Substring(uri.IndexOf("%2A") + 3); 
+                    var status = uri.Substring(uri.IndexOf("%2A") + 3);
 
                     switch (status)
                     {

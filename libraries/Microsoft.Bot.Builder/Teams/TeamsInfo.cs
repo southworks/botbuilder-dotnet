@@ -437,7 +437,6 @@ namespace Microsoft.Bot.Builder.Teams
             }
         }
 
-
         /// <summary>
         /// Cancels the process of an operation.
         /// </summary>
