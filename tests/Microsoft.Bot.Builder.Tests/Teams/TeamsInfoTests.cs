@@ -457,7 +457,6 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             // 201: created
             // 400: when send message to list of users request payload validation fails.
             // 403: if the bot is not allowed to send messages.
-            // 404: when Team is not found.
             // 429: too many requests for throttled requests.
 
             var baseUri = new Uri("https://test.coffee");
@@ -471,6 +470,129 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             {
                 Type = "message",
                 Text = "Test-SendMessageToAllUsersInTenantAsync",
+                ChannelId = Channels.Msteams,
+                ServiceUrl = "https://test.coffee",
+                From = new ChannelAccount()
+                {
+                    Id = "id-1",
+
+                    // Hack for test. use the Name field to pass expected status code to test code
+                    Name = statusCode
+                },
+                Conversation = new ConversationAccount() { Id = "conversation-id" }
+            };
+
+            var turnContext = new TurnContext(new SimpleAdapter(), activity);
+            turnContext.TurnState.Add<IConnectorClient>(connectorClient);
+            var handler = new TestTeamsActivityHandler();
+            await handler.OnTurnAsync(turnContext);
+        }
+
+        [Theory]
+        [InlineData("201")]
+        [InlineData("400")]
+        [InlineData("403")]
+        [InlineData("404")]
+        [InlineData("429")]
+        public async Task TestSendMessageToAllUsersInTeamAsync(string statusCode)
+        {
+            // 201: created
+            // 400: when send message to list of users request payload validation fails.
+            // 403: if the bot is not allowed to send messages.
+            // 404: when Team is not found.
+            // 429: too many requests for throttled requests.
+
+            var baseUri = new Uri("https://test.coffee");
+            var customHttpClient = new HttpClient(new RosterHttpMessageHandler());
+
+            // Set a special base address so then we can make sure the connector client is honoring this http client
+            customHttpClient.BaseAddress = baseUri;
+            var connectorClient = new ConnectorClient(new Uri("http://localhost/"), new MicrosoftAppCredentials(string.Empty, string.Empty), customHttpClient);
+
+            var activity = new Activity
+            {
+                Type = "message",
+                Text = "Test-SendMessageToAllUsersInTeamAsync",
+                ChannelId = Channels.Msteams,
+                ServiceUrl = "https://test.coffee",
+                From = new ChannelAccount()
+                {
+                    Id = "id-1",
+
+                    // Hack for test. use the Name field to pass expected status code to test code
+                    Name = statusCode
+                },
+                Conversation = new ConversationAccount() { Id = "conversation-id" }
+            };
+
+            var turnContext = new TurnContext(new SimpleAdapter(), activity);
+            turnContext.TurnState.Add<IConnectorClient>(connectorClient);
+            var handler = new TestTeamsActivityHandler();
+            await handler.OnTurnAsync(turnContext);
+        }
+        
+        [Theory]
+        [InlineData("201")]
+        [InlineData("400")]
+        [InlineData("403")]
+        [InlineData("429")]
+        public async Task TestSendMessageToListOfChannelsAsync(string statusCode)
+        {
+            // 201: created
+            // 400: when send message to list of channels request payload validation fails.
+            // 403: if the bot is not allowed to send messages.
+            // 429: too many requests for throttled requests.
+
+            var baseUri = new Uri("https://test.coffee");
+            var customHttpClient = new HttpClient(new RosterHttpMessageHandler());
+
+            // Set a special base address so then we can make sure the connector client is honoring this http client
+            customHttpClient.BaseAddress = baseUri;
+            var connectorClient = new ConnectorClient(new Uri("http://localhost/"), new MicrosoftAppCredentials(string.Empty, string.Empty), customHttpClient);
+
+            var activity = new Activity
+            {
+                Type = "message",
+                Text = "Test-SendMessageToListOfChannelsAsync",
+                ChannelId = Channels.Msteams,
+                ServiceUrl = "https://test.coffee",
+                From = new ChannelAccount()
+                {
+                    Id = "id-1",
+
+                    // Hack for test. use the Name field to pass expected status code to test code
+                    Name = statusCode
+                },
+                Conversation = new ConversationAccount() { Id = "conversation-id" }
+            };
+
+            var turnContext = new TurnContext(new SimpleAdapter(), activity);
+            turnContext.TurnState.Add<IConnectorClient>(connectorClient);
+            var handler = new TestTeamsActivityHandler();
+            await handler.OnTurnAsync(turnContext);
+        }
+
+        [Theory]
+        [InlineData("200")]
+        [InlineData("400")]
+        [InlineData("429")]
+        public async Task TestGetOperationStateAsync(string statusCode)
+        {
+            // 200: ok
+            // 400: for requests with invalid operationId (Which should be of type GUID).
+            // 429: too many requests for throttled requests.
+
+            var baseUri = new Uri("https://test.coffee");
+            var customHttpClient = new HttpClient(new RosterHttpMessageHandler());
+
+            // Set a special base address so then we can make sure the connector client is honoring this http client
+            customHttpClient.BaseAddress = baseUri;
+            var connectorClient = new ConnectorClient(new Uri("http://localhost/"), new MicrosoftAppCredentials(string.Empty, string.Empty), customHttpClient);
+
+            var activity = new Activity
+            {
+                Type = "message",
+                Text = "Test-GetOperationStateAsync",
                 ChannelId = Channels.Msteams,
                 ServiceUrl = "https://test.coffee",
                 From = new ChannelAccount()
@@ -568,6 +690,15 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                         break;
                     case "Test-SendMessageToAllUsersInTenantAsync":
                         await CallSendMessageToAllUsersInTenantAsync(turnContext);
+                        break;
+                    case "Test-SendMessageToAllUsersInTeamAsync":
+                        await CallSendMessageToAllUsersInTeamAsync(turnContext);
+                        break;
+                    case "Test-SendMessageToListOfChannelsAsync":
+                        await CallSendMessageToListOfChannelsAsync(turnContext);
+                        break;
+                    case "Test-GetOperationStateAsync":
+                        await CallGetOperationStateAsync(turnContext);
                         break;
                     case "Test-CancelOperationAsync":
                         await CallCancelOperationAsync(turnContext);
@@ -868,6 +999,163 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 }
             }
 
+            private async Task CallSendMessageToAllUsersInTeamAsync(ITurnContext turnContext)
+            {
+                var from = turnContext.Activity.From;
+                var teamId = "team-id";
+                var tenantId = "tenant-id";
+
+                try
+                {
+                    var operationId = await TeamsInfo.SendMessageToAllUsersInTeamAsync(turnContext, turnContext.Activity, teamId, tenantId).ConfigureAwait(false);
+
+                    switch (from.Name)
+                    {
+                        case "201":
+                            Assert.Equal("operation-1", operationId);
+                            break;
+                        default:
+                            throw new InvalidOperationException($"Expected {nameof(HttpOperationException)} with response status code {from.Name}.");
+                    }
+                }
+                catch (AggregateException ex)
+                {
+                    var firstException = ex.InnerExceptions.First();
+                    var httpException = new HttpOperationException();
+                    var errorResponse = new ErrorResponse();
+
+                    switch (from.Name)
+                    {
+                        case "400":
+                            Assert.Single(ex.InnerExceptions);
+                            httpException = (HttpOperationException)firstException;
+                            errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(httpException.Response.Content.ToString());
+                            Assert.Equal("BadSyntax", errorResponse.Error.Code);
+                            break;
+                        case "403":
+                            Assert.Single(ex.InnerExceptions);
+                            httpException = (HttpOperationException)firstException;
+                            errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(httpException.Response.Content.ToString());
+                            Assert.Equal("Forbidden", errorResponse.Error.Code);
+                            break;
+                        case "404":
+                            Assert.Single(ex.InnerExceptions);
+                            httpException = (HttpOperationException)firstException;
+                            errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(httpException.Response.Content.ToString());
+                            Assert.Equal("NotFound", errorResponse.Error.Code);
+                            break;
+                        case "429":
+                            Assert.Equal(11, ex.InnerExceptions.Count);
+                            break;
+                        default:
+                            throw new InvalidOperationException($"Expected {nameof(HttpOperationException)} with response status code {from.Name}.");
+                    }
+                }
+            }
+            
+            private async Task CallSendMessageToListOfChannelsAsync(ITurnContext turnContext)
+            {
+                var from = turnContext.Activity.From;
+                var members = new List<object>()
+                {
+                    new { Id = "channel-1" },
+                    new { Id = "channel-2" },
+                    new { Id = "channel-3" },
+                };
+                var tenantId = "tenant-id";
+
+                try
+                {
+                    var operationId = await TeamsInfo.SendMessageToListOfChannelsAsync(turnContext, turnContext.Activity, members, tenantId).ConfigureAwait(false);
+
+                    switch (from.Name)
+                    {
+                        case "201":
+                            Assert.Equal("operation-1", operationId);
+                            break;
+                        default:
+                            throw new InvalidOperationException($"Expected {nameof(HttpOperationException)} with response status code {from.Name}.");
+                    }
+                }
+                catch (AggregateException ex)
+                {
+                    var firstException = ex.InnerExceptions.First();
+                    var httpException = new HttpOperationException();
+                    var errorResponse = new ErrorResponse();
+
+                    switch (from.Name)
+                    {
+                        case "400":
+                            Assert.Single(ex.InnerExceptions);
+                            httpException = (HttpOperationException)firstException;
+                            errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(httpException.Response.Content.ToString());
+                            Assert.Equal("BadSyntax", errorResponse.Error.Code);
+                            break;
+                        case "403":
+                            Assert.Single(ex.InnerExceptions);
+                            httpException = (HttpOperationException)firstException;
+                            errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(httpException.Response.Content.ToString());
+                            Assert.Equal("Forbidden", errorResponse.Error.Code);
+                            break;
+                        case "429":
+                            Assert.Equal(11, ex.InnerExceptions.Count);
+                            break;
+                        default:
+                            throw new InvalidOperationException($"Expected {nameof(HttpOperationException)} with response status code {from.Name}.");
+                    }
+                }
+            }
+            
+            private async Task CallGetOperationStateAsync(ITurnContext turnContext)
+            {
+                var from = turnContext.Activity.From.Name;
+                var operationId = "operation-id*";
+                var response = new BatchOperationState
+                {
+                    State = "state-1",
+                    Response = new BatchOperationResponse(),
+                    TotalEntriesCount = 1
+                };
+                response.Response.StatusMap.Add("statusMap-1", 1);
+
+                try
+                {
+                    var operationResponse = await TeamsInfo.GetOperationStateAsync(turnContext, operationId + from).ConfigureAwait(false);
+
+                    switch (from)
+                    {
+                        case "200":
+                            Assert.Equal(response.ToString(), operationResponse.ToString());
+                            break;
+                        default:
+                            throw new InvalidOperationException($"Expected {nameof(HttpOperationException)} with response status code {from}.");
+                    }
+                }
+                catch (AggregateException ex)
+                {
+                    var firstException = ex.InnerExceptions.First();
+                    var httpException = new HttpOperationException();
+                    var errorResponse = new ErrorResponse();
+
+                    switch (from)
+                    {
+                        case "400":
+                            Assert.Single(ex.InnerExceptions);
+                            httpException = (HttpOperationException)firstException;
+                            errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(httpException.Response.Content.ToString());
+                            Assert.Equal("BadSyntax", errorResponse.Error.Code);
+                            break;
+                        case "429":
+                            Assert.Equal(11, ex.InnerExceptions.Count);
+                            break;
+                        default:
+                            throw new InvalidOperationException($"Expected {nameof(HttpOperationException)} with response status code {from}.");
+                    }
+                }
+            }
+        }
+
+
             private async Task CallCancelOperationAsync(ITurnContext turnContext)
             {
                 var from = turnContext.Activity.From.Name;
@@ -1128,7 +1416,6 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                             break;
                     }
                 }
-                
                 // SendMessageToAllUsersInTenant
                 else if (request.RequestUri.PathAndQuery.EndsWith("v3/batch/conversation/tenant/"))
                 {
@@ -1150,6 +1437,104 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                         case "403":
                             response.Content = new StringContent("{\"error\":{\"code\":\"Forbidden\"}}");
                             response.StatusCode = HttpStatusCode.Forbidden;
+                            break;
+                        case "429":
+                            response.Content = new StringContent("{\"error\":{\"code\":\"TooManyRequests\"}}");
+                            response.StatusCode = HttpStatusCode.TooManyRequests;
+                            break;
+                        default:
+                            response.StatusCode = HttpStatusCode.Accepted;
+                            break;
+                    }
+                }
+                // SendMessageToAllUsersInTeam
+                else if (request.RequestUri.PathAndQuery.EndsWith("v3/batch/conversation/team/"))
+                {
+                    var requestBody = await request.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    var payload = JObject.Parse(requestBody);
+                    var requestActivity = payload.SelectToken("Activity").ToObject<Activity>();
+
+                    // hack From.Name as expected status code, for testing
+                    switch (requestActivity.From.Name)
+                    {
+                        case "201":
+                            response.Content = new StringContent("operation-1");
+                            response.StatusCode = HttpStatusCode.Created;
+                            break;
+                        case "400":
+                            response.Content = new StringContent("{\"error\":{\"code\":\"BadSyntax\"}}");
+                            response.StatusCode = HttpStatusCode.BadRequest;
+                            break;
+                        case "403":
+                            response.Content = new StringContent("{\"error\":{\"code\":\"Forbidden\"}}");
+                            response.StatusCode = HttpStatusCode.Forbidden;
+                            break;
+                        case "404":
+                            response.Content = new StringContent("{\"error\":{\"code\":\"NotFound\"}}");
+                            response.StatusCode = HttpStatusCode.NotFound;
+                            break;
+                        case "429":
+                            response.Content = new StringContent("{\"error\":{\"code\":\"TooManyRequests\"}}");
+                            response.StatusCode = HttpStatusCode.TooManyRequests;
+                            break;
+                        default:
+                            response.StatusCode = HttpStatusCode.Accepted;
+                            break;
+                    }
+                }
+                // SendMessageToListOfChannels
+                else if (request.RequestUri.PathAndQuery.EndsWith("v3/batch/conversation/channels/"))
+                {
+                    var requestBody = await request.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    var payload = JObject.Parse(requestBody);
+                    var requestActivity = payload.SelectToken("Activity").ToObject<Activity>();
+
+                    // hack From.Name as expected status code, for testing
+                    switch (requestActivity.From.Name)
+                    {
+                        case "201":
+                            response.Content = new StringContent("operation-1");
+                            response.StatusCode = HttpStatusCode.Created;
+                            break;
+                        case "400":
+                            response.Content = new StringContent("{\"error\":{\"code\":\"BadSyntax\"}}");
+                            response.StatusCode = HttpStatusCode.BadRequest;
+                            break;
+                        case "403":
+                            response.Content = new StringContent("{\"error\":{\"code\":\"Forbidden\"}}");
+                            response.StatusCode = HttpStatusCode.Forbidden;
+                            break;
+                        case "429":
+                            response.Content = new StringContent("{\"error\":{\"code\":\"TooManyRequests\"}}");
+                            response.StatusCode = HttpStatusCode.TooManyRequests;
+                            break;
+                        default:
+                            response.StatusCode = HttpStatusCode.Accepted;
+                            break;
+                    }
+                }
+                // GetOperationState
+                else if (request.RequestUri.PathAndQuery.Contains("v3/batch/conversation/operation-id") && request.Method.ToString() == "GET")
+                {
+                    // get status from url for testing
+                    var uri = request.RequestUri.PathAndQuery;
+                    var status = uri.Substring(uri.IndexOf("%2A") + 3); 
+
+                    switch (status)
+                    {
+                        case "200":
+                            var content = new JObject
+                            {
+                                new JProperty("state", "state-1"),
+                                new JProperty("response", new JObject(new JProperty("statusMap", new JObject(new JProperty("statusMap-1", 1))))),
+                                new JProperty("totalEntriesCount", 1),
+                            };
+                            response.Content = new StringContent(content.ToString());
+                            response.StatusCode = HttpStatusCode.OK;
+                            break;
+                        case "400":
+                            response.Content = new StringContent("{\"error\":{\"code\":\"BadSyntax\"}}");
+                            response.StatusCode = HttpStatusCode.BadRequest;
                             break;
                         case "429":
                             response.Content = new StringContent("{\"error\":{\"code\":\"TooManyRequests\"}}");
