@@ -212,26 +212,23 @@ namespace Microsoft.Bot.Connector.Teams
         }
 
         /// <summary>
-        /// Cancels the proccess of an operation.
+        /// Cancels the process of an operation.
         /// </summary>
         /// <param name='operations'>
         /// The operations group for this extension method.
         /// </param>
         /// <param name='operationId'>
-        /// The operationId of the operation to cancel.
+        /// The id of the operation to cancel.
         /// </param>
         /// <param name='cancellationToken'>
         /// The cancellation token.
         /// </param>
         /// <returns>The state and responses of the operation.</returns>
-        public static async Task<string> CancelOperationAsync(this ITeamsOperations operations, string operationId, CancellationToken cancellationToken = default(CancellationToken))
+        public static async Task CancelOperationAsync(this ITeamsOperations operations, string operationId, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (operations is TeamsOperations teamsOperations)
             {
-                using (var result = await teamsOperations.CancelOperationAsync(operationId, null, cancellationToken).ConfigureAwait(false))
-                {
-                    return result.Body;
-                }
+                await teamsOperations.CancelOperationAsync(operationId, null, cancellationToken).ConfigureAwait(false);
             }
             else
             {

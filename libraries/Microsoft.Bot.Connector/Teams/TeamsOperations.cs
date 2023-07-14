@@ -564,9 +564,9 @@ namespace Microsoft.Bot.Connector.Teams
         }
 
         /// <summary>
-        /// Cancels the proccess of an operation.
+        /// Cancels the process of an operation.
         /// </summary>
-        /// <param name="operationId"> The operationId of the operation to cancel. </param>
+        /// <param name="operationId"> The id of the operation to cancel. </param>
         /// <param name="customHeaders"> Headers that will be added to request. </param>
         /// <param name='cancellationToken'> The cancellation token. </param>
         /// <exception cref="HttpOperationException">
@@ -578,7 +578,7 @@ namespace Microsoft.Bot.Connector.Teams
         /// <returns>
         /// A response object containing the state and responses of the operation.
         /// </returns>
-        public async Task<HttpOperationResponse<string>> CancelOperationAsync(string operationId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<HttpOperationResponse> CancelOperationAsync(string operationId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (string.IsNullOrEmpty(operationId))
             {
@@ -929,7 +929,7 @@ namespace Microsoft.Bot.Connector.Teams
             return result;
         }
 
-        private async Task<HttpOperationResponse<string>> CancelOperationWithRetryAsync(string operationId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
+        private async Task<HttpOperationResponse> CancelOperationWithRetryAsync(string operationId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Tracing
             var shouldTrace = ServiceClientTracing.IsEnabled;
@@ -955,7 +955,7 @@ namespace Microsoft.Bot.Connector.Teams
 
             // Create HTTP transport objects
 #pragma warning disable CA2000 // Dispose objects before losing scope
-            var result = new HttpOperationResponse<string>();
+            var result = new HttpOperationResponse();
 #pragma warning restore CA2000 // Dispose objects before losing scope
             try
             {
@@ -1006,27 +1006,6 @@ namespace Microsoft.Bot.Connector.Teams
                     // 200: OK for successful cancelled operations (Operations in state completed, or failed will not change state to cancel but still return 200)
 
                     responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    try
-                    {
-                        result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<string>(responseContent, Client.DeserializationSettings);
-                    }
-                    catch (JsonException ex)
-                    {
-                        if (shouldTrace)
-                        {
-                            ServiceClientTracing.Error(invocationId, ex);
-                        }
-
-                        throw new SerializationException("Unable to deserialize the response.", responseContent, ex);
-                    }
-                    finally
-                    {
-                        // This means the request was successful. We can make our retry policy null.
-                        if (currentRetryPolicy != null)
-                        {
-                            currentRetryPolicy = null;
-                        }
-                    }
                 }
                 else if ((int)statusCode == 429)
                 {

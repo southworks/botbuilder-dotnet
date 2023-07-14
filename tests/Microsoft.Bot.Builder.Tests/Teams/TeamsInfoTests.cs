@@ -493,7 +493,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
         [InlineData("200")]
         [InlineData("400")]
         [InlineData("429")]
-        public async Task TestGetOperationStateAsync(string statusCode)
+        public async Task TestCancelOperationAsync(string statusCode)
         {
             // 200: Ok for successful cancelled operations (Operations in state completed, or failed will not change state to cancel but still return 200)
             // 400: for requests with invalid operationId (Which should be of type GUID).
@@ -872,15 +872,16 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             {
                 var from = turnContext.Activity.From.Name;
                 var operationId = "operation-id*";
+                AggregateException exception = null;
 
                 try
                 {
-                    var operationResponse = await TeamsInfo.CancelOperationAsync(turnContext, operationId + from).ConfigureAwait(false);
+                    await TeamsInfo.CancelOperationAsync(turnContext, operationId + from).ConfigureAwait(false);
 
                     switch (from)
                     {
                         case "200":
-                            Assert.Null(operationResponse);
+                            Assert.Null(exception);
                             break;
                         default:
                             throw new InvalidOperationException($"Expected {nameof(HttpOperationException)} with response status code {from}.");
@@ -888,20 +889,21 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 }
                 catch (AggregateException ex)
                 {
-                    var firstException = ex.InnerExceptions.First();
+                    exception = ex;
+                    var firstException = exception.InnerExceptions.First();
                     var httpException = new HttpOperationException();
                     var errorResponse = new ErrorResponse();
 
                     switch (from)
                     {
                         case "400":
-                            Assert.Single(ex.InnerExceptions);
+                            Assert.Single(exception.InnerExceptions);
                             httpException = (HttpOperationException)firstException;
                             errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(httpException.Response.Content.ToString());
                             Assert.Equal("BadSyntax", errorResponse.Error.Code);
                             break;
                         case "429":
-                            Assert.Equal(11, ex.InnerExceptions.Count);
+                            Assert.Equal(11, exception.InnerExceptions.Count);
                             break;
                         default:
                             throw new InvalidOperationException($"Expected {nameof(HttpOperationException)} with response status code {from}.");
