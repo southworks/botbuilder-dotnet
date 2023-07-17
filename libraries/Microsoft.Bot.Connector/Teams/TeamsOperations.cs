@@ -1093,14 +1093,20 @@ namespace Microsoft.Bot.Connector.Teams
                 // Create Result
                 result.Request = httpRequest;
                 result.Response = httpResponse;
-                if ((int)statusCode == 201)
+                if ((int)statusCode == 201 || (int)statusCode == 200)
                 {
                     //200:ok
                     //201: created
                     try
                     {
-                        responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                        result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<T>(responseContent, Client.DeserializationSettings);
+                        responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false); 
+
+                        if (typeof(T) == typeof(string))
+                        {
+                            responseContent = JsonConvert.SerializeObject(responseContent, Client.SerializationSettings);
+                        }
+
+                        result.Body = JsonConvert.DeserializeAnonymousType<T>(responseContent, result.Body);                      
                     }
                     catch (JsonException ex)
                     {
