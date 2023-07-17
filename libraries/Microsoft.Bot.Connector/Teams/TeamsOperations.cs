@@ -678,6 +678,36 @@ namespace Microsoft.Bot.Connector.Teams
         }
 
         /// <summary>
+        /// Cancels the process of an operation.
+        /// </summary>
+        /// <param name="operationId"> The id of the operation to cancel. </param>
+        /// <param name="customHeaders"> Headers that will be added to request. </param>
+        /// <param name='cancellationToken'> The cancellation token. </param>
+        /// <exception cref="HttpOperationException">
+        /// Thrown when the operation returned an invalid status code.
+        /// </exception>
+        /// <exception cref="ValidationException">
+        /// Thrown when an input value does not match the expected data type, range or pattern.
+        /// </exception>
+        /// <returns>
+        /// A response object containing the state and responses of the operation.
+        /// </returns>
+        public async Task<HttpOperationResponse> CancelOperationAsync(string operationId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (string.IsNullOrEmpty(operationId))
+            {
+                throw new ValidationException(ValidationRules.CannotBeNull, nameof(operationId));
+            }
+
+            // In case of throttling, it will retry the operation with default values (10 retries every 50 miliseconds).
+            var result = await RetryAction.RunAsync(
+                task: () => CancelOperationWithRetryAsync(operationId, customHeaders, cancellationToken),
+                retryExceptionHandler: (ex, ct) => HandleThrottlingException(ex, ct)).ConfigureAwait(false);
+
+            return result;
+        }
+
+        /// <summary>
         /// Gets the failed entries of a batch operation with error code and message.
         /// </summary>
         /// <param name="operationId">The operationId to get the failed entries of.</param>
@@ -734,150 +764,15 @@ namespace Microsoft.Bot.Connector.Teams
                 ServiceClientTracing.Enter(invocationId, this, "SendMessageToAllUsersInTenant", tracingParameters);
             }
 
-            // Construct URL
-            var baseUrl = Client.BaseUri.AbsoluteUri;
-            var url = new Uri(new Uri(baseUrl + (baseUrl.EndsWith("/", StringComparison.InvariantCulture) ? string.Empty : "/")), "v3/batch/conversation/tenant/").ToString();
-            using var httpRequest = new HttpRequestMessage();
-            httpRequest.Method = new HttpMethod("POST");
-            httpRequest.RequestUri = new Uri(url);
-
-            HttpResponseMessage httpResponse = null;
-
-            // Create HTTP transport objects
-#pragma warning disable CA2000 // Dispose objects before losing scope
-            var result = new HttpOperationResponse<string>();
-#pragma warning restore CA2000 // Dispose objects before losing scope
-            try
+            var content = new
             {
-                // Set Headers
-                if (customHeaders != null)
-                {
-                    foreach (var header in customHeaders)
-                    {
-                        if (httpRequest.Headers.Contains(header.Key))
-                        {
-                            httpRequest.Headers.Remove(header.Key);
-                        }
+                Activity = activity,
+                TenantId = tenantId,
+            };
 
-                        httpRequest.Headers.TryAddWithoutValidation(header.Key, header.Value);
-                    }
-                }
+            var apiUrl = "v3/batch/conversation/tenant/";
 
-                var content = new
-                {
-                    Activity = activity,
-                    TenantId = tenantId,
-                };
-
-                // Serialize Request
-                string requestContent = null;
-
-                if (activity != null)
-                {
-                    requestContent = Rest.Serialization.SafeJsonConvert.SerializeObject(content);
-                    httpRequest.Content = new StringContent(requestContent, System.Text.Encoding.UTF8);
-                    httpRequest.Content.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
-                }
-
-                // Set Credentials
-                if (Client.Credentials != null)
-                {
-                    cancellationToken.ThrowIfCancellationRequested();
-                    await Client.Credentials.ProcessHttpRequestAsync(httpRequest, cancellationToken).ConfigureAwait(false);
-                }
-
-                // Send Request
-                if (shouldTrace)
-                {
-                    ServiceClientTracing.SendRequest(invocationId, httpRequest);
-                }
-
-                cancellationToken.ThrowIfCancellationRequested();
-                httpResponse = await Client.HttpClient.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false);
-                if (shouldTrace)
-                {
-                    ServiceClientTracing.ReceiveResponse(invocationId, httpResponse);
-                }
-
-                HttpStatusCode statusCode = httpResponse.StatusCode;
-                cancellationToken.ThrowIfCancellationRequested();
-                string responseContent = null;
-
-                // Create Result
-                result.Request = httpRequest;
-                result.Response = httpResponse;
-
-                if ((int)statusCode == 201)
-                {
-                    // 201: created
-                    try
-                    {
-                        responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                        result.Body = responseContent;
-                    }
-                    catch (JsonException ex)
-                    {
-                        if (shouldTrace)
-                        {
-                            ServiceClientTracing.Error(invocationId, ex);
-                        }
-
-                        throw new SerializationException("Unable to deserialize the response.", responseContent, ex);
-                    }
-                    finally
-                    {
-                        // This means the request was successful. We can make our retry policy null.
-                        if (currentRetryPolicy != null)
-                        {
-                            currentRetryPolicy = null;
-                        }
-                    }
-                }
-                else if ((int)statusCode == 429)
-                {
-                    throw new ThrottleException() { RetryParams = currentRetryPolicy };
-                }
-                else
-                {
-                    // 400: when request payload validation fails.
-                    // 401: if the bot token is invalid 
-                    // 403: if bot does not have permission to post messages within Tenant.
-
-                    // invalid/unexpected status code
-                    var ex = new HttpOperationException($"Operation returned an invalid status code '{statusCode}'");
-                    if (httpResponse.Content != null)
-                    {
-                        responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    }
-                    else
-                    {
-                        responseContent = string.Empty;
-                    }
-
-                    ex.Request = new HttpRequestMessageWrapper(httpRequest, requestContent);
-                    ex.Response = new HttpResponseMessageWrapper(httpResponse, responseContent);
-                    if (shouldTrace)
-                    {
-                        ServiceClientTracing.Error(invocationId, ex);
-                    }
-
-                    throw ex;
-                }
-            }
-            finally
-            {
-                if (httpResponse != null)
-                {
-                    httpResponse.Dispose();
-                }
-            }
-
-            if (shouldTrace)
-            {
-                ServiceClientTracing.Exit(invocationId, result);
-            }
-
-            return result;
+            return await GetBatchResponseAsync<string>(apiUrl, "POST", shouldTrace, invocationId, activity, content, customHeaders, cancellationToken).ConfigureAwait(false);
         }
 
         private async Task<HttpOperationResponse<string>> SendMessageToListOfUsersWithRetryAsync(IActivity activity, List<object> teamsMembers, string tenantId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
@@ -896,151 +791,16 @@ namespace Microsoft.Bot.Connector.Teams
                 ServiceClientTracing.Enter(invocationId, this, "SendMessageToListOfUsers", tracingParameters);
             }
 
-            // Construct URL
-            var baseUrl = Client.BaseUri.AbsoluteUri;
-            var url = new Uri(new Uri(baseUrl + (baseUrl.EndsWith("/", StringComparison.InvariantCulture) ? string.Empty : "/")), "v3/batch/conversation/users/").ToString();
-            using var httpRequest = new HttpRequestMessage();
-            httpRequest.Method = new HttpMethod("POST");
-            httpRequest.RequestUri = new Uri(url);
-
-            HttpResponseMessage httpResponse = null;
-
-            // Create HTTP transport objects
-#pragma warning disable CA2000 // Dispose objects before losing scope
-            var result = new HttpOperationResponse<string>();
-#pragma warning restore CA2000 // Dispose objects before losing scope
-            try
+            var content = new
             {
-                // Set Headers
-                if (customHeaders != null)
-                {
-                    foreach (var header in customHeaders)
-                    {
-                        if (httpRequest.Headers.Contains(header.Key))
-                        {
-                            httpRequest.Headers.Remove(header.Key);
-                        }
+                Members = teamsMembers,
+                Activity = activity,
+                TenantId = tenantId,
+            };
 
-                        httpRequest.Headers.TryAddWithoutValidation(header.Key, header.Value);
-                    }
-                }
+            var apiUrl = "v3/batch/conversation/users/";
 
-                var content = new
-                {
-                    Members = teamsMembers,
-                    Activity = activity,
-                    TenantId = tenantId,
-                };
-
-                // Serialize Request
-                string requestContent = null;
-
-                if (activity != null)
-                {
-                    requestContent = Rest.Serialization.SafeJsonConvert.SerializeObject(content);
-                    httpRequest.Content = new StringContent(requestContent, System.Text.Encoding.UTF8);
-                    httpRequest.Content.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
-                }
-
-                // Set Credentials
-                if (Client.Credentials != null)
-                {
-                    cancellationToken.ThrowIfCancellationRequested();
-                    await Client.Credentials.ProcessHttpRequestAsync(httpRequest, cancellationToken).ConfigureAwait(false);
-                }
-
-                // Send Request
-                if (shouldTrace)
-                {
-                    ServiceClientTracing.SendRequest(invocationId, httpRequest);
-                }
-
-                cancellationToken.ThrowIfCancellationRequested();
-                httpResponse = await Client.HttpClient.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false);
-                if (shouldTrace)
-                {
-                    ServiceClientTracing.ReceiveResponse(invocationId, httpResponse);
-                }
-
-                var statusCode = httpResponse.StatusCode;
-                cancellationToken.ThrowIfCancellationRequested();
-                string responseContent = null;
-
-                // Create Result
-                result.Request = httpRequest;
-                result.Response = httpResponse;
-
-                if ((int)statusCode == 201)
-                {
-                    // 201: created
-                    try
-                    {
-                        responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                        result.Body = responseContent;
-                    }
-                    catch (JsonException ex)
-                    {
-                        if (shouldTrace)
-                        {
-                            ServiceClientTracing.Error(invocationId, ex);
-                        }
-
-                        throw new SerializationException("Unable to deserialize the response.", responseContent, ex);
-                    }
-                    finally
-                    {
-                        // This means the request was successful. We can make our retry policy null.
-                        if (currentRetryPolicy != null)
-                        {
-                            currentRetryPolicy = null;
-                        }
-                    }
-                }
-                else if ((int)statusCode == 429)
-                {
-                    throw new ThrottleException() { RetryParams = currentRetryPolicy };
-                }
-                else
-                {
-                    // 400: when request payload validation fails.
-                    // 401: if the bot token is invalid. 
-                    // 403: if bot does not have permission to post messages within Tenant.
-
-                    // invalid/unexpected status code
-                    var ex = new HttpOperationException($"Operation returned an invalid status code '{statusCode}'");
-                    if (httpResponse.Content != null)
-                    {
-                        responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    }
-                    else
-                    {
-                        responseContent = string.Empty;
-                    }
-
-                    ex.Request = new HttpRequestMessageWrapper(httpRequest, requestContent);
-                    ex.Response = new HttpResponseMessageWrapper(httpResponse, responseContent);
-                    if (shouldTrace)
-                    {
-                        ServiceClientTracing.Error(invocationId, ex);
-                    }
-
-                    throw ex;
-                }
-            }
-            finally
-            {
-                if (httpResponse != null)
-                {
-                    httpResponse.Dispose();
-                }
-            }
-
-            if (shouldTrace)
-            {
-                ServiceClientTracing.Exit(invocationId, result);
-            }
-
-            return result;
+            return await GetBatchResponseAsync<string>(apiUrl, "POST", shouldTrace, invocationId, activity, content, customHeaders, cancellationToken).ConfigureAwait(false);
         }
 
         private async Task<HttpOperationResponse<string>> SendMessageToListOfChannelsWithRetryAsync(IActivity activity, List<object> channelsMembers, string tenantId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
@@ -1059,151 +819,16 @@ namespace Microsoft.Bot.Connector.Teams
                 ServiceClientTracing.Enter(invocationId, this, "SendMessageToListOfChannels", tracingParameters);
             }
 
-            // Construct URL
-            var baseUrl = Client.BaseUri.AbsoluteUri;
-            var url = new Uri(new Uri(baseUrl + (baseUrl.EndsWith("/", StringComparison.InvariantCulture) ? string.Empty : "/")), "v3/batch/conversation/channels/").ToString();
-            using var httpRequest = new HttpRequestMessage();
-            httpRequest.Method = new HttpMethod("POST");
-            httpRequest.RequestUri = new Uri(url);
-
-            HttpResponseMessage httpResponse = null;
-
-            // Create HTTP transport objects
-#pragma warning disable CA2000 // Dispose objects before losing scope
-            var result = new HttpOperationResponse<string>();
-#pragma warning restore CA2000 // Dispose objects before losing scope
-            try
+            var content = new
             {
-                // Set Headers
-                if (customHeaders != null)
-                {
-                    foreach (var header in customHeaders)
-                    {
-                        if (httpRequest.Headers.Contains(header.Key))
-                        {
-                            httpRequest.Headers.Remove(header.Key);
-                        }
+                Members = channelsMembers,
+                Activity = activity,
+                TenantId = tenantId,
+            };
 
-                        httpRequest.Headers.TryAddWithoutValidation(header.Key, header.Value);
-                    }
-                }
+            var apiUrl = "v3/batch/conversation/channels/";
 
-                var content = new
-                {
-                    Members = channelsMembers,
-                    Activity = activity,
-                    TenantId = tenantId,
-                };
-
-                // Serialize Request
-                string requestContent = null;
-
-                if (activity != null)
-                {
-                    requestContent = Rest.Serialization.SafeJsonConvert.SerializeObject(content);
-                    httpRequest.Content = new StringContent(requestContent, System.Text.Encoding.UTF8);
-                    httpRequest.Content.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
-                }
-
-                // Set Credentials
-                if (Client.Credentials != null)
-                {
-                    cancellationToken.ThrowIfCancellationRequested();
-                    await Client.Credentials.ProcessHttpRequestAsync(httpRequest, cancellationToken).ConfigureAwait(false);
-                }
-
-                // Send Request
-                if (shouldTrace)
-                {
-                    ServiceClientTracing.SendRequest(invocationId, httpRequest);
-                }
-
-                cancellationToken.ThrowIfCancellationRequested();
-                httpResponse = await Client.HttpClient.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false);
-                if (shouldTrace)
-                {
-                    ServiceClientTracing.ReceiveResponse(invocationId, httpResponse);
-                }
-
-                var statusCode = httpResponse.StatusCode;
-                cancellationToken.ThrowIfCancellationRequested();
-                string responseContent = null;
-
-                // Create Result
-                result.Request = httpRequest;
-                result.Response = httpResponse;
-
-                if ((int)statusCode == 201)
-                {
-                    // 201: created
-                    try
-                    {
-                        responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                        result.Body = responseContent;
-                    }
-                    catch (JsonException ex)
-                    {
-                        if (shouldTrace)
-                        {
-                            ServiceClientTracing.Error(invocationId, ex);
-                        }
-
-                        throw new SerializationException("Unable to deserialize the response.", responseContent, ex);
-                    }
-                    finally
-                    {
-                        // This means the request was successful. We can make our retry policy null.
-                        if (currentRetryPolicy != null)
-                        {
-                            currentRetryPolicy = null;
-                        }
-                    }
-                }
-                else if ((int)statusCode == 429)
-                {
-                    throw new ThrottleException() { RetryParams = currentRetryPolicy };
-                }
-                else
-                {
-                    // 400: when request payload validation fails.
-                    // 401: if the bot token is invalid. 
-                    // 403: if bot does not have permission to post messages within Tenant.
-
-                    // invalid/unexpected status code
-                    var ex = new HttpOperationException($"Operation returned an invalid status code '{statusCode}'");
-                    if (httpResponse.Content != null)
-                    {
-                        responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    }
-                    else
-                    {
-                        responseContent = string.Empty;
-                    }
-
-                    ex.Request = new HttpRequestMessageWrapper(httpRequest, requestContent);
-                    ex.Response = new HttpResponseMessageWrapper(httpResponse, responseContent);
-                    if (shouldTrace)
-                    {
-                        ServiceClientTracing.Error(invocationId, ex);
-                    }
-
-                    throw ex;
-                }
-            }
-            finally
-            {
-                if (httpResponse != null)
-                {
-                    httpResponse.Dispose();
-                }
-            }
-
-            if (shouldTrace)
-            {
-                ServiceClientTracing.Exit(invocationId, result);
-            }
-
-            return result;
+            return await GetBatchResponseAsync<string>(apiUrl, "POST", shouldTrace, invocationId, activity, content, customHeaders, cancellationToken).ConfigureAwait(false);            
         }
 
         private async Task<HttpOperationResponse<string>> SendMessageToAllUsersInTeamWithRetryAsync(IActivity activity, string teamId, string tenantId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
@@ -1222,152 +847,16 @@ namespace Microsoft.Bot.Connector.Teams
                 ServiceClientTracing.Enter(invocationId, this, "SendMessageToAllUsersInTeam", tracingParameters);
             }
 
-            // Construct URL
-            var baseUrl = Client.BaseUri.AbsoluteUri;
-            var url = new Uri(new Uri(baseUrl + (baseUrl.EndsWith("/", StringComparison.InvariantCulture) ? string.Empty : "/")), "v3/batch/conversation/team/").ToString();
-            using var httpRequest = new HttpRequestMessage();
-            httpRequest.Method = new HttpMethod("POST");
-            httpRequest.RequestUri = new Uri(url);
-
-            HttpResponseMessage httpResponse = null;
-
-            // Create HTTP transport objects
-#pragma warning disable CA2000 // Dispose objects before losing scope
-            var result = new HttpOperationResponse<string>();
-#pragma warning restore CA2000 // Dispose objects before losing scope
-            try
+            var content = new
             {
-                // Set Headers
-                if (customHeaders != null)
-                {
-                    foreach (var header in customHeaders)
-                    {
-                        if (httpRequest.Headers.Contains(header.Key))
-                        {
-                            httpRequest.Headers.Remove(header.Key);
-                        }
+                Activity = activity,
+                TeamId = teamId,
+                TenantId = tenantId,
+            };
 
-                        httpRequest.Headers.TryAddWithoutValidation(header.Key, header.Value);
-                    }
-                }
+            var apiUrl = "v3/batch/conversation/team/";
 
-                var content = new
-                {
-                    Activity = activity,
-                    TeamId = teamId,
-                    TenantId = tenantId,
-                };
-
-                // Serialize Request
-                string requestContent = null;
-
-                if (activity != null)
-                {
-                    requestContent = Rest.Serialization.SafeJsonConvert.SerializeObject(content);
-                    httpRequest.Content = new StringContent(requestContent, System.Text.Encoding.UTF8);
-                    httpRequest.Content.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
-                }
-
-                // Set Credentials
-                if (Client.Credentials != null)
-                {
-                    cancellationToken.ThrowIfCancellationRequested();
-                    await Client.Credentials.ProcessHttpRequestAsync(httpRequest, cancellationToken).ConfigureAwait(false);
-                }
-
-                // Send Request
-                if (shouldTrace)
-                {
-                    ServiceClientTracing.SendRequest(invocationId, httpRequest);
-                }
-
-                cancellationToken.ThrowIfCancellationRequested();
-                httpResponse = await Client.HttpClient.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false);
-                if (shouldTrace)
-                {
-                    ServiceClientTracing.ReceiveResponse(invocationId, httpResponse);
-                }
-
-                HttpStatusCode statusCode = httpResponse.StatusCode;
-                cancellationToken.ThrowIfCancellationRequested();
-                string responseContent = null;
-
-                // Create Result
-                result.Request = httpRequest;
-                result.Response = httpResponse;
-
-                if ((int)statusCode == 201)
-                {
-                    // 201: created
-                    try
-                    {
-                        responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                        result.Body = responseContent;
-                    }
-                    catch (JsonException ex)
-                    {
-                        if (shouldTrace)
-                        {
-                            ServiceClientTracing.Error(invocationId, ex);
-                        }
-
-                        throw new SerializationException("Unable to deserialize the response.", responseContent, ex);
-                    }
-                    finally
-                    {
-                        // This means the request was successfull. We can make our retry policy null.
-                        if (currentRetryPolicy != null)
-                        {
-                            currentRetryPolicy = null;
-                        }
-                    }
-                }
-                else if ((int)statusCode == 429)
-                {
-                    throw new ThrottleException() { RetryParams = currentRetryPolicy };
-                }
-                else
-                {
-                    // 400: when request payload validation fails.
-                    // 401: if the bot token is invalid 
-                    // 403: if bot does not have permission to post messages within Tenant.
-                    // 404: when Team is not found.
-
-                    // invalid/unexpected status code
-                    var ex = new HttpOperationException($"Operation returned an invalid status code '{statusCode}'");
-                    if (httpResponse.Content != null)
-                    {
-                        responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    }
-                    else
-                    {
-                        responseContent = string.Empty;
-                    }
-
-                    ex.Request = new HttpRequestMessageWrapper(httpRequest, requestContent);
-                    ex.Response = new HttpResponseMessageWrapper(httpResponse, responseContent);
-                    if (shouldTrace)
-                    {
-                        ServiceClientTracing.Error(invocationId, ex);
-                    }
-
-                    throw ex;
-                }
-            }
-            finally
-            {
-                if (httpResponse != null)
-                {
-                    httpResponse.Dispose();
-                }
-            }
-
-            if (shouldTrace)
-            {
-                ServiceClientTracing.Exit(invocationId, result);
-            }
-
-            return result;
+            return await GetBatchResponseAsync<string>(apiUrl, "POST", shouldTrace, invocationId, activity, content, customHeaders, cancellationToken).ConfigureAwait(false);
         }
 
         private async Task<HttpOperationResponse<BatchOperationState>> GetOperationStateWithRetryAsync(string operationId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
@@ -1384,134 +873,30 @@ namespace Microsoft.Bot.Connector.Teams
                 ServiceClientTracing.Enter(invocationId, this, "GetOperationState", tracingParameters);
             }
 
-            // Construct URL
-            var baseUrl = Client.BaseUri.AbsoluteUri;
-            var url = new Uri(new Uri(baseUrl + (baseUrl.EndsWith("/", StringComparison.InvariantCulture) ? string.Empty : "/")), "v3/batch/conversation/{operationId}").ToString();
-            url = url.Replace("{operationId}", System.Uri.EscapeDataString(operationId));
-            using var httpRequest = new HttpRequestMessage();
-            httpRequest.Method = new HttpMethod("GET");
-            httpRequest.RequestUri = new Uri(url);
+            var apiUrl = "v3/batch/conversation/{operationId}";
+            apiUrl = apiUrl.Replace("{operationId}", Uri.EscapeDataString(operationId));
 
-            HttpResponseMessage httpResponse = null;
+            return await GetBatchResponseAsync<BatchOperationState>(apiUrl, "GET", shouldTrace, invocationId, null, null, customHeaders, cancellationToken).ConfigureAwait(false);
+        }
 
-            // Create HTTP transport objects
-#pragma warning disable CA2000 // Dispose objects before losing scope
-            var result = new HttpOperationResponse<BatchOperationState>();
-#pragma warning restore CA2000 // Dispose objects before losing scope
-            try
-            {
-                // Set Headers
-                if (customHeaders != null)
-                {
-                    foreach (var header in customHeaders)
-                    {
-                        if (httpRequest.Headers.Contains(header.Key))
-                        {
-                            httpRequest.Headers.Remove(header.Key);
-                        }
-
-                        httpRequest.Headers.TryAddWithoutValidation(header.Key, header.Value);
-                    }
-                }
-
-                // Set Credentials
-                if (Client.Credentials != null)
-                {
-                    cancellationToken.ThrowIfCancellationRequested();
-                    await Client.Credentials.ProcessHttpRequestAsync(httpRequest, cancellationToken).ConfigureAwait(false);
-                }
-
-                // Send Request
-                if (shouldTrace)
-                {
-                    ServiceClientTracing.SendRequest(invocationId, httpRequest);
-                }
-
-                cancellationToken.ThrowIfCancellationRequested();
-                httpResponse = await Client.HttpClient.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false);
-                if (shouldTrace)
-                {
-                    ServiceClientTracing.ReceiveResponse(invocationId, httpResponse);
-                }
-
-                var statusCode = httpResponse.StatusCode;
-                cancellationToken.ThrowIfCancellationRequested();
-                string responseContent = null;
-
-                // Create Result
-                result.Request = httpRequest;
-                result.Response = httpResponse;
-
-                if ((int)statusCode == 200)
-                {
-                    // 200: OK
-
-                    responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    try
-                    {
-                        result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<BatchOperationState>(responseContent, Client.DeserializationSettings);
-                    }
-                    catch (JsonException ex)
-                    {
-                        if (shouldTrace)
-                        {
-                            ServiceClientTracing.Error(invocationId, ex);
-                        }
-
-                        throw new SerializationException("Unable to deserialize the response.", responseContent, ex);
-                    }
-                    finally
-                    {
-                        // This means the request was successful. We can make our retry policy null.
-                        if (currentRetryPolicy != null)
-                        {
-                            currentRetryPolicy = null;
-                        }
-                    }
-                }
-                else if ((int)statusCode == 429)
-                {
-                    throw new ThrottleException() { RetryParams = currentRetryPolicy };
-                }
-                else
-                {
-                    // 400: for requests with invalid operationId (Which should be of type GUID)
-
-                    // invalid/unexpected status code
-                    var ex = new HttpOperationException($"Operation returned an invalid status code '{statusCode}'");
-                    if (httpResponse.Content != null)
-                    {
-                        responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    }
-                    else
-                    {
-                        responseContent = string.Empty;
-                    }
-
-                    ex.Request = new HttpRequestMessageWrapper(httpRequest, operationId);
-                    ex.Response = new HttpResponseMessageWrapper(httpResponse, responseContent);
-                    if (shouldTrace)
-                    {
-                        ServiceClientTracing.Error(invocationId, ex);
-                    }
-
-                    throw ex;
-                }
-            }
-            finally
-            {
-                if (httpResponse != null)
-                {
-                    httpResponse.Dispose();
-                }
-            }
-
+        private async Task<HttpOperationResponse> CancelOperationWithRetryAsync(string operationId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            // Tracing
+            var shouldTrace = ServiceClientTracing.IsEnabled;
+            string invocationId = null;
             if (shouldTrace)
             {
-                ServiceClientTracing.Exit(invocationId, result);
+                invocationId = ServiceClientTracing.NextInvocationId.ToString(CultureInfo.InvariantCulture);
+                var tracingParameters = new Dictionary<string, object>();
+                tracingParameters.Add("operationId", operationId);
+                tracingParameters.Add("cancellationToken", cancellationToken);
+                ServiceClientTracing.Enter(invocationId, this, "CancelOperation", tracingParameters);
             }
 
-            return result;
+            var apiUrl = "v3/batch/conversation/{operationId}";
+            apiUrl = apiUrl.Replace("{operationId}", Uri.EscapeDataString(operationId));
+
+            return await GetBatchResponseAsync<BatchOperationState>(apiUrl, "DELETE", shouldTrace, invocationId, null, null, customHeaders, cancellationToken).ConfigureAwait(false);
         }
 
         private async Task<HttpOperationResponse<BatchFailedEntriesResponse>> GetFailedEntriesPaginatedWithRetryAsync(string operationId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
@@ -1528,133 +913,10 @@ namespace Microsoft.Bot.Connector.Teams
                 ServiceClientTracing.Enter(invocationId, this, "GetFailedEntriesPaginated", tracingParameters);
             }
 
-            // Construct URL
-            var baseUrl = Client.BaseUri.AbsoluteUri;
-            var url = new Uri(new Uri(baseUrl + (baseUrl.EndsWith("/", StringComparison.InvariantCulture) ? string.Empty : "/")), "v3/batch/conversation/failedentries/{operationId}").ToString();
-            url = url.Replace("{operationId}", Uri.EscapeDataString(operationId));
-            using var httpRequest = new HttpRequestMessage();
-            httpRequest.Method = new HttpMethod("GET");
-            httpRequest.RequestUri = new Uri(url);
+            var apiUrl = "v3/batch/conversation/failedentries/{operationId}";
+            apiUrl = apiUrl.Replace("{operationId}", Uri.EscapeDataString(operationId));
 
-            HttpResponseMessage httpResponse = null;
-
-            // Create HTTP transport objects
-#pragma warning disable CA2000 // Dispose objects before losing scope
-            var result = new HttpOperationResponse<BatchFailedEntriesResponse>();
-#pragma warning restore CA2000 // Dispose objects before losing scope
-            try
-            {
-                // Set Headers
-                if (customHeaders != null)
-                {
-                    foreach (var header in customHeaders)
-                    {
-                        if (httpRequest.Headers.Contains(header.Key))
-                        {
-                            httpRequest.Headers.Remove(header.Key);
-                        }
-
-                        httpRequest.Headers.TryAddWithoutValidation(header.Key, header.Value);
-                    }
-                }
-
-                // Set Credentials
-                if (Client.Credentials != null)
-                {
-                    cancellationToken.ThrowIfCancellationRequested();
-                    await Client.Credentials.ProcessHttpRequestAsync(httpRequest, cancellationToken).ConfigureAwait(false);
-                }
-
-                // Send Request
-                if (shouldTrace)
-                {
-                    ServiceClientTracing.SendRequest(invocationId, httpRequest);
-                }
-
-                cancellationToken.ThrowIfCancellationRequested();
-                httpResponse = await Client.HttpClient.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false);
-                if (shouldTrace)
-                {
-                    ServiceClientTracing.ReceiveResponse(invocationId, httpResponse);
-                }
-
-                var statusCode = httpResponse.StatusCode;
-                cancellationToken.ThrowIfCancellationRequested();
-                string responseContent = null;
-
-                // Create Result
-                result.Request = httpRequest;
-                result.Response = httpResponse;
-
-                if ((int)statusCode == 200)
-                {
-                    // 200: OK
-                    responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    try
-                    {
-                        result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<BatchFailedEntriesResponse>(responseContent, Client.DeserializationSettings);
-                    }
-                    catch (JsonException ex)
-                    {
-                        if (shouldTrace)
-                        {
-                            ServiceClientTracing.Error(invocationId, ex);
-                        }
-
-                        throw new SerializationException("Unable to deserialize the response.", responseContent, ex);
-                    }
-                    finally
-                    {
-                        // This means the request was successful. We can make our retry policy null.
-                        if (currentRetryPolicy != null)
-                        {
-                            currentRetryPolicy = null;
-                        }
-                    }
-                }
-                else if ((int)statusCode == 429)
-                {
-                    throw new ThrottleException() { RetryParams = currentRetryPolicy };
-                }
-                else
-                {
-                    // 400: for requests with invalid operationId (Which should be of type GUID)
-
-                    // invalid/unexpected status code
-                    var ex = new HttpOperationException($"Operation returned an invalid status code '{statusCode}'");
-                    if (httpResponse.Content != null)
-                    {
-                        responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    }
-                    else
-                    {
-                        responseContent = string.Empty;
-                    }
-
-                    ex.Request = new HttpRequestMessageWrapper(httpRequest, operationId);
-                    ex.Response = new HttpResponseMessageWrapper(httpResponse, responseContent);
-                    if (shouldTrace)
-                    {
-                        ServiceClientTracing.Error(invocationId, ex);
-                    }
-
-                    throw ex;
-                }
-            }
-            finally
-            {
-                if (httpResponse != null)
-                {
-                    httpResponse.Dispose();
-                }
-            }
-
-            if (shouldTrace)
-            {
-                ServiceClientTracing.Exit(invocationId, result);
-            }
-
-            return result;
+            return await GetBatchResponseAsync<BatchFailedEntriesResponse>(apiUrl, "GET", shouldTrace, invocationId, null, null, customHeaders, cancellationToken).ConfigureAwait(false);
         }
 
         private async Task<HttpOperationResponse<T>> GetResponseAsync<T>(string url, bool shouldTrace, string invocationId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
@@ -1755,6 +1017,144 @@ namespace Microsoft.Bot.Connector.Teams
                     }
 
                     throw new SerializationException("Unable to deserialize the response.", responseContent, ex);
+                }
+            }
+
+            if (shouldTrace)
+            {
+                ServiceClientTracing.Exit(invocationId, result);
+            }
+
+            return result;
+        }
+
+        private async Task<HttpOperationResponse<T>> GetBatchResponseAsync<T>(string apiUrl, string httpMethod, bool shouldTrace, string invocationId, IActivity activity = null, object content = null, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            // Construct URL
+            var baseUrl = Client.BaseUri.AbsoluteUri;
+            var url = new Uri(new Uri(baseUrl + (baseUrl.EndsWith("/", StringComparison.InvariantCulture) ? string.Empty : "/")), apiUrl).ToString();
+            using var httpRequest = new HttpRequestMessage();
+            httpRequest.Method = new HttpMethod(httpMethod);
+            httpRequest.RequestUri = new Uri(url);
+            HttpResponseMessage httpResponse = null;
+
+            // Create HTTP transport objects
+#pragma warning disable CA2000 // Dispose objects before losing scope
+            var result = new HttpOperationResponse<T>();
+#pragma warning restore CA2000 // Dispose objects before losing scope
+            try
+            {
+                // Set Headers
+                if (customHeaders != null)
+                {
+                    foreach (var header in customHeaders)
+                    {
+                        if (httpRequest.Headers.Contains(header.Key))
+                        {
+                            httpRequest.Headers.Remove(header.Key);
+                        }
+
+                        httpRequest.Headers.TryAddWithoutValidation(header.Key, header.Value);
+                    }
+                }
+
+                // Serialize Request
+                string requestContent = null;
+                if (activity != null)
+                {
+                    requestContent = Rest.Serialization.SafeJsonConvert.SerializeObject(content);
+                    httpRequest.Content = new StringContent(requestContent, System.Text.Encoding.UTF8);
+                    httpRequest.Content.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
+                }
+
+                if (Client.Credentials != null)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    await Client.Credentials.ProcessHttpRequestAsync(httpRequest, cancellationToken).ConfigureAwait(false);
+                }
+
+                // Send Request
+                if (shouldTrace)
+                {
+                    ServiceClientTracing.SendRequest(invocationId, httpRequest);
+                }
+
+                cancellationToken.ThrowIfCancellationRequested();
+                httpResponse = await Client.HttpClient.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false);
+                if (shouldTrace)
+                {
+                    ServiceClientTracing.ReceiveResponse(invocationId, httpResponse);
+                }
+
+                var statusCode = httpResponse.StatusCode;
+                cancellationToken.ThrowIfCancellationRequested();
+                string responseContent = null;
+
+                // Create Result
+                result.Request = httpRequest;
+                result.Response = httpResponse;
+                if ((int)statusCode == 201)
+                {
+                    //200:ok
+                    //201: created
+                    try
+                    {
+                        responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                        result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<T>(responseContent, Client.DeserializationSettings);
+                    }
+                    catch (JsonException ex)
+                    {
+                        if (shouldTrace)
+                        {
+                            ServiceClientTracing.Error(invocationId, ex);
+                        }
+
+                        throw new SerializationException("Unable to deserialize the response.", responseContent, ex);
+                    }
+                    finally
+                    {
+                        // This means the request was successful. We can make our retry policy null.
+                        if (currentRetryPolicy != null)
+                        {
+                            currentRetryPolicy = null;
+                        }
+                    }
+                }
+                else if ((int)statusCode == 429)
+                {
+                    throw new ThrottleException() { RetryParams = currentRetryPolicy };
+                }
+                else
+                {
+                    // 400: when request payload validation fails.
+                    // 401: if the bot token is invalid.
+                    // 403: if bot does not have permission to post messages within Tenant.
+                    // invalid/unexpected status code
+                    var ex = new HttpOperationException($"Operation returned an invalid status code '{statusCode}'");
+                    if (httpResponse.Content != null)
+                    {
+                        responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        responseContent = string.Empty;
+                    }
+
+                    ex.Request = new HttpRequestMessageWrapper(httpRequest, requestContent);
+                    ex.Response = new HttpResponseMessageWrapper(httpResponse, responseContent);
+                    if (shouldTrace)
+                    {
+                        ServiceClientTracing.Error(invocationId, ex);
+                    }
+
+                    throw ex;
+                }
+            }
+            finally
+            {
+                if (httpResponse != null)
+                {
+                    httpResponse.Dispose();
                 }
             }
 
