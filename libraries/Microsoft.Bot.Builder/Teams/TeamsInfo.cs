@@ -438,12 +438,29 @@ namespace Microsoft.Bot.Builder.Teams
         }
 
         /// <summary>
-        /// Cancels the process of an operation.
+        /// Gets the failed entries of a batch operation.
+        /// </summary>
+        /// <param name="turnContext">The turn context.</param>
+        /// <param name="operationId">The operationId to get the failed entries of.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The list of failed entries of the operation.</returns>
+        public static async Task<BatchFailedEntriesResponse> GetPagedFailedEntriesAsync(ITurnContext turnContext, string operationId, CancellationToken cancellationToken = default)
+        {
+            operationId = operationId ?? throw new InvalidOperationException($"{nameof(operationId)} is required.");
+
+            using (var teamsClient = GetTeamsConnectorClient(turnContext))
+            {
+                return await teamsClient.Teams.GetPagedFailedEntriesAsync(operationId, cancellationToken).ConfigureAwait(false);
+            }
+        }
+
+        /// <summary>
+        /// Cancels a batch operation by its id.
         /// </summary>
         /// <param name="turnContext"> Turn context. </param>
         /// <param name="operationId"> The id of the operation to cancel. </param>
         /// <param name="cancellationToken"> The cancellation token. </param>
-        /// <returns>The state and responses of the operation.</returns>
+        /// <returns>The response state code.</returns>
         public static async Task CancelOperationAsync(ITurnContext turnContext, string operationId, CancellationToken cancellationToken = default)
         {
             operationId = operationId ?? throw new InvalidOperationException($"{nameof(operationId)} is required.");
