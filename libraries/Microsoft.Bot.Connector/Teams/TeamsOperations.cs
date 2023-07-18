@@ -720,7 +720,7 @@ namespace Microsoft.Bot.Connector.Teams
         /// Thrown when an input value does not match the expected data type, range or pattern.
         /// </exception>
         /// <returns>
-        /// The response state code.
+        /// A <see cref="Task"/> representing the asynchronous operation.
         /// </returns>
         public async Task<HttpOperationResponse> CancelOperationAsync(string operationId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
         {

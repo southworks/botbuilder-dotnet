@@ -460,7 +460,7 @@ namespace Microsoft.Bot.Builder.Teams
         /// <param name="turnContext"> Turn context. </param>
         /// <param name="operationId"> The id of the operation to cancel. </param>
         /// <param name="cancellationToken"> The cancellation token. </param>
-        /// <returns>The response state code.</returns>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public static async Task CancelOperationAsync(ITurnContext turnContext, string operationId, CancellationToken cancellationToken = default)
         {
             operationId = operationId ?? throw new InvalidOperationException($"{nameof(operationId)} is required.");

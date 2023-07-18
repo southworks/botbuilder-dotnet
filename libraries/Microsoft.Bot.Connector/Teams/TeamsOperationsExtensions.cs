@@ -341,7 +341,7 @@ namespace Microsoft.Bot.Connector.Teams
         /// <param name='cancellationToken'>
         /// The cancellation token.
         /// </param>
-        /// <returns>The response state code.</returns>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public static async Task CancelOperationAsync(this ITeamsOperations operations, string operationId, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (operations is TeamsOperations teamsOperations)
