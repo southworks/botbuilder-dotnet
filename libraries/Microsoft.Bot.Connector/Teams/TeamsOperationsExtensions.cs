@@ -308,31 +308,6 @@ namespace Microsoft.Bot.Connector.Teams
         }
 
         /// <summary>
-        /// Cancels the process of an operation.
-        /// </summary>
-        /// <param name='operations'>
-        /// The operations group for this extension method.
-        /// </param>
-        /// <param name='operationId'>
-        /// The id of the operation to cancel.
-        /// </param>
-        /// <param name='cancellationToken'>
-        /// The cancellation token.
-        /// </param>
-        /// <returns>The state and responses of the operation.</returns>
-        public static async Task CancelOperationAsync(this ITeamsOperations operations, string operationId, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            if (operations is TeamsOperations teamsOperations)
-            {
-                await teamsOperations.CancelOperationAsync(operationId, null, cancellationToken).ConfigureAwait(false);
-            }
-            else
-            {
-                throw new InvalidOperationException("TeamsOperations with CancelOperationAsync is required for CancelOperationAsync.");
-            }
-        }
-
-        /// <summary>
         /// Gets the failed entries of a batch operation.
         /// </summary>
         /// <param name='operations'>The operations group for this extension method.</param>
@@ -351,6 +326,31 @@ namespace Microsoft.Bot.Connector.Teams
             else
             {
                 throw new InvalidOperationException("TeamsOperations with GetPagedFailedEntriesAsync is required for GetPagedFailedEntriesAsync.");
+            }
+        }
+
+        /// <summary>
+        /// Cancels a batch operation by its id.
+        /// </summary>
+        /// <param name='operations'>
+        /// The operations group for this extension method.
+        /// </param>
+        /// <param name='operationId'>
+        /// The id of the operation to cancel.
+        /// </param>
+        /// <param name='cancellationToken'>
+        /// The cancellation token.
+        /// </param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        public static async Task CancelOperationAsync(this ITeamsOperations operations, string operationId, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (operations is TeamsOperations teamsOperations)
+            {
+                await teamsOperations.CancelOperationAsync(operationId, null, cancellationToken).ConfigureAwait(false);
+            }
+            else
+            {
+                throw new InvalidOperationException("TeamsOperations with CancelOperationAsync is required for CancelOperationAsync.");
             }
         }
     }

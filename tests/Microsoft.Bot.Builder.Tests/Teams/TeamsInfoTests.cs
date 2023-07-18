@@ -615,9 +615,9 @@ namespace Microsoft.Bot.Builder.Teams.Tests
         [InlineData("200")]
         [InlineData("400")]
         [InlineData("429")]
-        public async Task TestCancelOperationAsync(string statusCode)
+        public async Task TestGetPagedFailedEntriesAsync(string statusCode)
         {
-            // 200: Ok for successful cancelled operations (Operations in state completed, or failed will not change state to cancel but still return 200)
+            // 200: ok
             // 400: for requests with invalid operationId (Which should be of type GUID).
             // 429: too many requests for throttled requests.
 
@@ -631,7 +631,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             var activity = new Activity
             {
                 Type = "message",
-                Text = "Test-CancelOperationAsync",
+                Text = "Test-GetPagedFailedEntriesAsync",
                 ChannelId = Channels.Msteams,
                 ServiceUrl = "https://test.coffee",
                 From = new ChannelAccount()
@@ -654,9 +654,9 @@ namespace Microsoft.Bot.Builder.Teams.Tests
         [InlineData("200")]
         [InlineData("400")]
         [InlineData("429")]
-        public async Task TestGetPagedFailedEntriesAsync(string statusCode)
+        public async Task TestCancelOperationAsync(string statusCode)
         {
-            // 200: ok
+            // 200: Ok for successful cancelled operations (Operations in state completed, or failed will not change state to cancel but still return 200)
             // 400: for requests with invalid operationId (Which should be of type GUID).
             // 429: too many requests for throttled requests.
 
@@ -670,7 +670,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             var activity = new Activity
             {
                 Type = "message",
-                Text = "Test-GetPagedFailedEntriesAsync",
+                Text = "Test-CancelOperationAsync",
                 ChannelId = Channels.Msteams,
                 ServiceUrl = "https://test.coffee",
                 From = new ChannelAccount()
@@ -739,11 +739,11 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                     case "Test-GetOperationStateAsync":
                         await CallGetOperationStateAsync(turnContext);
                         break;
-                    case "Test-CancelOperationAsync":
-                        await CallCancelOperationAsync(turnContext);
-                        break;
                     case "Test-GetPagedFailedEntriesAsync":
                         await CallGetPagedFailedEntriesAsync(turnContext);
+                        break;
+                    case "Test-CancelOperationAsync":
+                        await CallCancelOperationAsync(turnContext);
                         break;
                     default:
                         Assert.True(false);
@@ -1196,49 +1196,6 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 }
             }
 
-            private async Task CallCancelOperationAsync(ITurnContext turnContext)
-            {
-                var from = turnContext.Activity.From.Name;
-                var operationId = "operation-id*";
-                AggregateException exception = null;
-
-                try
-                {
-                    await TeamsInfo.CancelOperationAsync(turnContext, operationId + from).ConfigureAwait(false);
-
-                    switch (from)
-                    {
-                        case "200":
-                            Assert.Null(exception);
-                            break;
-                        default:
-                            throw new InvalidOperationException($"Expected {nameof(HttpOperationException)} with response status code {from}.");
-                    }
-                }
-                catch (AggregateException ex)
-                {
-                    exception = ex;
-                    var firstException = exception.InnerExceptions.First();
-                    var httpException = new HttpOperationException();
-                    var errorResponse = new ErrorResponse();
-
-                    switch (from)
-                    {
-                        case "400":
-                            Assert.Single(exception.InnerExceptions);
-                            httpException = (HttpOperationException)firstException;
-                            errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(httpException.Response.Content.ToString());
-                            Assert.Equal("BadSyntax", errorResponse.Error.Code);
-                            break;
-                        case "429":
-                            Assert.Equal(11, exception.InnerExceptions.Count);
-                            break;
-                        default:
-                            throw new InvalidOperationException($"Expected {nameof(HttpOperationException)} with response status code {from}.");
-                    }
-                }
-            }
-
             private async Task CallGetPagedFailedEntriesAsync(ITurnContext turnContext)
             {
                 var from = turnContext.Activity.From.Name;
@@ -1282,6 +1239,48 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                             break;
                         case "429":
                             Assert.Equal(11, ex.InnerExceptions.Count);
+                            break;
+                        default:
+                            throw new InvalidOperationException($"Expected {nameof(HttpOperationException)} with response status code {from}.");
+                    }
+                }
+            }
+
+            private async Task CallCancelOperationAsync(ITurnContext turnContext)
+            {
+                var from = turnContext.Activity.From.Name;
+                var operationId = "operation-id*";
+                AggregateException exception = null;
+
+                try
+                {
+                    await TeamsInfo.CancelOperationAsync(turnContext, operationId + from).ConfigureAwait(false);
+
+                    switch (from)
+                    {
+                        case "200":
+                            Assert.Null(exception);
+                            break;
+                        default:
+                            throw new InvalidOperationException($"Expected {nameof(HttpOperationException)} with response status code {from}.");
+                    }
+                }
+                catch (AggregateException ex)
+                {
+                    exception = ex;
+                    var firstException = exception.InnerExceptions.First();
+                    var httpException = new HttpOperationException();
+                    var errorResponse = new ErrorResponse();
+                    switch (from)
+                    {
+                        case "400":
+                            Assert.Single(exception.InnerExceptions);
+                            httpException = (HttpOperationException)firstException;
+                            errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(httpException.Response.Content.ToString());
+                            Assert.Equal("BadSyntax", errorResponse.Error.Code);
+                            break;
+                        case "429":
+                            Assert.Equal(11, exception.InnerExceptions.Count);
                             break;
                         default:
                             throw new InvalidOperationException($"Expected {nameof(HttpOperationException)} with response status code {from}.");
@@ -1640,32 +1639,6 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                     }
                 }
 
-                // CancelOperation
-                else if (request.RequestUri.PathAndQuery.Contains("v3/batch/conversation/operation-id") && request.Method.ToString() == "DELETE")
-                {
-                    // get status from url for testing
-                    var uri = request.RequestUri.PathAndQuery;
-                    var status = uri.Substring(uri.IndexOf("%2A") + 3);
-
-                    switch (status)
-                    {
-                        case "200":
-                            response.StatusCode = HttpStatusCode.OK;
-                            break;
-                        case "400":
-                            response.Content = new StringContent("{\"error\":{\"code\":\"BadSyntax\"}}");
-                            response.StatusCode = HttpStatusCode.BadRequest;
-                            break;
-                        case "429":
-                            response.Content = new StringContent("{\"error\":{\"code\":\"TooManyRequests\"}}");
-                            response.StatusCode = HttpStatusCode.TooManyRequests;
-                            break;
-                        default:
-                            response.StatusCode = HttpStatusCode.Accepted;
-                            break;
-                    }
-                }
-
                 // GetPagedFailedEntries
                 else if (request.RequestUri.PathAndQuery.Contains("v3/batch/conversation/failedentries/operation-id"))
                 {
@@ -1682,6 +1655,32 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                                 new JProperty("failedEntries", new JArray(new JObject(new JProperty("id", "entry-1"), new JProperty("error", "400 user not found")))),
                             };
                             response.Content = new StringContent(content.ToString());
+                            response.StatusCode = HttpStatusCode.OK;
+                            break;
+                        case "400":
+                            response.Content = new StringContent("{\"error\":{\"code\":\"BadSyntax\"}}");
+                            response.StatusCode = HttpStatusCode.BadRequest;
+                            break;
+                        case "429":
+                            response.Content = new StringContent("{\"error\":{\"code\":\"TooManyRequests\"}}");
+                            response.StatusCode = HttpStatusCode.TooManyRequests;
+                            break;
+                        default:
+                            response.StatusCode = HttpStatusCode.Accepted;
+                            break;
+                    }
+                }
+
+                // CancelOperation
+                else if (request.RequestUri.PathAndQuery.Contains("v3/batch/conversation/operation-id") && request.Method.ToString() == "DELETE")
+                {
+                    // get status from url for testing
+                    var uri = request.RequestUri.PathAndQuery;
+                    var status = uri.Substring(uri.IndexOf("%2A") + 3);
+
+                    switch (status)
+                    {
+                        case "200":
                             response.StatusCode = HttpStatusCode.OK;
                             break;
                         case "400":

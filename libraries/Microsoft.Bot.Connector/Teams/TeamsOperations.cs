@@ -678,36 +678,6 @@ namespace Microsoft.Bot.Connector.Teams
         }
 
         /// <summary>
-        /// Cancels the process of an operation.
-        /// </summary>
-        /// <param name="operationId"> The id of the operation to cancel. </param>
-        /// <param name="customHeaders"> Headers that will be added to request. </param>
-        /// <param name='cancellationToken'> The cancellation token. </param>
-        /// <exception cref="HttpOperationException">
-        /// Thrown when the operation returned an invalid status code.
-        /// </exception>
-        /// <exception cref="ValidationException">
-        /// Thrown when an input value does not match the expected data type, range or pattern.
-        /// </exception>
-        /// <returns>
-        /// A response object containing the state and responses of the operation.
-        /// </returns>
-        public async Task<HttpOperationResponse> CancelOperationAsync(string operationId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            if (string.IsNullOrEmpty(operationId))
-            {
-                throw new ValidationException(ValidationRules.CannotBeNull, nameof(operationId));
-            }
-
-            // In case of throttling, it will retry the operation with default values (10 retries every 50 miliseconds).
-            var result = await RetryAction.RunAsync(
-                task: () => CancelOperationWithRetryAsync(operationId, customHeaders, cancellationToken),
-                retryExceptionHandler: (ex, ct) => HandleThrottlingException(ex, ct)).ConfigureAwait(false);
-
-            return result;
-        }
-
-        /// <summary>
         /// Gets the failed entries of a batch operation with error code and message.
         /// </summary>
         /// <param name="operationId">The operationId to get the failed entries of.</param>
@@ -732,6 +702,36 @@ namespace Microsoft.Bot.Connector.Teams
             // In case of throttling, it will retry the operation with default values (10 retries every 50 miliseconds).
             var result = await RetryAction.RunAsync(
                 task: () => GetFailedEntriesPaginatedWithRetryAsync(operationId, customHeaders, cancellationToken),
+                retryExceptionHandler: (ex, ct) => HandleThrottlingException(ex, ct)).ConfigureAwait(false);
+
+            return result;
+        }
+
+        /// <summary>
+        /// Cancels a batch operation by its id.
+        /// </summary>
+        /// <param name="operationId"> The id of the operation to cancel. </param>
+        /// <param name="customHeaders"> Headers that will be added to request. </param>
+        /// <param name='cancellationToken'> The cancellation token. </param>
+        /// <exception cref="HttpOperationException">
+        /// Thrown when the operation returned an invalid status code.
+        /// </exception>
+        /// <exception cref="ValidationException">
+        /// Thrown when an input value does not match the expected data type, range or pattern.
+        /// </exception>
+        /// <returns>
+        /// A <see cref="Task"/> representing the asynchronous operation.
+        /// </returns>
+        public async Task<HttpOperationResponse> CancelOperationAsync(string operationId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (string.IsNullOrEmpty(operationId))
+            {
+                throw new ValidationException(ValidationRules.CannotBeNull, nameof(operationId));
+            }
+
+            // In case of throttling, it will retry the operation with default values (10 retries every 50 miliseconds).
+            var result = await RetryAction.RunAsync(
+                task: () => CancelOperationWithRetryAsync(operationId, customHeaders, cancellationToken),
                 retryExceptionHandler: (ex, ct) => HandleThrottlingException(ex, ct)).ConfigureAwait(false);
 
             return result;
@@ -1095,18 +1095,18 @@ namespace Microsoft.Bot.Connector.Teams
                 result.Response = httpResponse;
                 if ((int)statusCode == 201 || (int)statusCode == 200)
                 {
-                    //200:ok
+                    //200: ok
                     //201: created
                     try
                     {
-                        responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false); 
+                        responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
 
                         if (typeof(T) == typeof(string))
                         {
                             responseContent = JsonConvert.SerializeObject(responseContent, Client.SerializationSettings);
                         }
 
-                        result.Body = JsonConvert.DeserializeAnonymousType<T>(responseContent, result.Body);                      
+                        result.Body = JsonConvert.DeserializeAnonymousType<T>(responseContent, result.Body);
                     }
                     catch (JsonException ex)
                     {
@@ -1135,7 +1135,9 @@ namespace Microsoft.Bot.Connector.Teams
                     // 400: when request payload validation fails.
                     // 401: if the bot token is invalid.
                     // 403: if bot does not have permission to post messages within Tenant.
+                    // 404: the resource couldn't be found
                     // invalid/unexpected status code
+
                     var ex = new HttpOperationException($"Operation returned an invalid status code '{statusCode}'");
                     if (httpResponse.Content != null)
                     {
