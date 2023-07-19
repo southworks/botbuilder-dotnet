@@ -529,20 +529,12 @@ namespace Microsoft.Bot.Connector.Teams
                 TenantId = tenantId,
             };
 
-            // Tracing
-            var shouldTrace = ServiceClientTracing.IsEnabled;
-            string invocationId = null;
-            if (shouldTrace)
-            {
-                invocationId = ServiceClientTracing.NextInvocationId.ToString(CultureInfo.InvariantCulture);
-                TraceActivity("SendMessageToAllUsersInTenant", content, invocationId, cancellationToken);
-            }
-
+            string invocationId = TraceActivity("SendMessageToAllUsersInTenant", content, cancellationToken);
             var apiUrl = "v3/batch/conversation/users/";
 
             // In case of throttling, it will retry the operation with default values (10 retries every 50 miliseconds).
             var result = await RetryAction.RunAsync(
-                task: () => GetBatchResponseWithRetryAsync<string>(apiUrl, "POST", shouldTrace, invocationId, activity, content, customHeaders, cancellationToken),
+                task: () => GetBatchResponseWithRetryAsync<string>(apiUrl, "POST", invocationId, activity, content, customHeaders, cancellationToken),
                 retryExceptionHandler: (ex, ct) => HandleThrottlingException(ex, ct)).ConfigureAwait(false);
 
             return result;
@@ -582,20 +574,12 @@ namespace Microsoft.Bot.Connector.Teams
                 TenantId = tenantId,
             };
 
-            // Tracing
-            var shouldTrace = ServiceClientTracing.IsEnabled;
-            string invocationId = null;
-            if (shouldTrace)
-            {
-                invocationId = ServiceClientTracing.NextInvocationId.ToString(CultureInfo.InvariantCulture);
-                TraceActivity("SendMessageToAllUsersInTenant", content, invocationId, cancellationToken);
-            }
-
+            string invocationId = TraceActivity("SendMessageToAllUsersInTenant", content, cancellationToken);
             var apiUrl = "v3/batch/conversation/tenant/";
 
             // In case of throttling, it will retry the operation with default values (10 retries every 50 miliseconds).
             var result = await RetryAction.RunAsync(
-                task: () => GetBatchResponseWithRetryAsync<string>(apiUrl, "POST", shouldTrace, invocationId, activity, content, customHeaders, cancellationToken),
+                task: () => GetBatchResponseWithRetryAsync<string>(apiUrl, "POST", invocationId, activity, content, customHeaders, cancellationToken),
                 retryExceptionHandler: (ex, ct) => HandleThrottlingException(ex, ct)).ConfigureAwait(false);
 
             return result;
@@ -642,20 +626,12 @@ namespace Microsoft.Bot.Connector.Teams
                 TenantId = tenantId,
             };
 
-            // Tracing
-            var shouldTrace = ServiceClientTracing.IsEnabled;
-            string invocationId = null;
-            if (shouldTrace)
-            {
-                invocationId = ServiceClientTracing.NextInvocationId.ToString(CultureInfo.InvariantCulture);
-                TraceActivity("SendMessageToAllUsersInTeam", content, invocationId, cancellationToken);
-            }
-
+            string invocationId = TraceActivity("SendMessageToAllUsersInTeam", content, cancellationToken);
             var apiUrl = "v3/batch/conversation/team/";
 
             // In case of throttling, it will retry the operation with default values (10 retries every 50 miliseconds).
             var result = await RetryAction.RunAsync(
-                task: () => GetBatchResponseWithRetryAsync<string>(apiUrl, "POST", shouldTrace, invocationId, activity, content, customHeaders, cancellationToken),
+                task: () => GetBatchResponseWithRetryAsync<string>(apiUrl, "POST", invocationId, activity, content, customHeaders, cancellationToken),
                 retryExceptionHandler: (ex, ct) => HandleThrottlingException(ex, ct)).ConfigureAwait(false);
 
             return result;
@@ -702,20 +678,12 @@ namespace Microsoft.Bot.Connector.Teams
                 TenantId = tenantId,
             };
 
-            // Tracing
-            var shouldTrace = ServiceClientTracing.IsEnabled;
-            string invocationId = null;
-            if (shouldTrace)
-            {
-                invocationId = ServiceClientTracing.NextInvocationId.ToString(CultureInfo.InvariantCulture);
-                TraceActivity("SendMessageToListOfChannels", content, invocationId, cancellationToken);
-            }
-
+            string invocationId = TraceActivity("SendMessageToListOfChannels", content, cancellationToken);
             var apiUrl = "v3/batch/conversation/channels/";
 
             // In case of throttling, it will retry the operation with default values (10 retries every 50 miliseconds).
             var result = await RetryAction.RunAsync(
-                task: () => GetBatchResponseWithRetryAsync<string>(apiUrl, "POST", shouldTrace, invocationId, activity, content, customHeaders, cancellationToken),
+                task: () => GetBatchResponseWithRetryAsync<string>(apiUrl, "POST", invocationId, activity, content, customHeaders, cancellationToken),
                 retryExceptionHandler: (ex, ct) => HandleThrottlingException(ex, ct)).ConfigureAwait(false);
 
             return result;
@@ -743,21 +711,13 @@ namespace Microsoft.Bot.Connector.Teams
                 throw new ValidationException(ValidationRules.CannotBeNull, nameof(operationId));
             }
 
-            // Tracing
-            var shouldTrace = ServiceClientTracing.IsEnabled;
-            string invocationId = null;
-            if (shouldTrace)
-            {
-                invocationId = ServiceClientTracing.NextInvocationId.ToString(CultureInfo.InvariantCulture);
-                TraceActivity("GetOperationState", new { OperationId = operationId }, invocationId, cancellationToken);
-            }
-
+            string invocationId = TraceActivity("GetOperationState", new { OperationId = operationId }, cancellationToken);
             var apiUrl = "v3/batch/conversation/{operationId}";
             apiUrl = apiUrl.Replace("{operationId}", Uri.EscapeDataString(operationId));
 
             // In case of throttling, it will retry the operation with default values (10 retries every 50 miliseconds).
             var result = await RetryAction.RunAsync(
-                task: () => GetBatchResponseWithRetryAsync<BatchOperationState>(apiUrl, "GET", shouldTrace, invocationId, null, null, customHeaders, cancellationToken),
+                task: () => GetBatchResponseWithRetryAsync<BatchOperationState>(apiUrl, "GET", invocationId, null, null, customHeaders, cancellationToken),
                 retryExceptionHandler: (ex, ct) => HandleThrottlingException(ex, ct)).ConfigureAwait(false);
 
             return result;
@@ -785,21 +745,13 @@ namespace Microsoft.Bot.Connector.Teams
                 throw new ValidationException(ValidationRules.CannotBeNull, nameof(operationId));
             }
 
-            // Tracing
-            var shouldTrace = ServiceClientTracing.IsEnabled;
-            string invocationId = null;
-            if (shouldTrace)
-            {
-                invocationId = ServiceClientTracing.NextInvocationId.ToString(CultureInfo.InvariantCulture);
-                TraceActivity("GetFailedEntriesPaginated", new { OperationId = operationId }, invocationId, cancellationToken);
-            }
-
+            string invocationId = TraceActivity("GetFailedEntriesPaginated", new { OperationId = operationId }, cancellationToken);
             var apiUrl = "v3/batch/conversation/failedentries/{operationId}";
             apiUrl = apiUrl.Replace("{operationId}", Uri.EscapeDataString(operationId));
 
             // In case of throttling, it will retry the operation with default values (10 retries every 50 miliseconds).
             var result = await RetryAction.RunAsync(
-                task: () => GetBatchResponseWithRetryAsync<BatchFailedEntriesResponse>(apiUrl, "GET", shouldTrace, invocationId, null, null, customHeaders, cancellationToken),
+                task: () => GetBatchResponseWithRetryAsync<BatchFailedEntriesResponse>(apiUrl, "GET", invocationId, null, null, customHeaders, cancellationToken),
                 retryExceptionHandler: (ex, ct) => HandleThrottlingException(ex, ct)).ConfigureAwait(false);
 
             return result;
@@ -827,21 +779,13 @@ namespace Microsoft.Bot.Connector.Teams
                 throw new ValidationException(ValidationRules.CannotBeNull, nameof(operationId));
             }
 
-            // Tracing
-            var shouldTrace = ServiceClientTracing.IsEnabled;
-            string invocationId = null;
-            if (shouldTrace)
-            {
-                invocationId = ServiceClientTracing.NextInvocationId.ToString(CultureInfo.InvariantCulture);
-                TraceActivity("CancelOperation", new { OperationId = operationId }, invocationId, cancellationToken);
-            }
-
+            string invocationId = TraceActivity("CancelOperation", new { OperationId = operationId }, cancellationToken);     
             var apiUrl = "v3/batch/conversation/{operationId}";
             apiUrl = apiUrl.Replace("{operationId}", Uri.EscapeDataString(operationId));
 
             // In case of throttling, it will retry the operation with default values (10 retries every 50 miliseconds).
             var result = await RetryAction.RunAsync(
-                task: () => GetBatchResponseWithRetryAsync<BatchOperationState>(apiUrl, "DELETE", shouldTrace, invocationId, null, null, customHeaders, cancellationToken),
+                task: () => GetBatchResponseWithRetryAsync<BatchOperationState>(apiUrl, "DELETE", invocationId, null, null, customHeaders, cancellationToken),
                 retryExceptionHandler: (ex, ct) => HandleThrottlingException(ex, ct)).ConfigureAwait(false);
 
             return result;
@@ -968,8 +912,10 @@ namespace Microsoft.Bot.Connector.Teams
             return result;
         }
 
-        private async Task<HttpOperationResponse<T>> GetBatchResponseWithRetryAsync<T>(string apiUrl, string httpMethod, bool shouldTrace, string invocationId, IActivity activity = null, object content = null, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
+        private async Task<HttpOperationResponse<T>> GetBatchResponseWithRetryAsync<T>(string apiUrl, string httpMethod, string invocationId, IActivity activity = null, object content = null, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
         {
+            var shouldTrace = invocationId != null;
+
             // Construct URL
             var baseUrl = "https://canary.botapi.skype.com/amer";
             var url = new Uri(new Uri(baseUrl + (baseUrl.EndsWith("/", StringComparison.InvariantCulture) ? string.Empty : "/")), apiUrl).ToString();
@@ -1114,18 +1060,24 @@ namespace Microsoft.Bot.Connector.Teams
             return result;
         }
 
-        private void TraceActivity(string operationName, object content, string invocationId, CancellationToken cancellationToken)
+        private string TraceActivity(string operationName, object content, CancellationToken cancellationToken)
         {
-            var tracingParameters = new Dictionary<string, object>();
+            var shouldTrace = ServiceClientTracing.IsEnabled;
+            string invocationId = null;
 
-            foreach (PropertyInfo prop in content.GetType().GetProperties())
+            if (shouldTrace)
             {
-                tracingParameters.Add(prop.Name, prop.GetValue(content));
+                var tracingParameters = new Dictionary<string, object>();
+                foreach (PropertyInfo prop in content.GetType().GetProperties())
+                {
+                    tracingParameters.Add(prop.Name, prop.GetValue(content));
+                }
+
+                tracingParameters.Add("cancellationToken", cancellationToken);
+                ServiceClientTracing.Enter(invocationId, this, operationName, tracingParameters);
             }
 
-            tracingParameters.Add("cancellationToken", cancellationToken);
-
-            ServiceClientTracing.Enter(invocationId, this, operationName, tracingParameters);
+            return invocationId;
         }
     }
 }
