@@ -4,13 +4,11 @@
 namespace Microsoft.Bot.Connector.Teams
 {
     using System;
-    using System.Collections;
     using System.Collections.Generic;
     using System.Globalization;
     using System.Net;
     using System.Net.Http;
     using System.Reflection;
-    using System.Runtime.ConstrainedExecution;
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Bot.Connector.Authentication;
@@ -88,24 +86,13 @@ namespace Microsoft.Bot.Connector.Teams
                 throw new ValidationException(ValidationRules.CannotBeNull, "teamId");
             }
 
-            // Tracing
-            bool shouldTrace = ServiceClientTracing.IsEnabled;
-            string invocationId = null;
-            if (shouldTrace)
-            {
-                invocationId = ServiceClientTracing.NextInvocationId.ToString(CultureInfo.InvariantCulture);
-                Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
-                tracingParameters.Add("teamId", teamId);
-                tracingParameters.Add("cancellationToken", cancellationToken);
-                ServiceClientTracing.Enter(invocationId, this, "FetchChannelList", tracingParameters);
-            }
+            var invocationId = TraceActivity("FetchChannelList", new { teamId }, cancellationToken);
 
             // Construct URL
-            var baseUrl = Client.BaseUri.AbsoluteUri;
-            var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/", System.StringComparison.InvariantCulture) ? string.Empty : "/")), "v3/teams/{teamId}/conversations").ToString();
-            url = url.Replace("{teamId}", System.Uri.EscapeDataString(teamId));
+            var url = "v3/teams/{teamId}/conversations";
+            url = url.Replace("{teamId}", Uri.EscapeDataString(teamId));
 
-            return await GetResponseAsync<ConversationList>(url, shouldTrace, invocationId, cancellationToken: cancellationToken).ConfigureAwait(false);
+            return await GetBatchResponseWithRetryAsync<ConversationList>(url, "GET", invocationId, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -142,24 +129,14 @@ namespace Microsoft.Bot.Connector.Teams
                 throw new ValidationException(ValidationRules.CannotBeNull, "teamId");
             }
 
-            // Tracing
-            bool shouldTrace = ServiceClientTracing.IsEnabled;
-            string invocationId = null;
-            if (shouldTrace)
-            {
-                invocationId = ServiceClientTracing.NextInvocationId.ToString(CultureInfo.InvariantCulture);
-                Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
-                tracingParameters.Add("teamId", teamId);
-                tracingParameters.Add("cancellationToken", cancellationToken);
-                ServiceClientTracing.Enter(invocationId, this, "FetchTeamDetails", tracingParameters);
-            }
+            var invocationId = TraceActivity("FetchTeamDetails", new { teamId }, cancellationToken);
 
             // Construct URL
             var baseUrl = Client.BaseUri.AbsoluteUri;
-            var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/", System.StringComparison.InvariantCulture) ? string.Empty : "/")), "v3/teams/{teamId}").ToString();
-            url = url.Replace("{teamId}", System.Uri.EscapeDataString(teamId));
+            var url = "v3/teams/{teamId}";
+            url = url.Replace("{teamId}", Uri.EscapeDataString(teamId));
 
-            return await GetResponseAsync<TeamDetails>(url, shouldTrace, invocationId, cancellationToken: cancellationToken).ConfigureAwait(false);
+            return await GetBatchResponseWithRetryAsync<TeamDetails>(url, "GET", invocationId, customHeaders: customHeaders, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -196,24 +173,13 @@ namespace Microsoft.Bot.Connector.Teams
                 throw new ValidationException(ValidationRules.CannotBeNull, "meetingId");
             }
 
-            // Tracing
-            bool shouldTrace = ServiceClientTracing.IsEnabled;
-            string invocationId = null;
-            if (shouldTrace)
-            {
-                invocationId = ServiceClientTracing.NextInvocationId.ToString(CultureInfo.InvariantCulture);
-                Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
-                tracingParameters.Add("meetingId", meetingId);
-                tracingParameters.Add("cancellationToken", cancellationToken);
-                ServiceClientTracing.Enter(invocationId, this, "FetchMeetingInfo", tracingParameters);
-            }
+            var invocationId = TraceActivity("FetchMeetingInfo", new { meetingId }, cancellationToken);
 
             // Construct URL
-            var baseUrl = Client.BaseUri.AbsoluteUri;
-            var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/", System.StringComparison.InvariantCulture) ? string.Empty : "/")), "v1/meetings/{meetingId}").ToString();
+            var url = "v1/meetings/{meetingId}";
             url = url.Replace("{meetingId}", System.Uri.EscapeDataString(meetingId));
 
-            return await GetResponseAsync<MeetingInfo>(url, shouldTrace, invocationId, customHeaders, cancellationToken: cancellationToken).ConfigureAwait(false);
+            return await GetBatchResponseWithRetryAsync<MeetingInfo>(url, "GET", invocationId, customHeaders: customHeaders, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -271,28 +237,22 @@ namespace Microsoft.Bot.Connector.Teams
                 throw new ValidationException(ValidationRules.CannotBeNull, nameof(tenantId));
             }
 
-            // Tracing
-            bool shouldTrace = ServiceClientTracing.IsEnabled;
-            string invocationId = null;
-            if (shouldTrace)
+            var content = new
             {
-                invocationId = ServiceClientTracing.NextInvocationId.ToString(CultureInfo.InvariantCulture);
-                Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
-                tracingParameters.Add("meetingId", meetingId);
-                tracingParameters.Add("participantId", participantId);
-                tracingParameters.Add("tenantId", tenantId);
-                tracingParameters.Add("cancellationToken", cancellationToken);
-                ServiceClientTracing.Enter(invocationId, this, "GetParticipant", tracingParameters);
-            }
+                meetingId,
+                participantId,
+                tenantId,
+            };
+
+            var invocationId = TraceActivity("GetParticipant", content, cancellationToken);
 
             // Construct URL
-            var baseUrl = Client.BaseUri.AbsoluteUri;
-            var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/", System.StringComparison.InvariantCulture) ? string.Empty : "/")), "v1/meetings/{meetingId}/participants/{participantId}?tenantId={tenantId}").ToString();
+            var url = "v1/meetings/{meetingId}/participants/{participantId}?tenantId={tenantId}";
             url = url.Replace("{meetingId}", System.Uri.EscapeDataString(meetingId));
             url = url.Replace("{participantId}", System.Uri.EscapeDataString(participantId));
             url = url.Replace("{tenantId}", System.Uri.EscapeDataString(tenantId));
 
-            return await GetResponseAsync<TeamsMeetingParticipant>(url, shouldTrace, invocationId, cancellationToken: cancellationToken).ConfigureAwait(false);
+            return await GetBatchResponseWithRetryAsync<TeamsMeetingParticipant>(url, "GET", invocationId, customHeaders: customHeaders, cancellationToken: cancellationToken).ConfigureAwait(false); 
         }
 
         /// <summary>
@@ -335,157 +295,13 @@ namespace Microsoft.Bot.Connector.Teams
                 throw new ValidationException(ValidationRules.CannotBeNull, nameof(meetingId));
             }
 
-            // Tracing
-            bool shouldTrace = ServiceClientTracing.IsEnabled;
-            string invocationId = null;
-            if (shouldTrace)
-            {
-                invocationId = ServiceClientTracing.NextInvocationId.ToString(CultureInfo.InvariantCulture);
-                Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
-                tracingParameters.Add("meetingId", meetingId);
-                tracingParameters.Add("cancellationToken", cancellationToken);
-                ServiceClientTracing.Enter(invocationId, this, "SendMeetingNotification", tracingParameters);
-            }
+            var invocationId = TraceActivity("SendMeetingNotification", new { meetingId }, cancellationToken);           
 
             // Construct URL
-            var baseUrl = Client.BaseUri.AbsoluteUri;
-            var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/", System.StringComparison.InvariantCulture) ? string.Empty : "/")), "v1/meetings/{meetingId}/notification").ToString();
-            url = url.Replace("{meetingId}", System.Uri.EscapeDataString(meetingId));
-            using var httpRequest = new HttpRequestMessage();
-            httpRequest.Method = new HttpMethod("POST");
-            httpRequest.RequestUri = new System.Uri(url);
+            var url = "v1/meetings/{meetingId}/notification";
+            url = url.Replace("{meetingId}", Uri.EscapeDataString(meetingId));
 
-            HttpResponseMessage httpResponse = null;
-
-            // Create HTTP transport objects
-#pragma warning disable CA2000 // Dispose objects before losing scope
-            var result = new HttpOperationResponse<MeetingNotificationResponse>();
-#pragma warning restore CA2000 // Dispose objects before losing scope
-            try
-            {
-                // Set Headers
-                if (customHeaders != null)
-                {
-                    foreach (var header in customHeaders)
-                    {
-                        if (httpRequest.Headers.Contains(header.Key))
-                        {
-                            httpRequest.Headers.Remove(header.Key);
-                        }
-
-                        httpRequest.Headers.TryAddWithoutValidation(header.Key, header.Value);
-                    }
-                }
-
-                // Serialize Request
-                string requestContent = null;
-                if (notification != null)
-                {
-                    requestContent = Rest.Serialization.SafeJsonConvert.SerializeObject(notification, Client.SerializationSettings);
-                    httpRequest.Content = new StringContent(requestContent, System.Text.Encoding.UTF8);
-                    httpRequest.Content.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
-                }
-
-                // Set Credentials
-                if (Client.Credentials != null)
-                {
-                    cancellationToken.ThrowIfCancellationRequested();
-                    await Client.Credentials.ProcessHttpRequestAsync(httpRequest, cancellationToken).ConfigureAwait(false);
-                }
-
-                // Send Request
-                if (shouldTrace)
-                {
-                    ServiceClientTracing.SendRequest(invocationId, httpRequest);
-                }
-
-                cancellationToken.ThrowIfCancellationRequested();
-                httpResponse = await Client.HttpClient.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false);
-                if (shouldTrace)
-                {
-                    ServiceClientTracing.ReceiveResponse(invocationId, httpResponse);
-                }
-
-                HttpStatusCode statusCode = httpResponse.StatusCode;
-                cancellationToken.ThrowIfCancellationRequested();
-                string responseContent = null;
-
-                // Create Result
-                result.Request = httpRequest;
-                result.Response = httpResponse;
-
-                if ((int)statusCode == 207)
-                {
-                    // 207: if the notifications are sent only to parital number of recipients because
-                    //    the validation on some recipients’ ids failed or some recipients were not found in the roster.
-                    // In this case, SMBA will return the user MRIs of those failed recipients in a format that was given to a bot
-                    // (ex: if a bot sent encrypted user MRIs, return encrypted one).
-
-                    responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    try
-                    {
-                        result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<MeetingNotificationResponse>(responseContent, Client.DeserializationSettings);
-                    }
-                    catch (JsonException ex)
-                    {
-                        if (shouldTrace)
-                        {
-                            ServiceClientTracing.Error(invocationId, ex);
-                        }
-
-                        throw new SerializationException("Unable to deserialize the response.", responseContent, ex);
-                    }
-                }
-                else if ((int)statusCode != 202)
-                {
-                    // 400: when Meeting Notification request payload validation fails. For instance, 
-                    //    • Recipients: # of recipients is greater than what the API allows || all of recipients’ user ids were invalid
-                    //    • Surface: 
-                    //        o Surface list is empty or null 
-                    //        o Surface type is invalid 
-                    //        o Duplicative surface type exists in one payload
-                    // 401: if the bot token is invalid 
-                    // 403: if the bot is not allowed to send the notification.
-                    //     In this case, the payload should contain more detail error message.
-                    //     There can be many reasons: bot disabled by tenant admin, blocked during live site mitigation,
-                    //     the bot does not have a correct RSC permission for a specific surface type, etc
-                    // 404: if a meeting chat is not found || None of the receipients were found in the roster. 
-
-                    // invalid/unexpected status code
-                    var ex = new HttpOperationException($"Operation returned an invalid status code '{statusCode}'");
-                    if (httpResponse.Content != null)
-                    {
-                        responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    }
-                    else
-                    {
-                        responseContent = string.Empty;
-                    }
-
-                    ex.Request = new HttpRequestMessageWrapper(httpRequest, requestContent);
-                    ex.Response = new HttpResponseMessageWrapper(httpResponse, responseContent);
-                    if (shouldTrace)
-                    {
-                        ServiceClientTracing.Error(invocationId, ex);
-                    }
-
-                    throw ex;
-                }
-            }
-            finally
-            {
-                if (httpResponse != null)
-                {
-                    httpResponse.Dispose();
-                }
-            }
-
-            if (shouldTrace)
-            {
-                ServiceClientTracing.Exit(invocationId, result);
-            }
-
-            return result;
+            return await GetBatchResponseWithRetryAsync<MeetingNotificationResponse>(url, "POST", invocationId, content: notification, customHeaders: customHeaders, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -529,12 +345,12 @@ namespace Microsoft.Bot.Connector.Teams
                 TenantId = tenantId,
             };
 
-            string invocationId = TraceActivity("SendMessageToAllUsersInTenant", content, cancellationToken);
+            var invocationId = TraceActivity("SendMessageToAllUsersInTenant", content, cancellationToken);
             var apiUrl = "v3/batch/conversation/users/";
 
             // In case of throttling, it will retry the operation with default values (10 retries every 50 miliseconds).
             var result = await RetryAction.RunAsync(
-                task: () => GetBatchResponseWithRetryAsync<string>(apiUrl, "POST", invocationId, activity, content, customHeaders, cancellationToken),
+                task: () => GetBatchResponseWithRetryAsync<string>(apiUrl, "POST", invocationId, content: content, customHeaders: customHeaders, cancellationToken: cancellationToken),
                 retryExceptionHandler: (ex, ct) => HandleThrottlingException(ex, ct)).ConfigureAwait(false);
 
             return result;
@@ -574,12 +390,12 @@ namespace Microsoft.Bot.Connector.Teams
                 TenantId = tenantId,
             };
 
-            string invocationId = TraceActivity("SendMessageToAllUsersInTenant", content, cancellationToken);
+            var invocationId = TraceActivity("SendMessageToAllUsersInTenant", content, cancellationToken);
             var apiUrl = "v3/batch/conversation/tenant/";
 
             // In case of throttling, it will retry the operation with default values (10 retries every 50 miliseconds).
             var result = await RetryAction.RunAsync(
-                task: () => GetBatchResponseWithRetryAsync<string>(apiUrl, "POST", invocationId, activity, content, customHeaders, cancellationToken),
+                task: () => GetBatchResponseWithRetryAsync<string>(apiUrl, "POST", invocationId, content: content, customHeaders: customHeaders, cancellationToken: cancellationToken),
                 retryExceptionHandler: (ex, ct) => HandleThrottlingException(ex, ct)).ConfigureAwait(false);
 
             return result;
@@ -625,13 +441,13 @@ namespace Microsoft.Bot.Connector.Teams
                 TeamId = teamId,
                 TenantId = tenantId,
             };
-
-            string invocationId = TraceActivity("SendMessageToAllUsersInTeam", content, cancellationToken);
+     
+            var invocationId = TraceActivity("SendMessageToAllUsersInTeam", content, cancellationToken);
             var apiUrl = "v3/batch/conversation/team/";
 
             // In case of throttling, it will retry the operation with default values (10 retries every 50 miliseconds).
             var result = await RetryAction.RunAsync(
-                task: () => GetBatchResponseWithRetryAsync<string>(apiUrl, "POST", invocationId, activity, content, customHeaders, cancellationToken),
+                task: () => GetBatchResponseWithRetryAsync<string>(apiUrl, "POST", invocationId, content: content, customHeaders: customHeaders, cancellationToken: cancellationToken),
                 retryExceptionHandler: (ex, ct) => HandleThrottlingException(ex, ct)).ConfigureAwait(false);
 
             return result;
@@ -678,12 +494,12 @@ namespace Microsoft.Bot.Connector.Teams
                 TenantId = tenantId,
             };
 
-            string invocationId = TraceActivity("SendMessageToListOfChannels", content, cancellationToken);
+            var invocationId = TraceActivity("SendMessageToListOfChannels", content, cancellationToken);
             var apiUrl = "v3/batch/conversation/channels/";
 
             // In case of throttling, it will retry the operation with default values (10 retries every 50 miliseconds).
             var result = await RetryAction.RunAsync(
-                task: () => GetBatchResponseWithRetryAsync<string>(apiUrl, "POST", invocationId, activity, content, customHeaders, cancellationToken),
+                task: () => GetBatchResponseWithRetryAsync<string>(apiUrl, "POST", invocationId, content: content, customHeaders: customHeaders, cancellationToken: cancellationToken),
                 retryExceptionHandler: (ex, ct) => HandleThrottlingException(ex, ct)).ConfigureAwait(false);
 
             return result;
@@ -711,13 +527,13 @@ namespace Microsoft.Bot.Connector.Teams
                 throw new ValidationException(ValidationRules.CannotBeNull, nameof(operationId));
             }
 
-            string invocationId = TraceActivity("GetOperationState", new { OperationId = operationId }, cancellationToken);
+            var invocationId = TraceActivity("GetOperationState", new { OperationId = operationId }, cancellationToken);
             var apiUrl = "v3/batch/conversation/{operationId}";
             apiUrl = apiUrl.Replace("{operationId}", Uri.EscapeDataString(operationId));
 
             // In case of throttling, it will retry the operation with default values (10 retries every 50 miliseconds).
             var result = await RetryAction.RunAsync(
-                task: () => GetBatchResponseWithRetryAsync<BatchOperationState>(apiUrl, "GET", invocationId, null, null, customHeaders, cancellationToken),
+                task: () => GetBatchResponseWithRetryAsync<BatchOperationState>(apiUrl, "GET", invocationId, customHeaders: customHeaders, cancellationToken: cancellationToken),
                 retryExceptionHandler: (ex, ct) => HandleThrottlingException(ex, ct)).ConfigureAwait(false);
 
             return result;
@@ -728,6 +544,7 @@ namespace Microsoft.Bot.Connector.Teams
         /// </summary>
         /// <param name="operationId"> The operationId to get the failed entries of. </param>
         /// <param name="customHeaders"> Headers that will be added to request. </param>
+        /// <param name="continuationToken"> The continuation token. </param>
         /// <param name='cancellationToken'> The cancellation token. </param>
         /// <exception cref="HttpOperationException">
         /// Thrown when the operation returned an invalid status code.
@@ -738,20 +555,20 @@ namespace Microsoft.Bot.Connector.Teams
         /// <returns>
         /// A response object containing the state and responses of the operation.
         /// </returns>
-        public async Task<HttpOperationResponse<BatchFailedEntriesResponse>> GetPagedFailedEntriesAsync(string operationId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<HttpOperationResponse<BatchFailedEntriesResponse>> GetPagedFailedEntriesAsync(string operationId, Dictionary<string, List<string>> customHeaders = null, string continuationToken = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (string.IsNullOrEmpty(operationId))
             {
                 throw new ValidationException(ValidationRules.CannotBeNull, nameof(operationId));
             }
 
-            string invocationId = TraceActivity("GetFailedEntriesPaginated", new { OperationId = operationId }, cancellationToken);
+            var invocationId = TraceActivity("GetFailedEntriesPaginated", new { OperationId = operationId }, cancellationToken);
             var apiUrl = "v3/batch/conversation/failedentries/{operationId}";
             apiUrl = apiUrl.Replace("{operationId}", Uri.EscapeDataString(operationId));
 
             // In case of throttling, it will retry the operation with default values (10 retries every 50 miliseconds).
             var result = await RetryAction.RunAsync(
-                task: () => GetBatchResponseWithRetryAsync<BatchFailedEntriesResponse>(apiUrl, "GET", invocationId, null, null, customHeaders, cancellationToken),
+                task: () => GetBatchResponseWithRetryAsync<BatchFailedEntriesResponse>(apiUrl, "GET", invocationId, continuationToken: continuationToken, customHeaders: customHeaders, cancellationToken: cancellationToken),
                 retryExceptionHandler: (ex, ct) => HandleThrottlingException(ex, ct)).ConfigureAwait(false);
 
             return result;
@@ -779,13 +596,13 @@ namespace Microsoft.Bot.Connector.Teams
                 throw new ValidationException(ValidationRules.CannotBeNull, nameof(operationId));
             }
 
-            string invocationId = TraceActivity("CancelOperation", new { OperationId = operationId }, cancellationToken);     
+            var invocationId = TraceActivity("CancelOperation", new { OperationId = operationId }, cancellationToken);     
             var apiUrl = "v3/batch/conversation/{operationId}";
             apiUrl = apiUrl.Replace("{operationId}", Uri.EscapeDataString(operationId));
 
             // In case of throttling, it will retry the operation with default values (10 retries every 50 miliseconds).
             var result = await RetryAction.RunAsync(
-                task: () => GetBatchResponseWithRetryAsync<BatchOperationState>(apiUrl, "DELETE", invocationId, null, null, customHeaders, cancellationToken),
+                task: () => GetBatchResponseWithRetryAsync<BatchOperationState>(apiUrl, "DELETE", invocationId, customHeaders: customHeaders, cancellationToken: cancellationToken),
                 retryExceptionHandler: (ex, ct) => HandleThrottlingException(ex, ct)).ConfigureAwait(false);
 
             return result;
@@ -803,124 +620,21 @@ namespace Microsoft.Bot.Connector.Teams
             }
         }
 
-        private async Task<HttpOperationResponse<T>> GetResponseAsync<T>(string url, bool shouldTrace, string invocationId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
+        private async Task<HttpOperationResponse<T>> GetBatchResponseWithRetryAsync<T>(string apiUrl, string httpMethod, string invocationId, object content = null, Dictionary<string, List<string>> customHeaders = null, string continuationToken = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            // Create HTTP transport objects
-            var httpRequest = new HttpRequestMessage();
-            HttpResponseMessage httpResponse = null;
-            httpRequest.Method = new HttpMethod("GET");
-            httpRequest.RequestUri = new System.Uri(url);
-
-            // Set Headers
-            if (customHeaders != null)
-            {
-                foreach (var header in customHeaders)
-                {
-                    if (httpRequest.Headers.Contains(header.Key))
-                    {
-                        httpRequest.Headers.Remove(header.Key);
-                    }
-
-                    httpRequest.Headers.TryAddWithoutValidation(header.Key, header.Value);
-                }
-            }
-
-            // Serialize Request
-            string requestContent = null;
-
-            // Set Credentials
-            if (Client.Credentials != null)
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-                await Client.Credentials.ProcessHttpRequestAsync(httpRequest, cancellationToken).ConfigureAwait(false);
-            }
-
-            // Send Request
-            if (shouldTrace)
-            {
-                ServiceClientTracing.SendRequest(invocationId, httpRequest);
-            }
-
-            cancellationToken.ThrowIfCancellationRequested();
-            httpResponse = await Client.HttpClient.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false);
-            if (shouldTrace)
-            {
-                ServiceClientTracing.ReceiveResponse(invocationId, httpResponse);
-            }
-
-            HttpStatusCode statusCode = httpResponse.StatusCode;
-            cancellationToken.ThrowIfCancellationRequested();
-            string responseContent = null;
-            if ((int)statusCode != 200)
-            {
-                var ex = new HttpOperationException($"Operation returned an invalid status code '{statusCode}'");
-                if (httpResponse.Content != null)
-                {
-                    responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                }
-                else
-                {
-                    responseContent = string.Empty;
-                }
-
-                ex.Request = new HttpRequestMessageWrapper(httpRequest, requestContent);
-                ex.Response = new HttpResponseMessageWrapper(httpResponse, responseContent);
-                if (shouldTrace)
-                {
-                    ServiceClientTracing.Error(invocationId, ex);
-                }
-
-                httpRequest.Dispose();
-                if (httpResponse != null)
-                {
-                    httpResponse.Dispose();
-                }
-
-                throw ex;
-            }
-
-            // Create Result
-            var result = new HttpOperationResponse<T>();
-            result.Request = httpRequest;
-            result.Response = httpResponse;
-
-            // Deserialize Response
-            if ((int)statusCode == 200)
-            {
-                responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                try
-                {
-                    result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<T>(responseContent, Client.DeserializationSettings);
-                }
-                catch (JsonException ex)
-                {
-                    httpRequest.Dispose();
-                    if (httpResponse != null)
-                    {
-                        httpResponse.Dispose();
-                    }
-
-                    throw new SerializationException("Unable to deserialize the response.", responseContent, ex);
-                }
-            }
-
-            if (shouldTrace)
-            {
-                ServiceClientTracing.Exit(invocationId, result);
-            }
-
-            return result;
-        }
-
-        private async Task<HttpOperationResponse<T>> GetBatchResponseWithRetryAsync<T>(string apiUrl, string httpMethod, string invocationId, IActivity activity = null, object content = null, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            var shouldTrace = invocationId != null;
+            var shouldTrace = invocationId != null;             
 
             // Construct URL
-            var baseUrl = "https://canary.botapi.skype.com/amer";
+            var baseUrl = Client.BaseUri.AbsoluteUri;
             var url = new Uri(new Uri(baseUrl + (baseUrl.EndsWith("/", StringComparison.InvariantCulture) ? string.Empty : "/")), apiUrl).ToString();
             using var httpRequest = new HttpRequestMessage();
             httpRequest.Method = new HttpMethod(httpMethod);
+
+            if (continuationToken != null)
+            {
+                url += "?" + string.Join("&", string.Format(CultureInfo.InvariantCulture, "continuationToken={0}", System.Uri.EscapeDataString(continuationToken)));
+            }
+
             httpRequest.RequestUri = new Uri(url);
             HttpResponseMessage httpResponse = null;
 
@@ -946,13 +660,14 @@ namespace Microsoft.Bot.Connector.Teams
 
                 // Serialize Request
                 string requestContent = null;
-                if (activity != null)
+                if (content != null)
                 {
                     requestContent = Rest.Serialization.SafeJsonConvert.SerializeObject(content);
                     httpRequest.Content = new StringContent(requestContent, System.Text.Encoding.UTF8);
                     httpRequest.Content.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
                 }
 
+                // Set Credentials
                 if (Client.Credentials != null)
                 {
                     cancellationToken.ThrowIfCancellationRequested();
@@ -979,7 +694,8 @@ namespace Microsoft.Bot.Connector.Teams
                 // Create Result
                 result.Request = httpRequest;
                 result.Response = httpResponse;
-                if ((int)statusCode == 201 || (int)statusCode == 200)
+
+                if (httpResponse.IsSuccessStatusCode)
                 {
                     //200: ok
                     //201: created
@@ -992,7 +708,7 @@ namespace Microsoft.Bot.Connector.Teams
                             responseContent = JsonConvert.SerializeObject(responseContent, Client.SerializationSettings);
                         }
 
-                        result.Body = JsonConvert.DeserializeAnonymousType<T>(responseContent, result.Body);
+                        result.Body = JsonConvert.DeserializeObject<T>(responseContent, Client.DeserializationSettings);
                     }
                     catch (JsonException ex)
                     {

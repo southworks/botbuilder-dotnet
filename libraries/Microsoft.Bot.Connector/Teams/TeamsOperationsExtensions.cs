@@ -312,13 +312,14 @@ namespace Microsoft.Bot.Connector.Teams
         /// </summary>
         /// <param name='operations'>The operations group for this extension method.</param>
         /// <param name='operationId'>The operationId to get the failed entries of.</param>
+        /// <param name="continuationToken"> The continuation token. </param>
         /// <param name='cancellationToken'>The cancellation token.</param>
         /// <returns>The list of failed entries of the operation.</returns>
-        public static async Task<BatchFailedEntriesResponse> GetPagedFailedEntriesAsync(this ITeamsOperations operations, string operationId, CancellationToken cancellationToken = default)
+        public static async Task<BatchFailedEntriesResponse> GetPagedFailedEntriesAsync(this ITeamsOperations operations, string operationId, string continuationToken = null, CancellationToken cancellationToken = default)
         {
             if (operations is TeamsOperations teamsOperations)
             {
-                using (var result = await teamsOperations.GetPagedFailedEntriesAsync(operationId, null, cancellationToken).ConfigureAwait(false))
+                using (var result = await teamsOperations.GetPagedFailedEntriesAsync(operationId, null, continuationToken, cancellationToken).ConfigureAwait(false))
                 {
                     return result.Body;
                 }
