@@ -561,7 +561,7 @@ namespace Microsoft.Bot.Connector.Teams
                 throw new ValidationException(ValidationRules.CannotBeNull, nameof(operationId));
             }
 
-            var invocationId = TraceActivity("GetFailedEntries", new { OperationId = operationId }, cancellationToken);
+            var invocationId = TraceActivity("GetPagedFailedEntries", new { OperationId = operationId }, cancellationToken);
             var apiUrl = "v3/batch/conversation/failedentries/{operationId}";
             apiUrl = apiUrl.Replace("{operationId}", Uri.EscapeDataString(operationId));
 
