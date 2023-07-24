@@ -6,7 +6,6 @@ namespace Microsoft.Bot.Connector.Teams
     using System;
     using System.Collections.Generic;
     using System.Globalization;
-    using System.Net;
     using System.Net.Http;
     using System.Reflection;
     using System.Threading;
@@ -555,7 +554,7 @@ namespace Microsoft.Bot.Connector.Teams
         /// <returns>
         /// A response object containing the state and responses of the operation.
         /// </returns>
-        public async Task<HttpOperationResponse<BatchFailedEntriesResponse>> GetPagedFailedEntriesAsync(string operationId, Dictionary<string, List<string>> customHeaders = null, string continuationToken = null, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<HttpOperationResponse<BatchFailedEntriesResponse>> GetPagedFailedEntriesPaginatedAsync(string operationId, Dictionary<string, List<string>> customHeaders = null, string continuationToken = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (string.IsNullOrEmpty(operationId))
             {
@@ -620,7 +619,7 @@ namespace Microsoft.Bot.Connector.Teams
             }
         }
 
-        private async Task<HttpOperationResponse<T>> GetBatchResponseWithRetryAsync<T>(string apiUrl, string httpMethod, string invocationId, object content = null, Dictionary<string, List<string>> customHeaders = null, string continuationToken = null, CancellationToken cancellationToken = default(CancellationToken))
+        private async Task<HttpOperationResponse<T>> GetResponseAsync<T>(string apiUrl, string httpMethod, string invocationId, object content = null, Dictionary<string, List<string>> customHeaders = null, string continuationToken = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             var shouldTrace = invocationId != null;             
 
@@ -632,7 +631,7 @@ namespace Microsoft.Bot.Connector.Teams
 
             if (continuationToken != null)
             {
-                url += "?" + string.Join("&", string.Format(CultureInfo.InvariantCulture, "continuationToken={0}", System.Uri.EscapeDataString(continuationToken)));
+                url += "?" + string.Join("&", string.Format(CultureInfo.InvariantCulture, "continuationToken={0}", Uri.EscapeDataString(continuationToken)));
             }
 
             httpRequest.RequestUri = new Uri(url);

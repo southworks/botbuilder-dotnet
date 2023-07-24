@@ -1155,10 +1155,9 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 var response = new BatchOperationState
                 {
                     State = "state-1",
-                    Response = new BatchOperationResponse(),
                     TotalEntriesCount = 1
                 };
-                response.Response.StatusMap.Add("statusMap-1", 1);
+                response.StatusMap.Add("statusMap-1", 1);
 
                 try
                 {
