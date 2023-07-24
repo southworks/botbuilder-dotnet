@@ -131,7 +131,6 @@ namespace Microsoft.Bot.Connector.Teams
             var invocationId = TraceActivity("FetchTeamDetails", new { teamId }, cancellationToken);
 
             // Construct URL
-            var baseUrl = Client.BaseUri.AbsoluteUri;
             var url = "v3/teams/{teamId}";
             url = url.Replace("{teamId}", Uri.EscapeDataString(teamId));
 
@@ -243,7 +242,7 @@ namespace Microsoft.Bot.Connector.Teams
                 tenantId,
             };
 
-            var invocationId = TraceActivity("GetParticipant", content, cancellationToken);
+            var invocationId = TraceActivity("FetchParticipant", content, cancellationToken);
 
             // Construct URL
             var url = "v1/meetings/{meetingId}/participants/{participantId}?tenantId={tenantId}";
@@ -344,7 +343,7 @@ namespace Microsoft.Bot.Connector.Teams
                 TenantId = tenantId,
             };
 
-            var invocationId = TraceActivity("SendMessageToAllUsersInTenant", content, cancellationToken);
+            var invocationId = TraceActivity("SendMessageToListOfUsers", content, cancellationToken);
             var apiUrl = "v3/batch/conversation/users/";
 
             // In case of throttling, it will retry the operation with default values (10 retries every 50 miliseconds).
