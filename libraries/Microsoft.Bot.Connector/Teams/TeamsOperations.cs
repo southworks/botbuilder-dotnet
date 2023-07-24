@@ -91,7 +91,7 @@ namespace Microsoft.Bot.Connector.Teams
             var url = "v3/teams/{teamId}/conversations";
             url = url.Replace("{teamId}", Uri.EscapeDataString(teamId));
 
-            return await GetBatchResponseWithRetryAsync<ConversationList>(url, "GET", invocationId, cancellationToken: cancellationToken).ConfigureAwait(false);
+            return await GetResponseAsync<ConversationList>(url, "GET", invocationId, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -135,7 +135,7 @@ namespace Microsoft.Bot.Connector.Teams
             var url = "v3/teams/{teamId}";
             url = url.Replace("{teamId}", Uri.EscapeDataString(teamId));
 
-            return await GetBatchResponseWithRetryAsync<TeamDetails>(url, "GET", invocationId, customHeaders: customHeaders, cancellationToken: cancellationToken).ConfigureAwait(false);
+            return await GetResponseAsync<TeamDetails>(url, "GET", invocationId, customHeaders: customHeaders, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -178,7 +178,7 @@ namespace Microsoft.Bot.Connector.Teams
             var url = "v1/meetings/{meetingId}";
             url = url.Replace("{meetingId}", System.Uri.EscapeDataString(meetingId));
 
-            return await GetBatchResponseWithRetryAsync<MeetingInfo>(url, "GET", invocationId, customHeaders: customHeaders, cancellationToken: cancellationToken).ConfigureAwait(false);
+            return await GetResponseAsync<MeetingInfo>(url, "GET", invocationId, customHeaders: customHeaders, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -251,7 +251,7 @@ namespace Microsoft.Bot.Connector.Teams
             url = url.Replace("{participantId}", System.Uri.EscapeDataString(participantId));
             url = url.Replace("{tenantId}", System.Uri.EscapeDataString(tenantId));
 
-            return await GetBatchResponseWithRetryAsync<TeamsMeetingParticipant>(url, "GET", invocationId, customHeaders: customHeaders, cancellationToken: cancellationToken).ConfigureAwait(false); 
+            return await GetResponseAsync<TeamsMeetingParticipant>(url, "GET", invocationId, customHeaders: customHeaders, cancellationToken: cancellationToken).ConfigureAwait(false); 
         }
 
         /// <summary>
@@ -300,7 +300,7 @@ namespace Microsoft.Bot.Connector.Teams
             var url = "v1/meetings/{meetingId}/notification";
             url = url.Replace("{meetingId}", Uri.EscapeDataString(meetingId));
 
-            return await GetBatchResponseWithRetryAsync<MeetingNotificationResponse>(url, "POST", invocationId, content: notification, customHeaders: customHeaders, cancellationToken: cancellationToken).ConfigureAwait(false);
+            return await GetResponseAsync<MeetingNotificationResponse>(url, "POST", invocationId, content: notification, customHeaders: customHeaders, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -349,7 +349,7 @@ namespace Microsoft.Bot.Connector.Teams
 
             // In case of throttling, it will retry the operation with default values (10 retries every 50 miliseconds).
             var result = await RetryAction.RunAsync(
-                task: () => GetBatchResponseWithRetryAsync<string>(apiUrl, "POST", invocationId, content: content, customHeaders: customHeaders, cancellationToken: cancellationToken),
+                task: () => GetResponseAsync<string>(apiUrl, "POST", invocationId, content: content, customHeaders: customHeaders, cancellationToken: cancellationToken),
                 retryExceptionHandler: (ex, ct) => HandleThrottlingException(ex, ct)).ConfigureAwait(false);
 
             return result;
@@ -394,7 +394,7 @@ namespace Microsoft.Bot.Connector.Teams
 
             // In case of throttling, it will retry the operation with default values (10 retries every 50 miliseconds).
             var result = await RetryAction.RunAsync(
-                task: () => GetBatchResponseWithRetryAsync<string>(apiUrl, "POST", invocationId, content: content, customHeaders: customHeaders, cancellationToken: cancellationToken),
+                task: () => GetResponseAsync<string>(apiUrl, "POST", invocationId, content: content, customHeaders: customHeaders, cancellationToken: cancellationToken),
                 retryExceptionHandler: (ex, ct) => HandleThrottlingException(ex, ct)).ConfigureAwait(false);
 
             return result;
@@ -446,7 +446,7 @@ namespace Microsoft.Bot.Connector.Teams
 
             // In case of throttling, it will retry the operation with default values (10 retries every 50 miliseconds).
             var result = await RetryAction.RunAsync(
-                task: () => GetBatchResponseWithRetryAsync<string>(apiUrl, "POST", invocationId, content: content, customHeaders: customHeaders, cancellationToken: cancellationToken),
+                task: () => GetResponseAsync<string>(apiUrl, "POST", invocationId, content: content, customHeaders: customHeaders, cancellationToken: cancellationToken),
                 retryExceptionHandler: (ex, ct) => HandleThrottlingException(ex, ct)).ConfigureAwait(false);
 
             return result;
@@ -498,7 +498,7 @@ namespace Microsoft.Bot.Connector.Teams
 
             // In case of throttling, it will retry the operation with default values (10 retries every 50 miliseconds).
             var result = await RetryAction.RunAsync(
-                task: () => GetBatchResponseWithRetryAsync<string>(apiUrl, "POST", invocationId, content: content, customHeaders: customHeaders, cancellationToken: cancellationToken),
+                task: () => GetResponseAsync<string>(apiUrl, "POST", invocationId, content: content, customHeaders: customHeaders, cancellationToken: cancellationToken),
                 retryExceptionHandler: (ex, ct) => HandleThrottlingException(ex, ct)).ConfigureAwait(false);
 
             return result;
@@ -532,7 +532,7 @@ namespace Microsoft.Bot.Connector.Teams
 
             // In case of throttling, it will retry the operation with default values (10 retries every 50 miliseconds).
             var result = await RetryAction.RunAsync(
-                task: () => GetBatchResponseWithRetryAsync<BatchOperationState>(apiUrl, "GET", invocationId, customHeaders: customHeaders, cancellationToken: cancellationToken),
+                task: () => GetResponseAsync<BatchOperationState>(apiUrl, "GET", invocationId, customHeaders: customHeaders, cancellationToken: cancellationToken),
                 retryExceptionHandler: (ex, ct) => HandleThrottlingException(ex, ct)).ConfigureAwait(false);
 
             return result;
@@ -554,20 +554,20 @@ namespace Microsoft.Bot.Connector.Teams
         /// <returns>
         /// A response object containing the state and responses of the operation.
         /// </returns>
-        public async Task<HttpOperationResponse<BatchFailedEntriesResponse>> GetPagedFailedEntriesPaginatedAsync(string operationId, Dictionary<string, List<string>> customHeaders = null, string continuationToken = null, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<HttpOperationResponse<BatchFailedEntriesResponse>> GetPagedFailedEntriesAsync(string operationId, Dictionary<string, List<string>> customHeaders = null, string continuationToken = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (string.IsNullOrEmpty(operationId))
             {
                 throw new ValidationException(ValidationRules.CannotBeNull, nameof(operationId));
             }
 
-            var invocationId = TraceActivity("GetFailedEntriesPaginated", new { OperationId = operationId }, cancellationToken);
+            var invocationId = TraceActivity("GetFailedEntries", new { OperationId = operationId }, cancellationToken);
             var apiUrl = "v3/batch/conversation/failedentries/{operationId}";
             apiUrl = apiUrl.Replace("{operationId}", Uri.EscapeDataString(operationId));
 
             // In case of throttling, it will retry the operation with default values (10 retries every 50 miliseconds).
             var result = await RetryAction.RunAsync(
-                task: () => GetBatchResponseWithRetryAsync<BatchFailedEntriesResponse>(apiUrl, "GET", invocationId, continuationToken: continuationToken, customHeaders: customHeaders, cancellationToken: cancellationToken),
+                task: () => GetResponseAsync<BatchFailedEntriesResponse>(apiUrl, "GET", invocationId, continuationToken: continuationToken, customHeaders: customHeaders, cancellationToken: cancellationToken),
                 retryExceptionHandler: (ex, ct) => HandleThrottlingException(ex, ct)).ConfigureAwait(false);
 
             return result;
@@ -601,7 +601,7 @@ namespace Microsoft.Bot.Connector.Teams
 
             // In case of throttling, it will retry the operation with default values (10 retries every 50 miliseconds).
             var result = await RetryAction.RunAsync(
-                task: () => GetBatchResponseWithRetryAsync<BatchOperationState>(apiUrl, "DELETE", invocationId, customHeaders: customHeaders, cancellationToken: cancellationToken),
+                task: () => GetResponseAsync<BatchOperationState>(apiUrl, "DELETE", invocationId, customHeaders: customHeaders, cancellationToken: cancellationToken),
                 retryExceptionHandler: (ex, ct) => HandleThrottlingException(ex, ct)).ConfigureAwait(false);
 
             return result;
