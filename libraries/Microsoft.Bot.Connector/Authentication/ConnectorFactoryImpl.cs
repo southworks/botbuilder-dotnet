@@ -18,8 +18,9 @@ namespace Microsoft.Bot.Connector.Authentication
         private readonly ServiceClientCredentialsFactory _credentialFactory;
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ILogger _logger;
+        private readonly ConnectorClientOptions _connectorClientOptions;
 
-        public ConnectorFactoryImpl(string appId, string toChannelFromBotOAuthScope, string loginEndpoint, bool validateAuthority, ServiceClientCredentialsFactory credentialFactory, IHttpClientFactory httpClientFactory, ILogger logger)
+        public ConnectorFactoryImpl(string appId, string toChannelFromBotOAuthScope, string loginEndpoint, bool validateAuthority, ServiceClientCredentialsFactory credentialFactory, IHttpClientFactory httpClientFactory, ILogger logger, ConnectorClientOptions connectorClientOptions = default)
         {
             _appId = appId;
             _toChannelFromBotOAuthScope = toChannelFromBotOAuthScope;
@@ -28,6 +29,7 @@ namespace Microsoft.Bot.Connector.Authentication
             _credentialFactory = credentialFactory;
             _httpClientFactory = httpClientFactory;
             _logger = logger;
+            _connectorClientOptions = connectorClientOptions;
         }
 
         public override async Task<IConnectorClient> CreateAsync(string serviceUrl, string audience, CancellationToken cancellationToken)
@@ -39,6 +41,8 @@ namespace Microsoft.Bot.Connector.Authentication
 #pragma warning disable CA2000 // Dispose objects before losing scope
             var httpClient = _httpClientFactory?.CreateClient() ?? new HttpClient();
             ConnectorClient.AddDefaultRequestHeaders(httpClient);
+            ConnectorClient.AddUserAgent(httpClient, _connectorClientOptions?.UserAgent);
+
             return new ConnectorClient(new Uri(serviceUrl), credentials, httpClient, true);
 #pragma warning restore CA2000 // Dispose objects before losing scope
         }

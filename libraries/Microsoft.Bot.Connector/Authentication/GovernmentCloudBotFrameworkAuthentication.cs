@@ -9,7 +9,7 @@ namespace Microsoft.Bot.Connector.Authentication
 {
     internal class GovernmentCloudBotFrameworkAuthentication : BuiltinBotFrameworkAuthentication
     {
-        public GovernmentCloudBotFrameworkAuthentication(ServiceClientCredentialsFactory credentialFactory, AuthenticationConfiguration authConfiguration, IHttpClientFactory httpClientFactory, ILogger logger = null)
+        public GovernmentCloudBotFrameworkAuthentication(ServiceClientCredentialsFactory credentialFactory, AuthenticationConfiguration authConfiguration, IHttpClientFactory httpClientFactory, ILogger logger = null, ConnectorClientOptions connectorClientOptions = default)
             : base(
                   GovernmentAuthenticationConstants.ToChannelFromBotOAuthScope,
                   GovernmentAuthenticationConstants.ToChannelFromBotLoginUrl,
@@ -19,7 +19,8 @@ namespace Microsoft.Bot.Connector.Authentication
                   credentialFactory,
                   authConfiguration,
                   httpClientFactory,
-                  logger)
+                  logger,
+                  connectorClientOptions)
         {
         }
     }
