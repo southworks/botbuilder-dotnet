@@ -6,6 +6,7 @@ using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Skills;
+using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
@@ -28,7 +29,8 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// <param name="authConfiguration">An <see cref="AuthenticationConfiguration"/> instance.</param>
         /// <param name="httpClientFactory">The <see cref="IHttpClientFactory"/> to use.</param>
         /// <param name="logger">The ILogger instance to use.</param>
-        public ConfigurationBotFrameworkAuthentication(IConfiguration configuration, ServiceClientCredentialsFactory credentialsFactory = null, AuthenticationConfiguration authConfiguration = null, IHttpClientFactory httpClientFactory = null, ILogger logger = null)
+        /// <param name="connectorClientOptions">The <see cref="ConnectorClientOptions"/> to use when creating <see cref="ConnectorClient"/>.</param>
+        public ConfigurationBotFrameworkAuthentication(IConfiguration configuration, ServiceClientCredentialsFactory credentialsFactory = null, AuthenticationConfiguration authConfiguration = null, IHttpClientFactory httpClientFactory = null, ILogger logger = null, ConnectorClientOptions connectorClientOptions = default)
         {
             var channelService = configuration.GetSection("ChannelService")?.Value;
             var validateAuthority = configuration.GetSection("ValidateAuthority")?.Value;
@@ -53,7 +55,8 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                 credentialsFactory ?? new ConfigurationServiceClientCredentialFactory(configuration),
                 authConfiguration ?? new AuthenticationConfiguration(),
                 httpClientFactory,
-                logger);
+                logger,
+                connectorClientOptions);
         }
 
         /// <inheritdoc />
