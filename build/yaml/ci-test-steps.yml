@@ -24,7 +24,7 @@ steps:
   continueOnError: true
   inputs:
     packageType: "sdk"
-    version: 6.0
+    version: 6.x
   condition: and(succeeded(), eq(variables['BuildConfiguration'],'Release-Windows'), eq(variables['BuildTarget'],'net6'))
 
 - task: DotNetCoreCLI@2
