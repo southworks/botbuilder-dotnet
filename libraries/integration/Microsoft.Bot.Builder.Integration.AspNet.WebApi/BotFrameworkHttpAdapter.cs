@@ -106,6 +106,12 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
             }
         }
 
+        /// <inheritdoc/>
+        public Task ProcessAsync(AspNetCore.Http.HttpRequest httpRequest, AspNetCore.Http.HttpResponse httpResponse, IBot bot, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
+
         private static void WriteUnauthorizedResponse(string headerName, HttpResponseMessage httpResponse)
         {
             httpResponse.StatusCode = HttpStatusCode.Unauthorized;

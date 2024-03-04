@@ -4,6 +4,7 @@
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
 {
@@ -23,5 +24,16 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         Task ProcessAsync(HttpRequestMessage httpRequest, HttpResponseMessage httpResponse, IBot bot, CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
+        /// This method can be called from inside a POST method on any Controller implementation.
+        /// </summary>
+        /// <param name="httpRequest">The HTTP request object, typically in a POST handler by a Controller.</param>
+        /// <param name="httpResponse">The HTTP response object.</param>
+        /// <param name="bot">The bot implementation.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        Task ProcessAsync(HttpRequest httpRequest, HttpResponse httpResponse, IBot bot, CancellationToken cancellationToken = default(CancellationToken));
     }
 }
