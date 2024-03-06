@@ -3,13 +3,13 @@
 
 using System;
 using System.Collections.Concurrent;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.WebSockets;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Builder.Streaming;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
@@ -26,6 +26,8 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
     /// </summary>
     public class CloudAdapter : CloudAdapterBase, IBotFrameworkHttpAdapter
     {
+        private const string AuthHeaderName = "authorization";
+        private const string ChannelIdHeaderName = "channelid";
         private readonly ConcurrentDictionary<Guid, StreamingActivityProcessor> _streamingConnections = new ConcurrentDictionary<Guid, StreamingActivityProcessor>();
 
         /// <summary>
@@ -62,16 +64,8 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
         {
         }
 
-        /// <summary>
-        /// Process the inbound HTTP request with the bot resulting in the outbound http response, this method can be called directly from a Controller.
-        /// If the HTTP method is a POST the body will contain the <see cref="Activity"/> to process. 
-        /// </summary>
-        /// <param name="httpRequest">The <see cref="HttpRequest"/>.</param>
-        /// <param name="httpResponse">The <see cref="HttpResponse"/>.</param>
-        /// <param name="bot">The <see cref="IBot"/> implementation to use for this request.</param>
-        /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns>A <see cref="Task"/> that represents the work queued to execute.</returns>
-        public async Task ProcessAsync(HttpRequest httpRequest, HttpResponse httpResponse, IBot bot, CancellationToken cancellationToken = default)
+        /// <inheritdoc/>
+        public async Task ProcessAsync(HttpRequestMessage httpRequest, HttpResponseMessage httpResponse, IBot bot, CancellationToken cancellationToken = default)
         {
             _ = httpRequest ?? throw new ArgumentNullException(nameof(httpRequest));
             _ = httpResponse ?? throw new ArgumentNullException(nameof(httpResponse));
@@ -79,52 +73,48 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
 
             try
             {
+                var httpContext = httpRequest.GetRequestContext();
+                var context = httpContext;
+
                 // Only GET requests for web socket connects are allowed
-                if (httpRequest.Method == HttpMethods.Get && httpRequest.HttpContext.WebSockets.IsWebSocketRequest)
+                if (httpRequest.Method == HttpMethod.Get && System.Web.HttpContext.Current.IsWebSocketRequest)
                 {
                     // All socket communication will be handled by the internal streaming-specific BotAdapter
                     await ConnectAsync(httpRequest, bot, cancellationToken).ConfigureAwait(false);
                 }
-                else if (httpRequest.Method == HttpMethods.Post)
+                else if (httpRequest.Method == HttpMethod.Post)
                 {
-                    // Deserialize the incoming Activity
-                    var activity = await HttpHelper.ReadRequestAsync<Activity>(httpRequest).ConfigureAwait(false);
+                    // deserialize the incoming Activity
+                    var activity = await HttpHelper.ReadRequestAsync(httpRequest, cancellationToken).ConfigureAwait(false);
 
-                    // A POST request must contain an Activity 
                     if (string.IsNullOrEmpty(activity?.Type))
                     {
-                        httpResponse.StatusCode = (int)HttpStatusCode.BadRequest;
+                        httpResponse.StatusCode = HttpStatusCode.BadRequest;
                         Logger.LogWarning("BadRequest: Missing activity or activity type.");
                         return;
                     }
 
-                    // Grab the auth header from the inbound http request
-                    var authHeader = httpRequest.Headers["Authorization"];
+                    // grab the auth header from the inbound http request
+                    var authHeader = httpRequest.Headers.Authorization?.ToString();
 
-                    // Process the inbound activity with the bot
+                    // process the inbound activity with the bot
                     var invokeResponse = await ProcessActivityAsync(authHeader, activity, bot.OnTurnAsync, cancellationToken).ConfigureAwait(false);
 
-                    // Write the response, potentially serializing the InvokeResponse
-                    await HttpHelper.WriteResponseAsync(httpResponse, invokeResponse).ConfigureAwait(false);
+                    // write the response, potentially serializing the InvokeResponse
+                    HttpHelper.WriteResponse(httpRequest, httpResponse, invokeResponse);
                 }
                 else
                 {
-                    httpResponse.StatusCode = (int)HttpStatusCode.MethodNotAllowed;
+                    httpResponse.StatusCode = HttpStatusCode.MethodNotAllowed;
                 }
             }
             catch (UnauthorizedAccessException ex)
             {
                 // handle unauthorized here as this layer creates the http response
-                httpResponse.StatusCode = (int)HttpStatusCode.Unauthorized;
+                httpResponse.StatusCode = HttpStatusCode.Unauthorized;
 
                 Logger.LogError(ex.ToString());
             }
-        }
-
-        /// <inheritdoc/>
-        public Task ProcessAsync(HttpRequestMessage httpRequest, HttpResponseMessage httpResponse, IBot bot, CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -212,33 +202,35 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
             return new WebSocketStreamingConnection(socket, logger);
         }
 
-        private async Task ConnectAsync(HttpRequest httpRequest, IBot bot, CancellationToken cancellationToken)
+        private async Task ConnectAsync(HttpRequestMessage httpRequest, IBot bot, CancellationToken cancellationToken)
         {
             Logger.LogInformation($"Received request for web socket connect.");
 
             // Grab the auth header from the inbound http request
-            var authHeader = httpRequest.Headers["Authorization"];
+            var authHeader = httpRequest.Headers.GetValues(AuthHeaderName.ToLowerInvariant()).FirstOrDefault();
 
             // Grab the channelId which should be in the http headers
-            var channelIdHeader = httpRequest.Headers["channelid"];
+            var channelIdHeader = httpRequest.Headers.GetValues(ChannelIdHeaderName.ToLowerInvariant()).FirstOrDefault();
 
             var authenticationRequestResult = await BotFrameworkAuthentication.AuthenticateStreamingRequestAsync(authHeader, channelIdHeader, cancellationToken).ConfigureAwait(false);
 
             var connectionId = Guid.NewGuid();
             using (var scope = Logger.BeginScope(connectionId))
             {
-                var socket = await httpRequest.HttpContext.WebSockets.AcceptWebSocketAsync().ConfigureAwait(false);
-                var connection = CreateWebSocketConnection(socket, Logger);
-
-                using (var streamingActivityProcessor = new StreamingActivityProcessor(authenticationRequestResult, connection, this, bot))
+                System.Web.HttpContext.Current.AcceptWebSocketRequest(async context =>
                 {
-                    // Start receiving activities on the socket
-                    _streamingConnections.TryAdd(connectionId, streamingActivityProcessor);
-                    Log.WebSocketConnectionStarted(Logger);
-                    await streamingActivityProcessor.ListenAsync(cancellationToken).ConfigureAwait(false);
-                    _streamingConnections.TryRemove(connectionId, out _);
-                    Log.WebSocketConnectionCompleted(Logger);
-                }
+                    var connection = CreateWebSocketConnection(context.WebSocket, Logger);
+
+                    using (var streamingActivityProcessor = new StreamingActivityProcessor(authenticationRequestResult, connection, this, bot))
+                    {
+                        // Start receiving activities on the socket
+                        _streamingConnections.TryAdd(connectionId, streamingActivityProcessor);
+                        Log.WebSocketConnectionStarted(Logger);
+                        await streamingActivityProcessor.ListenAsync(cancellationToken).ConfigureAwait(false);
+                        _streamingConnections.TryRemove(connectionId, out _);
+                        Log.WebSocketConnectionCompleted(Logger);
+                    }
+                });
             }
         }
 
