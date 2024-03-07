@@ -73,9 +73,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
 
             try
             {
-                var httpContext = httpRequest.GetRequestContext();
-                var context = httpContext;
-
                 // Only GET requests for web socket connects are allowed
                 if (httpRequest.Method == HttpMethod.Get && System.Web.HttpContext.Current.IsWebSocketRequest)
                 {
