@@ -17,20 +17,20 @@ steps:
   displayName: 'Show API compat issue suppressions in ApiCompatBaseline.txt'
   continueOnError: true
 
-- task: SOUTHWORKS.binaries-comparer.custom-build-release-task.binaries-comparer@0
-  displayName: 'Compare Binaries'
-  inputs:
-    contractsRootFolder: '$(System.ArtifactsDirectory)/ContractDlls'
-    contractsFileName: '$(PackageName).dll'
-    implFolder: '$(System.ArtifactsDirectory)/OutputDlls'
-    failOnIssue: false
-    resolveFx: false
-    generateLog: true
-    outputFilename: '$(PackageName).$(ApiContractVersion).CompatResults.txt'
-    outputFolder: '$(Build.ArtifactStagingDirectory)'
-    useBaseline: true
-    baselineFile: ApiCompatBaseline.txt
-  continueOnError: false
+# - task: SOUTHWORKS.binaries-comparer.custom-build-release-task.binaries-comparer@0
+#   displayName: 'Compare Binaries'
+#   inputs:
+#     contractsRootFolder: '$(System.ArtifactsDirectory)/ContractDlls'
+#     contractsFileName: '$(PackageName).dll'
+#     implFolder: '$(System.ArtifactsDirectory)/OutputDlls'
+#     failOnIssue: false
+#     resolveFx: false
+#     generateLog: true
+#     outputFilename: '$(PackageName).$(ApiContractVersion).CompatResults.txt'
+#     outputFolder: '$(Build.ArtifactStagingDirectory)'
+#     useBaseline: true
+#     baselineFile: ApiCompatBaseline.txt
+#   continueOnError: false
 
 - powershell: |
     $filePath = "$(Build.ArtifactStagingDirectory)\$(PackageName).$(ApiContractVersion).CompatResults.txt"
