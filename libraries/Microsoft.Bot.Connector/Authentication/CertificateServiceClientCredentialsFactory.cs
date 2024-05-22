@@ -86,12 +86,12 @@ namespace Microsoft.Bot.Connector.Authentication
             {
                 certificateAppCredentials = new CertificateAppCredentials(
                     _certificate,
-                    _sendX5c,
                     _appId,
                     _tenantId,
+                    audience,
+                    _sendX5c,
                     _httpClient,
-                    _logger,
-                    audience);
+                    _logger);
                 _certificateAppCredentialsByAudience.TryAdd(audience, certificateAppCredentials);
             }
 
