@@ -47,8 +47,9 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <param name="channelAuthTenant">Optional. The oauth token tenant.</param>
         /// <param name="customHttpClient">Optional <see cref="HttpClient"/> to be used when acquiring tokens.</param>
         /// <param name="logger">Optional <see cref="ILogger"/> to gather telemetry data while acquiring and managing credentials.</param>
-        public CertificateAppCredentials(X509Certificate2 clientCertificate, string appId, string channelAuthTenant = null, HttpClient customHttpClient = null, ILogger logger = null)
-            : this(clientCertificate, false, appId, channelAuthTenant, customHttpClient, logger)
+        /// <param name="oAuthScope">The scope for the token.</param>
+        public CertificateAppCredentials(X509Certificate2 clientCertificate, string appId, string channelAuthTenant = null, HttpClient customHttpClient = null, ILogger logger = null, string oAuthScope = null)
+            : this(clientCertificate, false, appId, channelAuthTenant, customHttpClient, logger, oAuthScope)
         {
         }
 
@@ -61,8 +62,9 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <param name="channelAuthTenant">Optional. The oauth token tenant.</param>
         /// <param name="customHttpClient">Optional <see cref="HttpClient"/> to be used when acquiring tokens.</param>
         /// <param name="logger">Optional <see cref="ILogger"/> to gather telemetry data while acquiring and managing credentials.</param>
-        public CertificateAppCredentials(X509Certificate2 clientCertificate, bool sendX5c, string appId, string channelAuthTenant = null, HttpClient customHttpClient = null, ILogger logger = null)
-            : base(channelAuthTenant, customHttpClient, logger)
+        /// <param name="oAuthScope">The scope for the token.</param>
+        public CertificateAppCredentials(X509Certificate2 clientCertificate, bool sendX5c, string appId, string channelAuthTenant = null, HttpClient customHttpClient = null, ILogger logger = null, string oAuthScope = null)
+            : base(channelAuthTenant, customHttpClient, logger, oAuthScope: oAuthScope)
         {
             if (clientCertificate == null)
             {
