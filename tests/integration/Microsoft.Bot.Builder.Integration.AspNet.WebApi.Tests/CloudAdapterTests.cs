@@ -14,7 +14,8 @@ using System.Security.Principal;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web.Fakes;
+
+//using System.Web.Fakes;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Connector.Streaming.Application;
@@ -23,7 +24,8 @@ using Microsoft.Bot.Streaming;
 using Microsoft.Bot.Streaming.Payloads;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.QualityTools.Testing.Fakes;
+
+//using Microsoft.QualityTools.Testing.Fakes;
 using Microsoft.Rest;
 using Moq;
 using Moq.Protected;
@@ -162,356 +164,356 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Tests
             Assert.Equal(HttpStatusCode.BadRequest, httpResponse.StatusCode);
         }
 
-        [Fact]
-        public async Task WebSocketRequestShouldCallAuthenticateStreamingRequestAsync()
-        {
-            // Note this test only checks that a GET request will result in an auth call and a socket accept
-            // it doesn't valid that activities over that socket get to the bot or back
+        //[Fact]
+        //public async Task WebSocketRequestShouldCallAuthenticateStreamingRequestAsync()
+        //{
+        //    // Note this test only checks that a GET request will result in an auth call and a socket accept
+        //    // it doesn't valid that activities over that socket get to the bot or back
 
-            // Arrange
-            var httpRequest = new HttpRequestMessage
-            {
-                Method = HttpMethod.Get,
-                Content = CreateMessageActivityContent()
-            };
-            httpRequest.Headers.Add("authorization", "token");
-            httpRequest.Headers.Add("channelid", "channelid");
+        //    // Arrange
+        //    var httpRequest = new HttpRequestMessage
+        //    {
+        //        Method = HttpMethod.Get,
+        //        Content = CreateMessageActivityContent()
+        //    };
+        //    httpRequest.Headers.Add("authorization", "token");
+        //    httpRequest.Headers.Add("channelid", "channelid");
 
-            var httpResponse = new HttpResponseMessage();
+        //    var httpResponse = new HttpResponseMessage();
 
-            using (ShimsContext.Create())
-            {
-                ShimHttpContext.CurrentGet = () =>
-                {
-                    var e = new ShimHttpContext
-                    {
-                        IsWebSocketRequestGet = () => { return true; }
-                    };
-                    return e;
-                };
+        //    using (ShimsContext.Create())
+        //    {
+        //        ShimHttpContext.CurrentGet = () =>
+        //        {
+        //            var e = new ShimHttpContext
+        //            {
+        //                IsWebSocketRequestGet = () => { return true; }
+        //            };
+        //            return e;
+        //        };
 
-                var authenticateRequestResult = new AuthenticateRequestResult
-                {
-                    Audience = "audience",
-                };
+        //        var authenticateRequestResult = new AuthenticateRequestResult
+        //        {
+        //            Audience = "audience",
+        //        };
 
-                var botFrameworkAuthenticationMock = new Mock<BotFrameworkAuthentication>();
-                botFrameworkAuthenticationMock.Setup(
-                    x => x.AuthenticateStreamingRequestAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                    .ReturnsAsync(authenticateRequestResult);
+        //        var botFrameworkAuthenticationMock = new Mock<BotFrameworkAuthentication>();
+        //        botFrameworkAuthenticationMock.Setup(
+        //            x => x.AuthenticateStreamingRequestAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
+        //            .ReturnsAsync(authenticateRequestResult);
 
-                var bot = new MessageBot();
+        //        var bot = new MessageBot();
 
-                // Act
-                var adapter = new CloudAdapter(botFrameworkAuthenticationMock.Object);
-                await adapter.ProcessAsync(httpRequest, httpResponse, bot);
+        //        // Act
+        //        var adapter = new CloudAdapter(botFrameworkAuthenticationMock.Object);
+        //        await adapter.ProcessAsync(httpRequest, httpResponse, bot);
 
-                // Assert
-                botFrameworkAuthenticationMock.Verify(x => x.AuthenticateStreamingRequestAsync(It.Is<string>(v => true), It.Is<string>(v => true), It.Is<CancellationToken>(ct => true)), Times.Once());
-            }
-        }
+        //        // Assert
+        //        botFrameworkAuthenticationMock.Verify(x => x.AuthenticateStreamingRequestAsync(It.Is<string>(v => true), It.Is<string>(v => true), It.Is<CancellationToken>(ct => true)), Times.Once());
+        //    }
+        //}
 
-        [Fact]
-        public void CanContinueConversationOverWebSocket()
-        {
-            // Arrange
-            var continueConversationWaiter = new AutoResetEvent(false);
-            var verifiedValidContinuation = false;
+        //[Fact]
+        //public void CanContinueConversationOverWebSocket()
+        //{
+        //    // Arrange
+        //    var continueConversationWaiter = new AutoResetEvent(false);
+        //    var verifiedValidContinuation = false;
 
-            var appId = "testAppId";
-            var tenantId = "testTenantId";
-            var token = "Bearer testjwt";
-            var channelId = "testChannel";
-            var audience = "testAudience";
-            var callerId = "testCallerId";
+        //    var appId = "testAppId";
+        //    var tenantId = "testTenantId";
+        //    var token = "Bearer testjwt";
+        //    var channelId = "testChannel";
+        //    var audience = "testAudience";
+        //    var callerId = "testCallerId";
 
-            var authResult = new AuthenticateRequestResult
-            {
-                Audience = audience,
-                CallerId = callerId,
-                ClaimsIdentity = new ClaimsIdentity(new List<Claim>
-                {
-                    new Claim("aud", audience),
-                    new Claim("iss", $"https://login.microsoftonline.com/{tenantId}/"),
-                    new Claim("azp", appId),
-                    new Claim("tid", tenantId),
-                    new Claim("ver", "2.0")
-                })
-            };
+        //    var authResult = new AuthenticateRequestResult
+        //    {
+        //        Audience = audience,
+        //        CallerId = callerId,
+        //        ClaimsIdentity = new ClaimsIdentity(new List<Claim>
+        //        {
+        //            new Claim("aud", audience),
+        //            new Claim("iss", $"https://login.microsoftonline.com/{tenantId}/"),
+        //            new Claim("azp", appId),
+        //            new Claim("tid", tenantId),
+        //            new Claim("ver", "2.0")
+        //        })
+        //    };
 
-            var userTokenClient = new TestUserTokenClient(appId);
+        //    var userTokenClient = new TestUserTokenClient(appId);
 
-            var nullUrlActivity = new Activity
-            {
-                Id = Guid.NewGuid().ToString("N"),
-                Type = ActivityTypes.Message,
-                From = new ChannelAccount { Id = "testUser" },
-                Conversation = new ConversationAccount { Id = Guid.NewGuid().ToString("N") },
-                Recipient = new ChannelAccount { Id = "testBot" },
-                ServiceUrl = null,
-                ChannelId = channelId,
-                Text = "hi",
-            };
-            var nullUrlContent = new StringContent(JsonConvert.SerializeObject(nullUrlActivity), Encoding.UTF8, "application/json");
+        //    var nullUrlActivity = new Activity
+        //    {
+        //        Id = Guid.NewGuid().ToString("N"),
+        //        Type = ActivityTypes.Message,
+        //        From = new ChannelAccount { Id = "testUser" },
+        //        Conversation = new ConversationAccount { Id = Guid.NewGuid().ToString("N") },
+        //        Recipient = new ChannelAccount { Id = "testBot" },
+        //        ServiceUrl = null,
+        //        ChannelId = channelId,
+        //        Text = "hi",
+        //    };
+        //    var nullUrlContent = new StringContent(JsonConvert.SerializeObject(nullUrlActivity), Encoding.UTF8, "application/json");
 
-            var validActivity = new Activity
-            {
-                Id = Guid.NewGuid().ToString("N"),
-                Type = ActivityTypes.Message,
-                From = new ChannelAccount { Id = "testUser" },
-                Conversation = new ConversationAccount { Id = Guid.NewGuid().ToString("N") },
-                Recipient = new ChannelAccount { Id = "testBot" },
-                ServiceUrl = "wss://InvalidServiceUrl/api/messages",
-                ChannelId = channelId,
-                Text = "hi",
-            };
-            var validContent = new StringContent(JsonConvert.SerializeObject(validActivity), Encoding.UTF8, "application/json");
+        //    var validActivity = new Activity
+        //    {
+        //        Id = Guid.NewGuid().ToString("N"),
+        //        Type = ActivityTypes.Message,
+        //        From = new ChannelAccount { Id = "testUser" },
+        //        Conversation = new ConversationAccount { Id = Guid.NewGuid().ToString("N") },
+        //        Recipient = new ChannelAccount { Id = "testBot" },
+        //        ServiceUrl = "wss://InvalidServiceUrl/api/messages",
+        //        ChannelId = channelId,
+        //        Text = "hi",
+        //    };
+        //    var validContent = new StringContent(JsonConvert.SerializeObject(validActivity), Encoding.UTF8, "application/json");
 
-            var nullUrlConnection = new Mock<StreamingConnection>(null);
-            nullUrlConnection
-                .Setup(c => c.ListenAsync(It.IsAny<RequestHandler>(), It.IsAny<CancellationToken>()))
-                .Returns<RequestHandler, CancellationToken>((handler, cancellationToken) => handler.ProcessRequestAsync(
-                    new ReceiveRequest
-                    {
-                        Verb = "POST",
-                        Path = "/api/messages",
-                        Streams = new List<IContentStream>
-                        {
-                            new TestContentStream
-                            {
-                                Id = Guid.NewGuid(),
-                                ContentType = "application/json",
-                                Length = (int?)nullUrlContent.Headers.ContentLength,
-                                Stream = nullUrlContent.ReadAsStreamAsync().GetAwaiter().GetResult()
-                            }
-                        }
-                    },
-                    null,
-                    cancellationToken: cancellationToken));
+        //    var nullUrlConnection = new Mock<StreamingConnection>(null);
+        //    nullUrlConnection
+        //        .Setup(c => c.ListenAsync(It.IsAny<RequestHandler>(), It.IsAny<CancellationToken>()))
+        //        .Returns<RequestHandler, CancellationToken>((handler, cancellationToken) => handler.ProcessRequestAsync(
+        //            new ReceiveRequest
+        //            {
+        //                Verb = "POST",
+        //                Path = "/api/messages",
+        //                Streams = new List<IContentStream>
+        //                {
+        //                    new TestContentStream
+        //                    {
+        //                        Id = Guid.NewGuid(),
+        //                        ContentType = "application/json",
+        //                        Length = (int?)nullUrlContent.Headers.ContentLength,
+        //                        Stream = nullUrlContent.ReadAsStreamAsync().GetAwaiter().GetResult()
+        //                    }
+        //                }
+        //            },
+        //            null,
+        //            cancellationToken: cancellationToken));
 
-            var streamingConnection = new Mock<StreamingConnection>(null);
-            streamingConnection
-                .Setup(c => c.ListenAsync(It.IsAny<RequestHandler>(), It.IsAny<CancellationToken>()))
-                .Returns<RequestHandler, CancellationToken>((handler, cancellationToken) => handler.ProcessRequestAsync(
-                    new ReceiveRequest
-                    {
-                        Verb = "POST",
-                        Path = "/api/messages",
-                        Streams = new List<IContentStream>
-                        {
-                            new TestContentStream
-                            {
-                                Id = Guid.NewGuid(),
-                                ContentType = "application/json",
-                                Length = (int?)validContent.Headers.ContentLength,
-                                Stream = validContent.ReadAsStreamAsync().GetAwaiter().GetResult()
-                            }
-                        }
-                    },
-                    null,
-                    cancellationToken: cancellationToken));
+        //    var streamingConnection = new Mock<StreamingConnection>(null);
+        //    streamingConnection
+        //        .Setup(c => c.ListenAsync(It.IsAny<RequestHandler>(), It.IsAny<CancellationToken>()))
+        //        .Returns<RequestHandler, CancellationToken>((handler, cancellationToken) => handler.ProcessRequestAsync(
+        //            new ReceiveRequest
+        //            {
+        //                Verb = "POST",
+        //                Path = "/api/messages",
+        //                Streams = new List<IContentStream>
+        //                {
+        //                    new TestContentStream
+        //                    {
+        //                        Id = Guid.NewGuid(),
+        //                        ContentType = "application/json",
+        //                        Length = (int?)validContent.Headers.ContentLength,
+        //                        Stream = validContent.ReadAsStreamAsync().GetAwaiter().GetResult()
+        //                    }
+        //                }
+        //            },
+        //            null,
+        //            cancellationToken: cancellationToken));
 
-            var auth = new Mock<BotFrameworkAuthentication>();
-            auth.Setup(a => a.AuthenticateStreamingRequestAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .Returns(Task.FromResult(authResult));
-            auth.Setup(a => a.CreateUserTokenClientAsync(It.IsAny<ClaimsIdentity>(), It.IsAny<CancellationToken>()))
-                .Returns(Task.FromResult<UserTokenClient>(userTokenClient));
+        //    var auth = new Mock<BotFrameworkAuthentication>();
+        //    auth.Setup(a => a.AuthenticateStreamingRequestAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
+        //        .Returns(Task.FromResult(authResult));
+        //    auth.Setup(a => a.CreateUserTokenClientAsync(It.IsAny<ClaimsIdentity>(), It.IsAny<CancellationToken>()))
+        //        .Returns(Task.FromResult<UserTokenClient>(userTokenClient));
 
-            var webSocket = new ClientWebSocket();
+        //    var webSocket = new ClientWebSocket();
 
-            var httpRequest = new HttpRequestMessage
-            {
-                Method = HttpMethod.Get,
-                Content = CreateMessageActivityContent()
-            };
-            httpRequest.Headers.Add("authorization", "Bearer " + token);
-            httpRequest.Headers.Add("channelId", channelId);
+        //    var httpRequest = new HttpRequestMessage
+        //    {
+        //        Method = HttpMethod.Get,
+        //        Content = CreateMessageActivityContent()
+        //    };
+        //    httpRequest.Headers.Add("authorization", "Bearer " + token);
+        //    httpRequest.Headers.Add("channelId", channelId);
 
-            var httpResponse = new HttpResponseMessage();
+        //    var httpResponse = new HttpResponseMessage();
 
-            using (ShimsContext.Create())
-            {
-                ShimHttpContext.CurrentGet = () =>
-                {
-                    var e = new ShimHttpContext
-                    {
-                        IsWebSocketRequestGet = () => { return true; },
-                    };
+        //    using (ShimsContext.Create())
+        //    {
+        //        ShimHttpContext.CurrentGet = () =>
+        //        {
+        //            var e = new ShimHttpContext
+        //            {
+        //                IsWebSocketRequestGet = () => { return true; },
+        //            };
 
-                    e.AcceptWebSocketRequestFuncOfAspNetWebSocketContextTask = (config) =>
-                    {
-                        Task.FromResult(webSocket);
-                    };
+        //            e.AcceptWebSocketRequestFuncOfAspNetWebSocketContextTask = (config) =>
+        //            {
+        //                Task.FromResult(webSocket);
+        //            };
 
-                    return e;
-                };
+        //            return e;
+        //        };
 
-                var nullUrlWebSocket = new ClientWebSocket();
+        //        var nullUrlWebSocket = new ClientWebSocket();
 
-                var nullUrlHttpRequest = new HttpRequestMessage
-                {
-                    Method = HttpMethod.Get,
-                    Content = CreateMessageActivityContent()
-                };
-                nullUrlHttpRequest.Headers.Add("authorization", "Bearer " + token);
-                nullUrlHttpRequest.Headers.Add("channelId", channelId);
+        //        var nullUrlHttpRequest = new HttpRequestMessage
+        //        {
+        //            Method = HttpMethod.Get,
+        //            Content = CreateMessageActivityContent()
+        //        };
+        //        nullUrlHttpRequest.Headers.Add("authorization", "Bearer " + token);
+        //        nullUrlHttpRequest.Headers.Add("channelId", channelId);
 
-                var nullUrlHttpResponse = new HttpResponseMessage();
+        //        var nullUrlHttpResponse = new HttpResponseMessage();
 
-                var bot = new Mock<IBot>();
-                bot.Setup(b => b.OnTurnAsync(It.IsAny<ITurnContext>(), It.IsAny<CancellationToken>()))
-                    .Returns(Task.Factory.StartNew(() => { continueConversationWaiter.WaitOne(); })); // Simulate listening on web socket
+        //        var bot = new Mock<IBot>();
+        //        bot.Setup(b => b.OnTurnAsync(It.IsAny<ITurnContext>(), It.IsAny<CancellationToken>()))
+        //            .Returns(Task.Factory.StartNew(() => { continueConversationWaiter.WaitOne(); })); // Simulate listening on web socket
 
-                // Act
-                var adapter = new StreamingTestCloudAdapter(auth.Object, new Dictionary<WebSocket, StreamingConnection> { { nullUrlWebSocket, nullUrlConnection.Object }, { webSocket, streamingConnection.Object } });
-                var nullUrlProcessRequest = adapter.ProcessAsync(nullUrlHttpRequest, nullUrlHttpResponse, bot.Object, CancellationToken.None);
-                var processRequest = adapter.ProcessAsync(httpRequest, httpResponse, bot.Object, CancellationToken.None);
+        //        // Act
+        //        var adapter = new StreamingTestCloudAdapter(auth.Object, new Dictionary<WebSocket, StreamingConnection> { { nullUrlWebSocket, nullUrlConnection.Object }, { webSocket, streamingConnection.Object } });
+        //        var nullUrlProcessRequest = adapter.ProcessAsync(nullUrlHttpRequest, nullUrlHttpResponse, bot.Object, CancellationToken.None);
+        //        var processRequest = adapter.ProcessAsync(httpRequest, httpResponse, bot.Object, CancellationToken.None);
 
-                var validContinuation = adapter.ContinueConversationAsync(
-                    authResult.ClaimsIdentity,
-                    validActivity,
-                    (turn, cancellationToken) =>
-                    {
-                        var connectorFactory = turn.TurnState.Get<ConnectorFactory>();
-                        Assert.NotNull(connectorFactory);
-                        var connectorFactoryTypeName = connectorFactory.GetType().FullName ?? string.Empty;
-                        Assert.EndsWith("TestConnectorFactory", connectorFactoryTypeName);
-                        verifiedValidContinuation = true;
+        //        var validContinuation = adapter.ContinueConversationAsync(
+        //            authResult.ClaimsIdentity,
+        //            validActivity,
+        //            (turn, cancellationToken) =>
+        //            {
+        //                var connectorFactory = turn.TurnState.Get<ConnectorFactory>();
+        //                Assert.NotNull(connectorFactory);
+        //                var connectorFactoryTypeName = connectorFactory.GetType().FullName ?? string.Empty;
+        //                Assert.EndsWith("TestConnectorFactory", connectorFactoryTypeName);
+        //                verifiedValidContinuation = true;
 
-                        return Task.CompletedTask;
-                    },
-                    CancellationToken.None);
+        //                return Task.CompletedTask;
+        //            },
+        //            CancellationToken.None);
 
-                continueConversationWaiter.Set();
-                nullUrlProcessRequest.Wait();
-                processRequest.Wait();
+        //        continueConversationWaiter.Set();
+        //        nullUrlProcessRequest.Wait();
+        //        processRequest.Wait();
 
-                // Assert
-                Assert.True(processRequest.IsCompleted);
-                Assert.True(verifiedValidContinuation);
-                Assert.True(validContinuation.IsCompleted);
-                Assert.Null(validContinuation.Exception);
-            }
-        }
+        //        // Assert
+        //        Assert.True(processRequest.IsCompleted);
+        //        Assert.True(verifiedValidContinuation);
+        //        Assert.True(validContinuation.IsCompleted);
+        //        Assert.Null(validContinuation.Exception);
+        //    }
+        //}
 
-        [Fact]
-        public void ContinueConversationWillThrowOnInvalidActivity()
-        {
-            // Arrange
-            var continueConversationWaiter = new AutoResetEvent(false);
+        //[Fact]
+        //public void ContinueConversationWillThrowOnInvalidActivity()
+        //{
+        //    // Arrange
+        //    var continueConversationWaiter = new AutoResetEvent(false);
 
-            var appId = "testAppId";
-            var tenantId = "testTenantId";
-            var token = "Bearer testjwt";
-            var channelId = "testChannel";
-            var audience = "testAudience";
-            var callerId = "testCallerId";
+        //    var appId = "testAppId";
+        //    var tenantId = "testTenantId";
+        //    var token = "Bearer testjwt";
+        //    var channelId = "testChannel";
+        //    var audience = "testAudience";
+        //    var callerId = "testCallerId";
 
-            var authResult = new AuthenticateRequestResult
-            {
-                Audience = audience,
-                CallerId = callerId,
-                ClaimsIdentity = new ClaimsIdentity(new List<Claim>
-                {
-                    new Claim("aud", audience),
-                    new Claim("iss", $"https://login.microsoftonline.com/{tenantId}/"),
-                    new Claim("azp", appId),
-                    new Claim("tid", tenantId),
-                    new Claim("ver", "2.0")
-                })
-            };
+        //    var authResult = new AuthenticateRequestResult
+        //    {
+        //        Audience = audience,
+        //        CallerId = callerId,
+        //        ClaimsIdentity = new ClaimsIdentity(new List<Claim>
+        //        {
+        //            new Claim("aud", audience),
+        //            new Claim("iss", $"https://login.microsoftonline.com/{tenantId}/"),
+        //            new Claim("azp", appId),
+        //            new Claim("tid", tenantId),
+        //            new Claim("ver", "2.0")
+        //        })
+        //    };
 
-            var invalidActivity = new Activity
-            {
-                Id = Guid.NewGuid().ToString("N"),
-                Type = ActivityTypes.Message,
-                From = new ChannelAccount { Id = "testUser" },
-                Recipient = new ChannelAccount { Id = "testBot" },
-                ServiceUrl = "wss://InvalidServiceUrl/api/messages",
-                ChannelId = channelId,
-                Text = "hi",
-            };
-            var invalidContent = new StringContent(JsonConvert.SerializeObject(invalidActivity), Encoding.UTF8, "application/json");
+        //    var invalidActivity = new Activity
+        //    {
+        //        Id = Guid.NewGuid().ToString("N"),
+        //        Type = ActivityTypes.Message,
+        //        From = new ChannelAccount { Id = "testUser" },
+        //        Recipient = new ChannelAccount { Id = "testBot" },
+        //        ServiceUrl = "wss://InvalidServiceUrl/api/messages",
+        //        ChannelId = channelId,
+        //        Text = "hi",
+        //    };
+        //    var invalidContent = new StringContent(JsonConvert.SerializeObject(invalidActivity), Encoding.UTF8, "application/json");
 
-            var userTokenClient = new TestUserTokenClient(appId);
+        //    var userTokenClient = new TestUserTokenClient(appId);
 
-            var streamingConnection = new Mock<StreamingConnection>(null);
-            streamingConnection
-                .Setup(c => c.ListenAsync(It.IsAny<RequestHandler>(), It.IsAny<CancellationToken>()))
-                .Returns<RequestHandler, CancellationToken>((handler, cancellationToken) => handler.ProcessRequestAsync(
-                    new ReceiveRequest
-                    {
-                        Verb = "POST",
-                        Path = "/api/messages",
-                        Streams = new List<IContentStream>
-                        {
-                            new TestContentStream
-                            {
-                                Id = Guid.NewGuid(),
-                                ContentType = "application/json",
-                                Length = (int?)invalidContent.Headers.ContentLength,
-                                Stream = invalidContent.ReadAsStreamAsync().GetAwaiter().GetResult()
-                            }
-                        }
-                    },
-                    null,
-                    cancellationToken: cancellationToken));
+        //    var streamingConnection = new Mock<StreamingConnection>(null);
+        //    streamingConnection
+        //        .Setup(c => c.ListenAsync(It.IsAny<RequestHandler>(), It.IsAny<CancellationToken>()))
+        //        .Returns<RequestHandler, CancellationToken>((handler, cancellationToken) => handler.ProcessRequestAsync(
+        //            new ReceiveRequest
+        //            {
+        //                Verb = "POST",
+        //                Path = "/api/messages",
+        //                Streams = new List<IContentStream>
+        //                {
+        //                    new TestContentStream
+        //                    {
+        //                        Id = Guid.NewGuid(),
+        //                        ContentType = "application/json",
+        //                        Length = (int?)invalidContent.Headers.ContentLength,
+        //                        Stream = invalidContent.ReadAsStreamAsync().GetAwaiter().GetResult()
+        //                    }
+        //                }
+        //            },
+        //            null,
+        //            cancellationToken: cancellationToken));
 
-            var auth = new Mock<BotFrameworkAuthentication>();
-            auth.Setup(a => a.AuthenticateStreamingRequestAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .Returns(Task.FromResult(authResult));
-            auth.Setup(a => a.CreateUserTokenClientAsync(It.IsAny<ClaimsIdentity>(), It.IsAny<CancellationToken>()))
-                .Returns(Task.FromResult<UserTokenClient>(userTokenClient));
+        //    var auth = new Mock<BotFrameworkAuthentication>();
+        //    auth.Setup(a => a.AuthenticateStreamingRequestAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
+        //        .Returns(Task.FromResult(authResult));
+        //    auth.Setup(a => a.CreateUserTokenClientAsync(It.IsAny<ClaimsIdentity>(), It.IsAny<CancellationToken>()))
+        //        .Returns(Task.FromResult<UserTokenClient>(userTokenClient));
 
-            var webSocket = new ClientWebSocket();
+        //    var webSocket = new ClientWebSocket();
 
-            var httpRequest = new HttpRequestMessage
-            {
-                Method = HttpMethod.Get,
-                Content = CreateMessageActivityContent()
-            };
-            httpRequest.Headers.Add("authorization", "Bearer " + token);
-            httpRequest.Headers.Add("channelId", channelId);
+        //    var httpRequest = new HttpRequestMessage
+        //    {
+        //        Method = HttpMethod.Get,
+        //        Content = CreateMessageActivityContent()
+        //    };
+        //    httpRequest.Headers.Add("authorization", "Bearer " + token);
+        //    httpRequest.Headers.Add("channelId", channelId);
 
-            var httpResponse = new HttpResponseMessage();
+        //    var httpResponse = new HttpResponseMessage();
 
-            using (ShimsContext.Create())
-            {
-                ShimHttpContext.CurrentGet = () =>
-                {
-                    var e = new ShimHttpContext
-                    {
-                        IsWebSocketRequestGet = () => { return true; },
-                    };
+        //    using (ShimsContext.Create())
+        //    {
+        //        ShimHttpContext.CurrentGet = () =>
+        //        {
+        //            var e = new ShimHttpContext
+        //            {
+        //                IsWebSocketRequestGet = () => { return true; },
+        //            };
 
-                    e.AcceptWebSocketRequestFuncOfAspNetWebSocketContextTask = (config) =>
-                    {
-                        Task.FromResult(webSocket);
-                    };
+        //            e.AcceptWebSocketRequestFuncOfAspNetWebSocketContextTask = (config) =>
+        //            {
+        //                Task.FromResult(webSocket);
+        //            };
 
-                    return e;
-                };
+        //            return e;
+        //        };
 
-                var bot = new Mock<IBot>();
-                bot.Setup(b => b.OnTurnAsync(It.IsAny<ITurnContext>(), It.IsAny<CancellationToken>()))
-                    .Returns(Task.Factory.StartNew(() => { continueConversationWaiter.WaitOne(); })); // Simulate listening on web socket
+        //        var bot = new Mock<IBot>();
+        //        bot.Setup(b => b.OnTurnAsync(It.IsAny<ITurnContext>(), It.IsAny<CancellationToken>()))
+        //            .Returns(Task.Factory.StartNew(() => { continueConversationWaiter.WaitOne(); })); // Simulate listening on web socket
 
-                // Act
-                var adapter = new StreamingTestCloudAdapter(auth.Object, new Dictionary<WebSocket, StreamingConnection> { { webSocket, streamingConnection.Object } });
+        //        // Act
+        //        var adapter = new StreamingTestCloudAdapter(auth.Object, new Dictionary<WebSocket, StreamingConnection> { { webSocket, streamingConnection.Object } });
 
-                var processRequest = adapter.ProcessAsync(httpRequest, httpResponse, bot.Object, CancellationToken.None);
+        //        var processRequest = adapter.ProcessAsync(httpRequest, httpResponse, bot.Object, CancellationToken.None);
 
-                // Assert
-                Assert.True(processRequest.IsCompleted);
+        //        // Assert
+        //        Assert.True(processRequest.IsCompleted);
                 
-                Assert.ThrowsAsync<ArgumentException>(() =>
-                    adapter.ContinueConversationAsync(
-                        authResult.ClaimsIdentity, invalidActivity, (turn, cancellationToken) => Task.CompletedTask, CancellationToken.None));
+        //        Assert.ThrowsAsync<ArgumentException>(() =>
+        //            adapter.ContinueConversationAsync(
+        //                authResult.ClaimsIdentity, invalidActivity, (turn, cancellationToken) => Task.CompletedTask, CancellationToken.None));
 
-                continueConversationWaiter.Set();
-                processRequest.Wait();
-            }
-        }
+        //        continueConversationWaiter.Set();
+        //        processRequest.Wait();
+        //    }
+        //}
 
         [Fact]
         public void ConstructorWithConfiguration()

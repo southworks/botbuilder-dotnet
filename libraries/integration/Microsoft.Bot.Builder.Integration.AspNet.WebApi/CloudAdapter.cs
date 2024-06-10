@@ -10,6 +10,7 @@ using System.Net.WebSockets;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web.WebSockets;
 using Microsoft.Bot.Builder.Streaming;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
@@ -76,8 +77,12 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
                 // Only GET requests for web socket connects are allowed
                 if (httpRequest.Method == HttpMethod.Get && System.Web.HttpContext.Current.IsWebSocketRequest)
                 {
-                    // All socket communication will be handled by the internal streaming-specific BotAdapter
-                    await ConnectAsync(httpRequest, bot, cancellationToken).ConfigureAwait(false);
+                    System.Web.HttpContext.Current.AcceptWebSocketRequest(async context =>
+                    {
+                        // All socket communication will be handled by the internal streaming-specific BotAdapter
+                        await ConnectAsync(context, httpRequest, bot, cancellationToken).ConfigureAwait(false);
+                    });
+                    httpResponse.StatusCode = HttpStatusCode.SwitchingProtocols;
                 }
                 else if (httpRequest.Method == HttpMethod.Post)
                 {
@@ -199,7 +204,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
             return new WebSocketStreamingConnection(socket, logger);
         }
 
-        private async Task ConnectAsync(HttpRequestMessage httpRequest, IBot bot, CancellationToken cancellationToken)
+        private async Task ConnectAsync(AspNetWebSocketContext context, HttpRequestMessage httpRequest, IBot bot, CancellationToken cancellationToken)
         {
             Logger.LogInformation($"Received request for web socket connect.");
 
@@ -214,20 +219,17 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
             var connectionId = Guid.NewGuid();
             using (var scope = Logger.BeginScope(connectionId))
             {
-                System.Web.HttpContext.Current.AcceptWebSocketRequest(async context =>
-                {
-                    var connection = CreateWebSocketConnection(context.WebSocket, Logger);
+                var connection = CreateWebSocketConnection(context.WebSocket, Logger);
 
-                    using (var streamingActivityProcessor = new StreamingActivityProcessor(authenticationRequestResult, connection, this, bot))
-                    {
-                        // Start receiving activities on the socket
-                        _streamingConnections.TryAdd(connectionId, streamingActivityProcessor);
-                        Log.WebSocketConnectionStarted(Logger);
-                        await streamingActivityProcessor.ListenAsync(cancellationToken).ConfigureAwait(false);
-                        _streamingConnections.TryRemove(connectionId, out _);
-                        Log.WebSocketConnectionCompleted(Logger);
-                    }
-                });
+                using (var streamingActivityProcessor = new StreamingActivityProcessor(authenticationRequestResult, connection, this, bot))
+                {
+                    // Start receiving activities on the socket
+                    _streamingConnections.TryAdd(connectionId, streamingActivityProcessor);
+                    Log.WebSocketConnectionStarted(Logger);
+                    await streamingActivityProcessor.ListenAsync(cancellationToken).ConfigureAwait(false);
+                    _streamingConnections.TryRemove(connectionId, out _);
+                    Log.WebSocketConnectionCompleted(Logger);
+                }
             }
         }
 
