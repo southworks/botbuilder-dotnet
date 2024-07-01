@@ -179,6 +179,29 @@ namespace Microsoft.Bot.Connector
         /// Configures an HTTP client to include default headers for the Bot Framework.
         /// </summary>
         /// <param name="httpClient">The HTTP client to configure.</param>
+        /// <param name="userAgent">user agent.</param>
+        public static void AddUserAgent(HttpClient httpClient, string userAgent)
+        {
+            if (httpClient == null)
+            {
+                return;
+            }
+
+            if (string.IsNullOrEmpty(userAgent))
+            {
+                return;
+            }
+
+            lock (httpClient)
+            {
+                httpClient.DefaultRequestHeaders.UserAgent.ParseAdd(userAgent);
+            }
+        }
+
+        /// <summary>
+        /// Configures an HTTP client to include default headers for the Bot Framework.
+        /// </summary>
+        /// <param name="httpClient">The HTTP client to configure.</param>
         public static void AddDefaultRequestHeaders(HttpClient httpClient)
         {
             lock (httpClient)

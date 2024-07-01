@@ -25,6 +25,17 @@ namespace Microsoft.Bot.Connector.Tests
         }
 
         [Fact]
+        public void ConnectorClient_CustomHttpClient_CustomUserAgent()
+        {
+            var userAgent = $"CustomUserAgent/{Guid.NewGuid()} CustomUserAgent2/{Guid.NewGuid()} CustomUserAgent3/{Guid.NewGuid()}";
+            var customHttpClient = new HttpClient();
+            ConnectorClient.AddDefaultRequestHeaders(customHttpClient);
+            ConnectorClient.AddUserAgent(customHttpClient, userAgent);
+
+            Assert.Contains(userAgent, customHttpClient.DefaultRequestHeaders.UserAgent.ToString());
+        }
+
+        [Fact]
         public void ConnectorClient_CustomHttpClient_ContainsAcceptAll()
         {
             var customHttpClient = new HttpClient();

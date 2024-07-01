@@ -34,11 +34,13 @@ namespace Microsoft.Bot.Connector.Authentication
             ServiceClientCredentials credentials,
             string oauthEndpoint,
             HttpClient httpClient,
-            ILogger logger)
+            ILogger logger,
+            ConnectorClientOptions connectorClientOptions = default)
         {
             _appId = appId;
             _httpClient = httpClient ?? new HttpClient();
             ConnectorClient.AddDefaultRequestHeaders(_httpClient);
+            ConnectorClient.AddUserAgent(_httpClient, connectorClientOptions?.UserAgent);
             _client = new OAuthClient(credentials, _httpClient, true) { BaseUri = new Uri(oauthEndpoint) };
             _logger = logger ?? NullLogger.Instance;
         }
