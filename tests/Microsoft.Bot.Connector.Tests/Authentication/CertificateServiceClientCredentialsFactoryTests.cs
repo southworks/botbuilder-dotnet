@@ -17,6 +17,9 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         private const string TestAppId = nameof(TestAppId);
         private const string TestTenantId = nameof(TestTenantId);
         private const string TestAudience = nameof(TestAudience);
+        private const string LoginEndpoint = AuthenticationConstants.ToChannelFromBotLoginUrlTemplate;
+        private const string GovLoginEndpoint = GovernmentAuthenticationConstants.ToChannelFromBotLoginUrlTemplate;
+        private const string PrivateLoginEndpoint = "https://login.privatecloud.com";
         private readonly Mock<ILogger> logger = new Mock<ILogger>();
         private readonly Mock<X509Certificate2> certificate = new Mock<X509Certificate2>();
 
@@ -63,15 +66,59 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         }
 
         [Fact]
-        public async void CanCreateCredentials()
+        public async void CanCreatePublicCredentials()
         {
             var factory = new CertificateServiceClientCredentialsFactory(certificate.Object, TestAppId);
 
             var credentials = await factory.CreateCredentialsAsync(
-                TestAppId, TestAudience, "https://login.microsoftonline.com", true, CancellationToken.None);
+                TestAppId, TestAudience, LoginEndpoint, true, CancellationToken.None);
 
             Assert.NotNull(credentials);
             Assert.IsType<CertificateAppCredentials>(credentials);
+        }
+
+        [Fact]
+        public async void CanCreateGovCredentials()
+        {
+            var factory = new CertificateServiceClientCredentialsFactory(certificate.Object, TestAppId);
+
+            var credentials = await factory.CreateCredentialsAsync(
+                TestAppId, TestAudience, GovLoginEndpoint, true, CancellationToken.None);
+
+            Assert.NotNull(credentials);
+            Assert.IsType<CertificateGovernmentAppCredentials>(credentials);
+        }
+
+        [Fact]
+        public async void CanCreatePrivateCredentials()
+        {
+            var factory = new CertificateServiceClientCredentialsFactory(certificate.Object, TestAppId);
+
+            var credentials = await factory.CreateCredentialsAsync(
+                TestAppId, TestAudience, PrivateLoginEndpoint, true, CancellationToken.None);
+
+            Assert.NotNull(credentials);
+            Assert.IsAssignableFrom<CertificateAppCredentials>(credentials);
+            Assert.Equal(PrivateLoginEndpoint, ((CertificateAppCredentials)credentials).OAuthEndpoint);
+        }
+
+        [Fact]
+        public async void ShouldCreateUniqueCredentialsByAudience()
+        {
+            var factory = new CertificateServiceClientCredentialsFactory(certificate.Object, TestAppId);
+
+            var credentials1 = await factory.CreateCredentialsAsync(
+                TestAppId, string.Empty, LoginEndpoint, true, CancellationToken.None);
+            var credentials2 = await factory.CreateCredentialsAsync(
+                TestAppId, TestAudience, LoginEndpoint, true, CancellationToken.None);
+            var credentials3 = await factory.CreateCredentialsAsync(
+                TestAppId, Guid.NewGuid().ToString(), LoginEndpoint, true, CancellationToken.None);
+            var credentials4 = await factory.CreateCredentialsAsync(
+                TestAppId, string.Empty, LoginEndpoint, true, CancellationToken.None);
+
+            Assert.NotEqual(credentials1, credentials2);
+            Assert.NotEqual(credentials1, credentials3);
+            Assert.Equal(credentials1, credentials4);
         }
 
         [Fact]
@@ -80,7 +127,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
             var factory = new CertificateServiceClientCredentialsFactory(certificate.Object, TestAppId);
 
             Assert.ThrowsAsync<InvalidOperationException>(() => factory.CreateCredentialsAsync(
-                    "InvalidAppId", TestAudience, "https://login.microsoftonline.com", true, CancellationToken.None));
+                    "InvalidAppId", TestAudience, LoginEndpoint, true, CancellationToken.None));
         }
     }
 }
