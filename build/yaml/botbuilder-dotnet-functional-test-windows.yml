@@ -161,7 +161,6 @@ steps:
   env:
     TestAppId: $(WinTestBotAppId)
     TestPassword: $(WinTestBotAppSecret)
-    SPEECHBOTSECRET: $(WinTestBotAppSecret)
     SPEECHSUBSCRIPTION: $(AzureSubscription)
 
 - task: AzureCLI@1
