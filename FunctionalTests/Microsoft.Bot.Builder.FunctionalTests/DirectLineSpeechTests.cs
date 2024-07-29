@@ -50,8 +50,8 @@ namespace Microsoft.Bot.Builder.FunctionalTests
             Assert.IsTrue(File.Exists(SoundFilePath));
 
             // Create a Dialog Service Config for use with the Direct Line Speech Connector
-            var config = DialogServiceConfig.FromBotSecret(speechBotSecret, speechSubscription, SpeechRegion);
-            config.SpeechRecognitionLanguage = "en-us";
+            var config = BotFrameworkConfig.FromSubscription(speechSubscription, SpeechRegion);
+            config.SetProperty(PropertyId.SpeechServiceConnection_RecoLanguage, "en-us");
             config.SetProperty(PropertyId.Conversation_From_Id, FromUser);
 
             // Create a new Dialog Service Connector for the above configuration and register to receive events
