@@ -86,7 +86,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests
         private void GetEnvironmentVars()
         {
             // The secret for the test bot and DLS channel.
-            speechBotSecret = Environment.GetEnvironmentVariable("SPEECHBOTSECRET");
+            speechBotSecret = Environment.GetEnvironmentVariable("DIRECTLINE");
             if (string.IsNullOrWhiteSpace(speechBotSecret))
             {
                 Assert.Fail("Environment variable 'SPEECHBOTSECRET' not found.");
