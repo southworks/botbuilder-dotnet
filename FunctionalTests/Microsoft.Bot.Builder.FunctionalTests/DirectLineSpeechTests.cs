@@ -28,7 +28,6 @@ namespace Microsoft.Bot.Builder.FunctionalTests
         private static readonly string SpeechRegion = "westus2";
         private static readonly string SoundFilePath = $"..{Path.DirectorySeparatorChar}..{Path.DirectorySeparatorChar}..{Path.DirectorySeparatorChar}Assets{Path.DirectorySeparatorChar}TellMeAJoke.wav";
         private static string speechSubscription = null;
-        private static string speechBotSecret = null;
         private List<MessageRecord> messages = new List<MessageRecord>();
         private List<ActivityRecord> activities = new List<ActivityRecord>();
         private WaveOutEvent player = new WaveOutEvent();
@@ -50,8 +49,8 @@ namespace Microsoft.Bot.Builder.FunctionalTests
             Assert.IsTrue(File.Exists(SoundFilePath));
 
             // Create a Dialog Service Config for use with the Direct Line Speech Connector
-            var config = DialogServiceConfig.FromBotSecret(speechBotSecret, speechSubscription, SpeechRegion);
-            config.SpeechRecognitionLanguage = "en-us";
+            var config = BotFrameworkConfig.FromSubscription(speechSubscription, SpeechRegion);
+            config.SetProperty(PropertyId.SpeechServiceConnection_RecoLanguage, "en-us");
             config.SetProperty(PropertyId.Conversation_From_Id, FromUser);
 
             // Create a new Dialog Service Connector for the above configuration and register to receive events
@@ -86,13 +85,6 @@ namespace Microsoft.Bot.Builder.FunctionalTests
         /// </summary>
         private void GetEnvironmentVars()
         {
-            // The secret for the test bot and DLS channel.
-            speechBotSecret = Environment.GetEnvironmentVariable("SPEECHBOTSECRET");
-            if (string.IsNullOrWhiteSpace(speechBotSecret))
-            {
-                Assert.Fail("Environment variable 'SPEECHBOTSECRET' not found.");
-            }
-
             // The cog services key for use with DLS.
             speechSubscription = Environment.GetEnvironmentVariable("SPEECHSUBSCRIPTION");
             if (string.IsNullOrWhiteSpace(speechSubscription))
