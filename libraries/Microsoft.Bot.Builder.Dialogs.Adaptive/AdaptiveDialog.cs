@@ -349,6 +349,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 activeDialogState[AdaptiveKey] = state;
             }
 
+            state.Actions.First().DialogCallStack = dc.CallStack;
+
             if (state.Actions != null && state.Actions.Any())
             {
                 var childContext = new DialogContext(this.Dialogs, dc, state.Actions.First());
@@ -1095,7 +1097,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 state.Actions = new List<ActionState>();
             }
 
-            var actionContext = new ActionContext(dc.Dialogs, dc, new DialogState { DialogStack = dc.Stack }, state.Actions, changeTurnKey);
+            var actionContext = new ActionContext(dc.Dialogs, dc, new DialogState { DialogStack = dc.Stack, DialogCallStack = dc.CallStack }, state.Actions, changeTurnKey);
             actionContext.Parent = dc.Parent;
             return actionContext;
         }
