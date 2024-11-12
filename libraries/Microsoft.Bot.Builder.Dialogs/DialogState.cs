@@ -42,5 +42,12 @@ namespace Microsoft.Bot.Builder.Dialogs
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
         public List<DialogInstance> DialogStack { get; set; } = new List<DialogInstance>();
 #pragma warning restore CA2227 // Collection properties should be read only
+
+        /// <summary>
+        /// Gets or sets the call stack information of the dialogs.
+        /// </summary>
+        /// <value>Call stack of dialogs.</value>
+        [JsonProperty("dialogCallStack")]
+        public string DialogCallStack { get; set; } = string.Empty;
     }
 }
