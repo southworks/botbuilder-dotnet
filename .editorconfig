@@ -3,6 +3,7 @@
 ###############################
 # Core EditorConfig Options   #
 ###############################
+
 root = true
 
 # All files
