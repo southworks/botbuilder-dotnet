@@ -1,0 +1,36 @@
+{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "test",
+        "autoEndDialog": false,
+        "triggers": [
+          {
+            "$kind": "Microsoft.OnMessageActivity",
+            "actions": [
+              {
+                "$kind": "Microsoft.BeginDialog",
+                "activityProcessed": true,
+                "dialog": "DialogA"
+              },
+              {
+                "$kind": "Microsoft.SendActivity",
+                "activity": "Finished calling Dialog A from Root"
+              }
+            ]
+          }
+        ],
+        "defaultResultProperty": "dialog.result"
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "hi"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Dialog A called, calling Dialog B"
+        }
+    ]
+}

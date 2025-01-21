@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -344,6 +345,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <inheritdoc/>
         protected override string OnComputeId()
         {
+            Debug.WriteLine(1);
             return $"ActionScope[{StringUtils.EllipsisHash(string.Join(",", Actions.Select(a => a.Id)), 50)}]";
         }
     }
