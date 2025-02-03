@@ -138,7 +138,9 @@ namespace Microsoft.Bot.Connector.Tests
                 stream.Position = 0;
                 var length = stream.Length > int.MaxValue ? int.MaxValue : Convert.ToInt32(stream.Length);
                 var buffer = new byte[length];
+#pragma warning disable CA2022 // cause
                 stream.Read(buffer, 0, length);
+#pragma warning restore CA2022 // cause
 
                 var actualAsString = Convert.ToBase64String(buffer, Base64FormattingOptions.None);
 
