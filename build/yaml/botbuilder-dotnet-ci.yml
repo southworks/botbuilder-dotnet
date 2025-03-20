@@ -66,7 +66,7 @@ stages:
   - job: Release_Windows_Configuration_8
     variables:
       BuildConfiguration: Release-Windows
-      BuildTarget: 'net8' # set the TargetFramework property for tests to use net8.0
+      BuildTarget: 'net9' # set the TargetFramework property for tests to use net9.0
       PublishCoverage: true
     steps:
     - template: ci-build-steps.yml
