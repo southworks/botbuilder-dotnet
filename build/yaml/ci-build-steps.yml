@@ -24,6 +24,7 @@ steps:
   displayName: 'Build solution Microsoft.Bot.Builder.sln'
   inputs:
     solution: '$(Parameters.solution)'
+    vsVersion: 17.0
     msbuildArgs: '$(MSBuildArguments)'
     platform: '$(BuildPlatform)'
     configuration: '$(BuildConfiguration)'
