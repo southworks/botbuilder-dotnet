@@ -250,6 +250,16 @@ namespace Microsoft.Bot.Connector
                     }
                 }
 
+                var filteredHeaders = HeaderPropagation.FilterHeaders();
+
+                if (filteredHeaders != null && filteredHeaders.Count > 0)
+                {
+                    foreach (var header in filteredHeaders)
+                    {
+                        httpClient.DefaultRequestHeaders.Add(header.Key, header.Value.ToArray());
+                    }
+                }
+
                 httpClient.DefaultRequestHeaders.ExpectContinue = false;
 
                 var jsonAcceptHeader = new MediaTypeWithQualityHeaderValue("*/*");
