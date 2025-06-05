@@ -110,6 +110,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [Fact]
+        public async Task DialogLoop()
+        {
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
+        }
+
+        [Fact]
         public async Task AdaptiveDialog_BeginDialog_With_Dup_Dialog_Ref()
         {
             await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);

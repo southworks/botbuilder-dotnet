@@ -1,0 +1,27 @@
+{
+    "$schema": "../../../../tests.schema",
+    "$kind": "Microsoft.AdaptiveDialog",
+    "id": "DialogA",
+    "triggers": [
+        {
+            "$kind": "Microsoft.OnBeginDialog",
+            "actions": [
+                {
+                  "$kind": "Microsoft.SendActivity",
+                  "activity": "Dialog A called, calling Dialog B"
+                },
+                {
+                  "$kind": "Microsoft.BeginDialog",
+                  "activityProcessed": true,
+                  "dialog": "DialogB"
+                },
+                {
+                  "$kind": "Microsoft.SendActivity",
+                  "activity": "Finished calling Dialog B from Dialog A"
+                }
+            ]
+        }
+    ],
+    "autoEndDialog": true,
+    "defaultResultProperty": "dialog.result"
+}

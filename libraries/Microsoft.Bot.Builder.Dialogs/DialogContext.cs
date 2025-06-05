@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
@@ -20,6 +21,8 @@ namespace Microsoft.Bot.Builder.Dialogs
     [System.Diagnostics.DebuggerDisplay("{GetType().Name}[{ActiveDialog?.Id}]")]
     public class DialogContext
     {
+        private readonly Regex _dialogRegex = new Regex(@"^BeginDialog\[.*\]$");
+
         /// <summary>
         /// Initializes a new instance of the <see cref="DialogContext"/> class from the turn context.
         /// </summary>
@@ -31,6 +34,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             Dialogs = dialogs ?? throw new ArgumentNullException(nameof(dialogs));
             Context = turnContext ?? throw new ArgumentNullException(nameof(turnContext));
             Stack = state.DialogStack;
+            CallStack = state.DialogCallStack;
             State = new DialogStateManager(this);
             Services = new TurnContextStateCollection();
 
@@ -84,6 +88,14 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// The current dialog stack.
         /// </value>
         public List<DialogInstance> Stack { get; private set; }
+
+        /// <summary>
+        /// Gets the current call dialog stack.
+        /// </summary>
+        /// <value>
+        /// The current call dialog stack.
+        /// </value>
+        public string CallStack { get; private set; }
 
         /// <summary>
         /// Gets or sets the parent <see cref="DialogContext"/>, if any. Used when searching for the ID of a dialog to start.
@@ -203,6 +215,17 @@ namespace Microsoft.Bot.Builder.Dialogs
                 };
 
                 Stack.Insert(0, instance);
+
+                if (_dialogRegex.IsMatch(dialogId))
+                {
+                    CallStack += dialogId;
+
+                    // Check for repeating cycles
+                    if (HasContinuousSequence(CallStack))
+                    {
+                        throw new Exception("Circular reference in dialogs detected");
+                    }
+                }
 
                 // Call dialog's BeginAsync() method
                 await this.DebuggerStepAsync(dialog, DialogEvents.BeginDialog, cancellationToken).ConfigureAwait(false);
@@ -758,6 +781,26 @@ namespace Microsoft.Bot.Builder.Dialogs
                     { nameof(State), this.State.GetMemorySnapshot() }
                 });
             }
+        }
+
+        /// <summary>
+        /// Evaluates if the string passed has continues sequences longer than 4.
+        /// </summary>
+        /// <param name="input">The string that will be evaluated.</param>
+        /// <returns>A boolean with the value resulting from the operation.</returns>
+        private bool HasContinuousSequence(string input)
+        {
+            for (int seqLength = 1; seqLength <= input.Length / 5; seqLength++)
+            {
+                //regex that checks if the input follows a pattern of length i 5 or more times continuously.
+                string pattern = $"(.{{{seqLength}}})\\1{{4,}}";
+                if (Regex.IsMatch(input, pattern))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }
